@@ -8,6 +8,7 @@ import { ExerciseModule } from './exercise/exercise.module';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { HealthModule } from './health/health.module';
+import { ExerciseCheckModule } from './exercise-check/exercise-check.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { HealthModule } from './health/health.module';
     HealthModule,
     UserModule,
     AuthModule,
+    ExerciseCheckModule,
   ],
   controllers: [AppController],
   providers: [AppService],

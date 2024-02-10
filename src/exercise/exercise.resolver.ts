@@ -12,10 +12,14 @@ import { JwtAuthGuard } from '../guards/jwt-auth-guard';
 import { Exercise, ExerciseInput } from '../graphql/graphqlTypes';
 import { CurrentUser } from '../auth/user.auth.decorator';
 import { User } from '@prisma/client';
+import { ExerciseCheckService } from '../exercise-check/exercise-check.service';
 
 @Resolver('Exercise')
 export class ExerciseResolver {
-  constructor(private readonly exerciseService: ExerciseService) {}
+  constructor(
+    private readonly exerciseService: ExerciseService,
+    private readonly exerciseCheckService: ExerciseCheckService,
+  ) {}
 
   @UseGuards(JwtAuthGuard)
   @Query('exercises')
@@ -47,5 +51,10 @@ export class ExerciseResolver {
   @ResolveField('history')
   async getHistory(@Parent() exercise: Exercise) {
     return this.exerciseService.getHistory(exercise.id);
+  }
+
+  @ResolveField('checks')
+  async getChecks(@Parent() exercise: Exercise) {
+    return this.exerciseCheckService.getChecksByExerciseId(exercise.id);
   }
 }
