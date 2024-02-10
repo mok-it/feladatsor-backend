@@ -5,5 +5,6 @@ import { ExerciseResolver } from './exercise.resolver';
 import { PrismaClient } from '@prisma/client';
 @Module({
   providers: [ExerciseResolver, ExerciseService, PrismaClient],
+  exports: [ExerciseService],
 })
 export class ExerciseModule {}
