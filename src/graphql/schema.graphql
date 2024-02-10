@@ -1,0 +1,23 @@
+type Mutation {
+    createExerciseCheck(data: ExerciseCheckInput!): ExerciseCheck!
+}
+
+enum ExerciseCheckType {
+    GOOD
+    CHANGE_REQUIRED
+    TO_DELETE
+}
+
+input ExerciseCheckInput {
+    exerciseId: ID!
+    type: ExerciseCheckType!
+}
+
+type ExerciseCheck {
+    id: ID!
+    exercise: Exercise!
+    user: User!
+    type: ExerciseCheckType!
+    createdAt: String!
+    updatedAt: String!
+}

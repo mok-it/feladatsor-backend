@@ -1,0 +1,58 @@
+type Query {
+    exercises(take: Int!, skip: Int!): [Exercise!]!
+    exercisesCount: Int!
+    exercise(id: ID!): Exercise
+}
+
+type Mutation {
+    createExercise(input: ExerciseInput!): Exercise!
+}
+
+input ExerciseInput {
+    name: String!
+    description: String!
+    exerciseImage: String
+    solution: String!
+    elaboration: String
+    elaborationImage: String
+    helpingQuestions: [String!]!
+    source: String
+}
+
+type Exercise {
+    id: ID!
+    name: String!
+    description: String!
+    exerciseImage: String
+    solution: String!
+    elaboration: String
+    elaborationImage: String
+    helpingQuestions: [String!]!
+    source: String
+    difficulty: [ExerciseDifficulty!]!
+    history: [ExerciseHistory!]!
+    similarExercises: [Exercise!]!
+    checks: [ExerciseCheck!]!
+    createdBy: User!
+    createdAt: String!
+    updatedAt: String!
+}
+
+type ExerciseDifficulty {
+    ageGroup: ExerciseAgeGroup!
+    difficulty: Int!
+}
+
+enum ExerciseAgeGroup {
+    KOALA
+    MEDVEBOCS
+    KISMEDVE
+    NAGYMEDVE
+    JEGESMEDVE
+}
+
+type ExerciseHistory {
+    id: ID!
+    exercise: Exercise!
+    #TODO
+}

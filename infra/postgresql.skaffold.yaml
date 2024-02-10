@@ -14,7 +14,7 @@ deploy:
             tag: 13.7.0-debian-11-r0
           auth:
             postgresPassword: dev
-            database: nest-starter
+            database: be-febe
           primary:
             persistence:
               size: 2Gi
