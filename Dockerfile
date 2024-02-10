@@ -10,11 +10,12 @@ WORKDIR /code
 # 👇 Copy config files and source
 COPY package*.json tsconfig.json ./
 COPY prisma ./prisma/
+COPY src ./src
 
 # 👇 Install deps and build source
 RUN npm ci
 
-COPY src ./src
+RUN npm run db:generate
 RUN npm run build
 
 FROM builder as prodbuild
