@@ -13,9 +13,9 @@ jobs:
       - name: Login to GitLab
         uses: docker/login-action@v2
         with:
-          registry: registry.gitlab.com
-          username: ${{ secrets.GITLAB_USERNAME }}
-          password: ${{ secrets.GITLAB_PASSWORD }}
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
       - uses: actions/checkout@v3
 
@@ -23,7 +23,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v4
         with:
-          images: registry.gitlab.com/kosbalint/anton-apps/${{ github.event.repository.name }}
+          images: ghcr.io/mok-it/${{ github.event.repository.name }}
           flavor: |
             latest=false
 
