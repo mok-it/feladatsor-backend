@@ -7,6 +7,7 @@ import { Config } from './config/config';
 import { ExerciseModule } from './exercise/exercise.module';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
+import { HealthModule } from './health/health.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { AuthModule } from './auth/auth.module';
     }),
     Config,
     ExerciseModule,
+    HealthModule,
     UserModule,
     AuthModule,
   ],
