@@ -4,6 +4,7 @@ import { JwtService } from '@nestjs/jwt';
 import { UserService } from '../user/user.service';
 import { JwtPayload } from './jwtPayload';
 import { validateFirebaseToken } from './validateFirebaseToken';
+import { User } from '@prisma/client';
 
 @Injectable()
 export class AuthenticateUser {
@@ -11,15 +12,8 @@ export class AuthenticateUser {
     private userService: UserService,
     private jwtService: JwtService,
   ) {}
-  async execute(name: string, password: string) {
-    const user = await this.userService.getUserByUserName(name);
-    if (!user) {
-      return null;
-    }
-    const passwordHasMatch = await compare(password, user.password);
-    if (!passwordHasMatch) {
-      return null;
-    }
+
+  createToken(user: User) {
     const payload: Omit<Omit<JwtPayload, 'iat'>, 'exp'> = {
       subject: user.id,
       user_name: user.userName,
@@ -30,9 +24,21 @@ export class AuthenticateUser {
     };
   }
 
+  async execute(name: string, password: string) {
+    const user = await this.userService.getUserByUserName(name);
+    if (!user) {
+      return null;
+    }
+    const passwordHasMatch = await compare(password, user.password);
+    if (!passwordHasMatch) {
+      return null;
+    }
+    return this.createToken(user);
+  }
+
   async loginWithGoogle(token: string) {
     //Check if token is valid
-    const isValid = validateFirebaseToken(token);
+    const isValid = await validateFirebaseToken(token);
     if (!isValid) {
       return null;
     }
@@ -41,13 +47,15 @@ export class AuthenticateUser {
       json: true,
     }) as GoogleTokenPayload;
 
-    return await this.userService.upserUserByGoogleId('googleId', {
+    const user = await this.userService.upserUserByGoogleId(payload.user_id, {
       email: payload.email,
       name: payload.name,
       avatarUrl: payload.picture,
       userName: payload.email,
       firebaseId: payload.user_id,
     });
+
+    return this.createToken(user);
   }
 }
 
