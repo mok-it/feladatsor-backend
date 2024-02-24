@@ -8,4 +8,8 @@ export class AuthService {
   login(name: string, password: string) {
     return this.authUser.execute(name, password);
   }
+
+  loginWithGoogle(token: string) {
+    return this.authUser.loginWithGoogle(token);
+  }
 }

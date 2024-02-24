@@ -3,6 +3,7 @@ import { compare } from 'bcryptjs';
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from '../user/user.service';
 import { JwtPayload } from './jwtPayload';
+import { validateFirebaseToken } from './validateFirebaseToken';
 
 @Injectable()
 export class AuthenticateUser {
@@ -28,4 +29,45 @@ export class AuthenticateUser {
       user,
     };
   }
+
+  async loginWithGoogle(token: string) {
+    //Check if token is valid
+    const isValid = validateFirebaseToken(token);
+    if (!isValid) {
+      return null;
+    }
+
+    const payload = this.jwtService.decode(token, {
+      json: true,
+    }) as GoogleTokenPayload;
+
+    return await this.userService.upserUserByGoogleId('googleId', {
+      email: payload.email,
+      name: payload.name,
+      avatarUrl: payload.picture,
+      userName: payload.email,
+      firebaseId: payload.user_id,
+    });
+  }
 }
+
+type GoogleTokenPayload = {
+  name: string;
+  picture: string;
+  iss: string;
+  aud: string;
+  auth_time: number;
+  user_id: string;
+  sub: string;
+  iat: number;
+  exp: number;
+  email: string;
+  email_verified: boolean;
+  firebase: {
+    identities: {
+      'google.com': string[];
+      email: string[];
+    };
+    sign_in_provider: string | 'google.com';
+  };
+};

@@ -9,4 +9,9 @@ export class AuthResolver {
   login(@Args('name') name: string, @Args('password') password: string) {
     return this.authService.login(name, password);
   }
+
+  @Mutation('loginWithGoogle')
+  loginWithGoogle(@Args('googleToken') googleToken: string) {
+    return this.authService.loginWithGoogle(googleToken);
+  }
 }

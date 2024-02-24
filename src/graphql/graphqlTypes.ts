@@ -79,6 +79,7 @@ export interface UserRegisterInput {
 
 export interface IMutation {
     login(name: string, password: string): Nullable<LoginResponse> | Promise<Nullable<LoginResponse>>;
+    loginWithGoogle(googleToken: string): Nullable<LoginResponse> | Promise<Nullable<LoginResponse>>;
     createExerciseCheck(data: ExerciseCheckInput): ExerciseCheck | Promise<ExerciseCheck>;
     createExercise(input: ExerciseInput): Exercise | Promise<Exercise>;
     register(data: UserRegisterInput): User | Promise<User>;

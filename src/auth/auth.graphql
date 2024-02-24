@@ -1,3 +1,4 @@
 type Mutation {
     login(name: String!, password: String!): LoginResponse
+    loginWithGoogle(googleToken: String!): LoginResponse
 }
