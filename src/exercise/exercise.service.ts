@@ -34,16 +34,16 @@ export class ExerciseService {
   createExercise(data: ExerciseInput, user: User) {
     return this.prismaClient.exercise.create({
       data: {
-        alternativeDifficultyExercise: {
-          connect: {
-            id: data.alternativeDifficultyParent,
-          },
-        },
-        sameLogicExercise: {
-          connect: {
-            id: data.sameLogicParent,
-          },
-        },
+        //alternativeDifficultyExercise: {
+        //  connect: {
+        //    id: data.alternativeDifficultyParent,
+        //  },
+        //},
+        //sameLogicExercise: {
+        //  connect: {
+        //    id: data.sameLogicParent,
+        //  },
+        //},
         status: data.status,
         solveIdea: data.solveIdea,
         isCompetitionFinal: data.isCompetitionFinal,

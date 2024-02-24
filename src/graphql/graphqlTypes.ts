@@ -45,13 +45,14 @@ export interface ExerciseSearchQuery {
 }
 
 export interface ExerciseInput {
-    id?: Nullable<string>;
     tags: Nullable<string>[];
     status: ExerciseStatus;
     description: string;
     exerciseImage?: Nullable<string>;
     solution: string;
+    solutionImage?: Nullable<string>;
     solveIdea?: Nullable<string>;
+    solveIdeaImage?: Nullable<string>;
     elaboration?: Nullable<string>;
     elaborationImage?: Nullable<string>;
     helpingQuestions: string[];
@@ -61,8 +62,6 @@ export interface ExerciseInput {
     alternativeDifficultyParent?: Nullable<string>;
     sameLogicParent?: Nullable<string>;
     isCompetitionFinal?: Nullable<boolean>;
-    createdAt: string;
-    updatedAt: string;
 }
 
 export interface ExerciseDifficultyInput {

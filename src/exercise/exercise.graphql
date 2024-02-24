@@ -14,13 +14,14 @@ type Mutation {
 }
 
 input ExerciseInput {
-    id: ID
     tags: [ID]!
     status: ExerciseStatus! #Authorization based, who can create what
     description: String! #text
     exerciseImage: String
     solution: String!
+    solutionImage: String
     solveIdea: String
+    solveIdeaImage: String
     elaboration: String
     elaborationImage: String
     helpingQuestions: [String!]!
@@ -30,8 +31,6 @@ input ExerciseInput {
     alternativeDifficultyParent: ID
     sameLogicParent: ID
     isCompetitionFinal: Boolean
-    createdAt: String!
-    updatedAt: String!
 }
 
 enum ExerciseStatus {
