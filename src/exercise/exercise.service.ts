@@ -70,7 +70,7 @@ export class ExerciseService {
     });
   }
 
-  getSimilarExercises(exerciseId: string) {
+  getAlternativeDifficultyExercises(exerciseId: string) {
     return this.prismaClient.exercise.findMany({
       where: {
         alternativeDifficultyExerciseId: exerciseId,

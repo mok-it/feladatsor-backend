@@ -42,9 +42,9 @@ export class ExerciseResolver {
     return this.exerciseService.createExercise(data, user);
   }
 
-  @ResolveField('similarExercises')
-  async getSimilarExercises(@Parent() exercise: Exercise) {
-    return this.exerciseService.getSimilarExercises(exercise.id);
+  @ResolveField('alternativeDifficultyExercises')
+  async getAlternativeDifficultyExercises(@Parent() exercise: Exercise) {
+    return this.exerciseService.getAlternativeDifficultyExercises(exercise.id);
   }
 
   //TODO: Move this out into a exerciseHistoryService
