@@ -14,14 +14,24 @@ type Mutation {
 }
 
 input ExerciseInput {
-    name: String!
-    description: String!
+    id: ID
+    tags: [ID]!
+    status: ExerciseStatus! #Authorization based, who can create what
+    description: String! #text
     exerciseImage: String
     solution: String!
+    solveIdea: String
     elaboration: String
     elaborationImage: String
     helpingQuestions: [String!]!
+    solutionOptions: [String!]!
     source: String
+    difficulty: [ExerciseDifficultyInput!]!
+    alternativeDifficultyParent: ID
+    sameLogicParent: ID
+    isCompetitionFinal: Boolean
+    createdAt: String!
+    updatedAt: String!
 }
 
 enum ExerciseStatus {
@@ -34,7 +44,7 @@ enum ExerciseStatus {
 type Exercise {
     id: ID!
     tags: [Tag!]!
-    status: ExerciseStatus! #Authorization based
+    status: ExerciseStatus! #Authorization based, who can create what
     description: String! #text
     exerciseImage: String
     solution: String!
@@ -46,11 +56,11 @@ type Exercise {
     source: String
     difficulty: [ExerciseDifficulty!]!
     history: [ExerciseHistory!]!
-    similarExercises: [Exercise!]! #Difficulty is different
-    atadottExercises: [Exercise!]! #Logic is the same, everything is different #TODO: Find name in eng
+    alternativeDifficultyExercises: [Exercise!]! #[Hasonló] Difficulty is different
+    sameLogicExercises: [Exercise!]! #[Átadott] Logic is the same, everything is different
     checks: [ExerciseCheck!]! #User and TimeStamp
     comments: [ExerciseComment!]!
-    isFinal: Boolean
+    isCompetitionFinal: Boolean
     createdBy: User!
     createdAt: String!
     updatedAt: String!
@@ -68,11 +78,16 @@ type Tag {
     id: ID!
     parent: Tag
     children: [Tag!]!
-    name: String!
     exercises: [Exercise!]!
+    name: String!
 }
 
 type ExerciseDifficulty {
+    ageGroup: ExerciseAgeGroup!
+    difficulty: Int!
+}
+
+input ExerciseDifficultyInput {
     ageGroup: ExerciseAgeGroup!
     difficulty: Int!
 }

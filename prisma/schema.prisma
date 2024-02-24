@@ -10,26 +10,61 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum ExerciseStatus {
+  DRAFT
+  CREATED
+  APPROVED
+  DELETED
+}
+
+model ExerciseTag {
+  id                  String        @id @default(uuid())
+  parentExerciseTagId String?
+  parentTag           ExerciseTag?  @relation("parentExercises", fields: [parentExerciseTagId], references: [id])
+  children            ExerciseTag[] @relation("parentExercises")
+  exercises           Exercise[]
+  name                String
+}
+
 model Exercise {
-  id                String               @id @default(uuid())
-  name              String
-  description       String
-  exerciseImage     String?
-  solution          String
-  elaboration       String?
-  elaborationImage  String?
-  helpingQuestions  String[]
-  source            String?
-  difficulty        ExerciseDifficulty[]
-  history           ExerciseHistory[]
-  similarExerciseId String?
-  similarExercise   Exercise?            @relation("SimilarExercises", fields: [similarExerciseId], references: [id])
-  similarExercises  Exercise[]           @relation("SimilarExercises")
-  checks            ExerciseCheck[]
-  createdBy         User                 @relation(fields: [createdById], references: [id])
-  createdById       String
-  createdAt         DateTime             @default(now())
-  updatedAt         DateTime             @default(now()) @updatedAt
+  id                              String               @id @default(uuid())
+  tags                            ExerciseTag[]
+  status                          ExerciseStatus
+  description                     String
+  exerciseImage                   String?
+  solution                        String
+  solveIdea                       String?
+  elaboration                     String?
+  elaborationImage                String?
+  helpingQuestions                String[]
+  solutionOptions                 String[]
+  source                          String?
+  difficulty                      ExerciseDifficulty[]
+  history                         ExerciseHistory[]
+  alternativeDifficultyExerciseId String?
+  alternativeDifficultyExercise   Exercise?            @relation("alternativeDifficultyExercises", fields: [alternativeDifficultyExerciseId], references: [id])
+  alternativeDifficultyExercises  Exercise[]           @relation("alternativeDifficultyExercises")
+  sameLogicExerciseId             String?
+  sameLogicExercise               Exercise?            @relation("sameLogicExercises", fields: [sameLogicExerciseId], references: [id])
+  sameLogicExercises              Exercise[]           @relation("sameLogicExercises")
+  checks                          ExerciseCheck[]
+  comments                        ExerciseComment[]
+  isCompetitionFinal              Boolean              @default(false)
+  createdBy                       User                 @relation(fields: [createdById], references: [id])
+  createdById                     String
+  createdAt                       DateTime             @default(now())
+  updatedAt                       DateTime             @default(now()) @updatedAt
+}
+
+model ExerciseComment {
+  id         String   @id @default(uuid())
+  exerciseId String
+  exercise   Exercise @relation(fields: [exerciseId], references: [id])
+  userId     String
+  user       User     @relation(fields: [userId], references: [id])
+  comment    String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @default(now()) @updatedAt
 }
 
 model ExerciseDifficulty {
@@ -56,15 +91,16 @@ enum AgeGroup {
 }
 
 model User {
-  id            String          @id @default(uuid())
-  name          String
-  userName      String          @unique
-  email         String
-  password      String
-  createdAt     DateTime        @default(now())
-  updatedAt     DateTime        @default(now())
-  exercises     Exercise[]
-  ExerciseCheck ExerciseCheck[]
+  id              String            @id @default(uuid())
+  name            String
+  userName        String            @unique
+  email           String
+  password        String
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @default(now())
+  exercises       Exercise[]
+  ExerciseCheck   ExerciseCheck[]
+  ExerciseComment ExerciseComment[]
 }
 
 model ExerciseCheck {

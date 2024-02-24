@@ -8,6 +8,25 @@
 /* tslint:disable */
 /* eslint-disable */
 
+export enum ExerciseCheckType {
+    GOOD = "GOOD",
+    CHANGE_REQUIRED = "CHANGE_REQUIRED",
+    TO_DELETE = "TO_DELETE"
+}
+
+export enum ExerciseCheckRole {
+    EXAMINER = "EXAMINER",
+    PROFESSIONAL = "PROFESSIONAL",
+    LECTOR = "LECTOR"
+}
+
+export enum ExerciseStatus {
+    DRAFT = "DRAFT",
+    CREATED = "CREATED",
+    APPROVED = "APPROVED",
+    DELETED = "DELETED"
+}
+
 export enum ExerciseAgeGroup {
     KOALA = "KOALA",
     MEDVEBOCS = "MEDVEBOCS",
@@ -16,34 +35,39 @@ export enum ExerciseAgeGroup {
     JEGESMEDVE = "JEGESMEDVE"
 }
 
-export enum ExerciseCheckType {
-    GOOD = "GOOD",
-    CHANGE_REQUIRED = "CHANGE_REQUIRED",
-    TO_DELETE = "TO_DELETE"
-}
-
-export interface CreateDuckInput {
-    exampleField?: Nullable<number>;
-}
-
-export interface UpdateDuckInput {
-    id: number;
-}
-
-export interface ExerciseInput {
-    name: string;
-    description: string;
-    exerciseImage?: Nullable<string>;
-    solution: string;
-    elaboration?: Nullable<string>;
-    elaborationImage?: Nullable<string>;
-    helpingQuestions: string[];
-    source?: Nullable<string>;
-}
-
 export interface ExerciseCheckInput {
     exerciseId: string;
     type: ExerciseCheckType;
+}
+
+export interface ExerciseSearchQuery {
+    queryStr?: Nullable<string>;
+}
+
+export interface ExerciseInput {
+    id?: Nullable<string>;
+    tags: Nullable<string>[];
+    status: ExerciseStatus;
+    description: string;
+    exerciseImage?: Nullable<string>;
+    solution: string;
+    solveIdea?: Nullable<string>;
+    elaboration?: Nullable<string>;
+    elaborationImage?: Nullable<string>;
+    helpingQuestions: string[];
+    solutionOptions: string[];
+    source?: Nullable<string>;
+    difficulty: ExerciseDifficultyInput[];
+    alternativeDifficultyParent?: Nullable<string>;
+    sameLogicParent?: Nullable<string>;
+    isCompetitionFinal?: Nullable<boolean>;
+    createdAt: string;
+    updatedAt: string;
+}
+
+export interface ExerciseDifficultyInput {
+    ageGroup: ExerciseAgeGroup;
+    difficulty: number;
 }
 
 export interface UserRegisterInput {
@@ -55,21 +79,23 @@ export interface UserRegisterInput {
 
 export interface IMutation {
     login(name: string, password: string): Nullable<LoginResponse> | Promise<Nullable<LoginResponse>>;
-    createDuck(createDuckInput: CreateDuckInput): Duck | Promise<Duck>;
-    updateDuck(updateDuckInput: UpdateDuckInput): Duck | Promise<Duck>;
-    removeDuck(id: number): Nullable<Duck> | Promise<Nullable<Duck>>;
-    createExercise(input: ExerciseInput): Exercise | Promise<Exercise>;
     createExerciseCheck(data: ExerciseCheckInput): ExerciseCheck | Promise<ExerciseCheck>;
+    createExercise(input: ExerciseInput): Exercise | Promise<Exercise>;
     register(data: UserRegisterInput): User | Promise<User>;
 }
 
-export interface Duck {
-    exampleField?: Nullable<number>;
+export interface ExerciseCheck {
+    id: string;
+    role: ExerciseCheckRole;
+    exercise: Exercise;
+    user: User;
+    type: ExerciseCheckType;
+    createdAt: string;
+    updatedAt: string;
 }
 
 export interface IQuery {
-    ducks(): Nullable<Duck>[] | Promise<Nullable<Duck>[]>;
-    duck(id: number): Nullable<Duck> | Promise<Nullable<Duck>>;
+    searchExercises(query?: Nullable<ExerciseSearchQuery>): Exercise[] | Promise<Exercise[]>;
     exercises(take: number, skip: number): Exercise[] | Promise<Exercise[]>;
     exercisesCount(): number | Promise<number>;
     exercise(id: string): Nullable<Exercise> | Promise<Nullable<Exercise>>;
@@ -79,21 +105,43 @@ export interface IQuery {
 
 export interface Exercise {
     id: string;
-    name: string;
+    tags: Tag[];
+    status: ExerciseStatus;
     description: string;
     exerciseImage?: Nullable<string>;
     solution: string;
+    solveIdea?: Nullable<string>;
     elaboration?: Nullable<string>;
     elaborationImage?: Nullable<string>;
     helpingQuestions: string[];
+    solutionOptions: string[];
     source?: Nullable<string>;
     difficulty: ExerciseDifficulty[];
     history: ExerciseHistory[];
-    similarExercises: Exercise[];
+    alternativeDifficultyExercises: Exercise[];
+    sameLogicExercises: Exercise[];
     checks: ExerciseCheck[];
+    comments: ExerciseComment[];
+    isCompetitionFinal?: Nullable<boolean>;
     createdBy: User;
     createdAt: string;
     updatedAt: string;
+}
+
+export interface ExerciseComment {
+    id: string;
+    user: User;
+    comment: string;
+    createdAt: string;
+    updatedAt: string;
+}
+
+export interface Tag {
+    id: string;
+    parent?: Nullable<Tag>;
+    children: Tag[];
+    exercises: Exercise[];
+    name: string;
 }
 
 export interface ExerciseDifficulty {
@@ -104,15 +152,6 @@ export interface ExerciseDifficulty {
 export interface ExerciseHistory {
     id: string;
     exercise: Exercise;
-}
-
-export interface ExerciseCheck {
-    id: string;
-    exercise: Exercise;
-    user: User;
-    type: ExerciseCheckType;
-    createdAt: string;
-    updatedAt: string;
 }
 
 export interface LoginResponse {
