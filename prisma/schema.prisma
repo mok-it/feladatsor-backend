@@ -57,7 +57,6 @@ enum AgeGroup {
 
 model User {
   id            String          @id @default(uuid())
-  firebaseId    String          @unique
   name          String
   userName      String          @unique
   email         String
