@@ -13,8 +13,15 @@ input ExerciseCheckInput {
     type: ExerciseCheckType!
 }
 
+enum ExerciseCheckRole{
+    EXAMINER     #Anyone who can check the exercise
+    PROFESSIONAL #Can go into exerciseBank
+    LECTOR
+}
+
 type ExerciseCheck {
     id: ID!
+    role: ExerciseCheckRole!
     exercise: Exercise!
     user: User!
     type: ExerciseCheckType!

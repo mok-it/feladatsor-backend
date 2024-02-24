@@ -1,7 +1,12 @@
 type Query {
+    searchExercises(query: ExerciseSearchQuery): [Exercise!]!
     exercises(take: Int!, skip: Int!): [Exercise!]!
     exercisesCount: Int!
     exercise(id: ID!): Exercise
+}
+
+input ExerciseSearchQuery {
+    queryStr: String
 }
 
 type Mutation {
@@ -19,23 +24,52 @@ input ExerciseInput {
     source: String
 }
 
+enum ExerciseStatus {
+    DRAFT   #Mentve, in progress
+    CREATED
+    APPROVED # Ellenőrzött
+    DELETED # Purgált
+}
+
 type Exercise {
     id: ID!
-    name: String!
-    description: String!
+    tags: [Tag!]!
+    status: ExerciseStatus! #Authorization based
+    description: String! #text
     exerciseImage: String
     solution: String!
+    solveIdea: String
     elaboration: String
     elaborationImage: String
     helpingQuestions: [String!]!
+    solutionOptions: [String!]!
     source: String
     difficulty: [ExerciseDifficulty!]!
     history: [ExerciseHistory!]!
-    similarExercises: [Exercise!]!
-    checks: [ExerciseCheck!]!
+    similarExercises: [Exercise!]! #Difficulty is different
+    atadottExercises: [Exercise!]! #Logic is the same, everything is different #TODO: Find name in eng
+    checks: [ExerciseCheck!]! #User and TimeStamp
+    comments: [ExerciseComment!]!
+    isFinal: Boolean
     createdBy: User!
     createdAt: String!
     updatedAt: String!
+}
+
+type ExerciseComment {
+    id: ID!
+    user: User!
+    comment: String!
+    createdAt: String!
+    updatedAt: String!
+}
+
+type Tag {
+    id: ID!
+    parent: Tag
+    children: [Tag!]!
+    name: String!
+    exercises: [Exercise!]!
 }
 
 type ExerciseDifficulty {

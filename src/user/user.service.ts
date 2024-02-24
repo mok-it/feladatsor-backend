@@ -8,7 +8,7 @@ export class UserService {
   constructor(private readonly prismaClient: PrismaClient) {}
 
   async users() {
-    return await this.prismaClient.user.findMany();
+    return this.prismaClient.user.findMany();
   }
 
   getUserById(id: string) {

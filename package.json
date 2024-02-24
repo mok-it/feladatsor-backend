@@ -51,6 +51,7 @@
     "ts-morph": "^17.0.1"
   },
   "devDependencies": {
+    "@faker-js/faker": "^8.4.1",
     "@nestjs/cli": "^9.0.0",
     "@nestjs/schematics": "^9.0.4",
     "@nestjs/testing": "^9.0.0",
