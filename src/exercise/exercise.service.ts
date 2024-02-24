@@ -34,7 +34,26 @@ export class ExerciseService {
   createExercise(data: ExerciseInput, user: User) {
     return this.prismaClient.exercise.create({
       data: {
-        name: data.name,
+        alternativeDifficultyExercise: {
+          connect: {
+            id: data.alternativeDifficultyParent,
+          },
+        },
+        sameLogicExercise: {
+          connect: {
+            id: data.sameLogicParent,
+          },
+        },
+        status: data.status,
+        solveIdea: data.solveIdea,
+        isCompetitionFinal: data.isCompetitionFinal,
+        solutionOptions: data.solutionOptions,
+        difficulty: {
+          create: data.difficulty.map((d) => ({
+            ageGroup: d.ageGroup,
+            difficulty: d.difficulty,
+          })),
+        },
         description: data.description,
         exerciseImage: data.exerciseImage,
         solution: data.solution,
@@ -54,7 +73,7 @@ export class ExerciseService {
   getSimilarExercises(exerciseId: string) {
     return this.prismaClient.exercise.findMany({
       where: {
-        similarExerciseId: exerciseId,
+        alternativeDifficultyExerciseId: exerciseId,
       },
     });
   }

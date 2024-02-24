@@ -12,7 +12,7 @@ async function main() {
 
   console.log('❌ Truncating tables');
   await prisma.exerciseCheck.deleteMany();
-  await prisma.exerciseAgeGroup.deleteMany();
+  //await prisma.exerciseAgeGroup.deleteMany();
   await prisma.exerciseDifficulty.deleteMany();
   await prisma.exerciseHistory.deleteMany();
   await prisma.exercise.deleteMany();

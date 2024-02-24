@@ -9,6 +9,7 @@ export const seedAgeGroups = async (prisma: PrismaClient) => {
     'JEGESMEDVE',
   ];
 
+  /*
   await Promise.all(
     ageGroups.map(async (ageGroupName) => {
       await prisma.exerciseAgeGroup.create({
@@ -18,5 +19,5 @@ export const seedAgeGroups = async (prisma: PrismaClient) => {
         },
       });
     }),
-  );
+  );*/
 };

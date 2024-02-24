@@ -68,18 +68,11 @@ model ExerciseComment {
 }
 
 model ExerciseDifficulty {
-  id                 String           @id @default(uuid())
-  exercise           Exercise         @relation(fields: [exerciseId], references: [id])
-  exerciseId         String
-  ageGroup           ExerciseAgeGroup @relation(fields: [exerciseAgeGroupId], references: [id])
-  difficulty         Int
-  exerciseAgeGroupId String
-}
-
-model ExerciseAgeGroup {
-  id        String               @id @default(uuid())
-  exercises ExerciseDifficulty[]
-  ageGroup  AgeGroup
+  id         String   @id @default(uuid())
+  exerciseId String
+  exercise   Exercise @relation(fields: [exerciseId], references: [id])
+  ageGroup   AgeGroup
+  difficulty Int
 }
 
 enum AgeGroup {
