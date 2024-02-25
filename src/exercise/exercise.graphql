@@ -7,6 +7,15 @@ type Query {
 
 input ExerciseSearchQuery {
     queryStr: String
+    difficulty: [ExerciseDifficultyRange!]
+    tags: [ID!]
+    excludeTags: [ID!]
+}
+
+input ExerciseDifficultyRange {
+    ageGroup: ExerciseAgeGroup!
+    min: Int
+    max: Int
 }
 
 type Mutation {

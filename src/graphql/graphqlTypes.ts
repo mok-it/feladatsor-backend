@@ -42,6 +42,15 @@ export interface ExerciseCheckInput {
 
 export interface ExerciseSearchQuery {
     queryStr?: Nullable<string>;
+    difficulty?: Nullable<Nullable<ExerciseDifficultyRange>[]>;
+    tags?: Nullable<string[]>;
+    excludeTags?: Nullable<string[]>;
+}
+
+export interface ExerciseDifficultyRange {
+    ageGroup: ExerciseAgeGroup;
+    min?: Nullable<number>;
+    max?: Nullable<number>;
 }
 
 export interface ExerciseInput {

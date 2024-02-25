@@ -85,4 +85,24 @@ export class ExerciseService {
       },
     });
   }
+
+  getDifficultyByExercise(id: string) {
+    return this.prismaClient.exerciseDifficulty.findMany({
+      where: {
+        exerciseId: id,
+      },
+    });
+  }
+
+  getTagsByExerciseId(id: string) {
+    return this.prismaClient.exerciseTag.findMany({
+      where: {
+        exercises: {
+          some: {
+            id: id,
+          },
+        },
+      },
+    });
+  }
 }

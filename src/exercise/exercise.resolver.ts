@@ -9,15 +9,21 @@ import {
 import { ExerciseService } from './exercise.service';
 import { UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from '../guards/jwt-auth-guard';
-import { Exercise, ExerciseInput } from '../graphql/graphqlTypes';
+import {
+  Exercise,
+  ExerciseInput,
+  ExerciseSearchQuery,
+} from '../graphql/graphqlTypes';
 import { CurrentUser } from '../auth/user.auth.decorator';
 import { User } from '@prisma/client';
 import { ExerciseCheckService } from '../exercise-check/exercise-check.service';
+import { ExerciseSearchService } from './exercise-search.service';
 
 @Resolver('Exercise')
 export class ExerciseResolver {
   constructor(
     private readonly exerciseService: ExerciseService,
+    private readonly exerciseSearchService: ExerciseSearchService,
     private readonly exerciseCheckService: ExerciseCheckService,
   ) {}
 
@@ -31,6 +37,12 @@ export class ExerciseResolver {
   @Query('exercisesCount')
   async getExercisesCount() {
     return this.exerciseService.getExercisesCount();
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Query('searchExercises')
+  async searchExercises(@Args('query') query: ExerciseSearchQuery) {
+    return this.exerciseSearchService.searchExercises(query);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -56,5 +68,16 @@ export class ExerciseResolver {
   @ResolveField('checks')
   async getChecks(@Parent() exercise: Exercise) {
     return this.exerciseCheckService.getChecksByExerciseId(exercise.id);
+  }
+
+  @ResolveField('difficulty')
+  async getExerciseDifficulty(@Parent() exercise: Exercise) {
+    return this.exerciseService.getDifficultyByExercise(exercise.id);
+  }
+
+  @ResolveField('tags')
+  async getExerciseTags(@Parent() exercise: Exercise) {
+    //TODO: Move this to an exercise-tag service
+    return this.exerciseService.getTagsByExerciseId(exercise.id);
   }
 }
