@@ -8,6 +8,7 @@ async function bootstrap() {
   const config = app.get(Config);
 
   const { port, host } = config.server;
+  console.log(`Listening on http://${host}:${port}`);
   await app.listen(port, host);
 }
 bootstrap();
