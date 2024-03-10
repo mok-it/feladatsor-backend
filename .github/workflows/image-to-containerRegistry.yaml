@@ -23,7 +23,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v4
         with:
-          images: feladatsor-15604/${{ github.event.repository.name }}
+          images: gcr.io/feladatsor-15604/${{ github.event.repository.name }}
           flavor: |
             latest=false
 
