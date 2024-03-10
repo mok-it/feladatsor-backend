@@ -23,14 +23,14 @@ jobs:
         id: meta
         uses: docker/metadata-action@v4
         with:
-          images: ${{ github.event.repository.name }}
+          images: gcr.io/feladatsor-15604/s${{ github.event.repository.name }}
           flavor: |
             latest=false
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v3
         with:
-          registry: europe-west3-docker.pkg.dev
+          registry: gcr.io
           context: .
           push: true
           tags: ${{ steps.meta.outputs.tags }}
