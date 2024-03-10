@@ -28,6 +28,11 @@ FROM node:20-bullseye-slim as runner
 # Add openssl and tini
 RUN apt-get -qy update && apt-get -qy install openssl tini
 
+RUN apk --no-cache add ca-certificates wget
+RUN wget -q -O /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub
+RUN wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.30-r0/glibc-2.30-r0.apk
+RUN apk add glibc-2.30-r0.apk
+
 # Tini is now available at /sbin/tini
 ENTRYPOINT ["/usr/bin/tini", "--"]
 
