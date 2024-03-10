@@ -30,8 +30,9 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v3
         with:
-          registry: gcr.io
+          #registry: gcr.io
           context: .
+          platforms: linux/x86_64
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
