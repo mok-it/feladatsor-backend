@@ -1,5 +1,5 @@
 # ⚒ Build the builder image
-FROM node:20-bullseye as builder
+FROM node:18 as builder
 
 # 🤫 Silence npm
 ENV NPM_CONFIG_LOGLEVEL=error
@@ -23,15 +23,10 @@ FROM builder as prodbuild
 RUN npm prune --production
 
 # 🚀 Build the runner image
-FROM node:20-bullseye-slim as runner
+FROM node:18-slim as runner
 
 # Add openssl and tini
-RUN apt-get -qy update && apt-get -qy install openssl tini
-
-RUN apk --no-cache add ca-certificates wget
-RUN wget -q -O /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub
-RUN wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.30-r0/glibc-2.30-r0.apk
-RUN apk add glibc-2.30-r0.apk
+RUN apt -qy update && apt -qy install openssl tini
 
 # Tini is now available at /sbin/tini
 ENTRYPOINT ["/usr/bin/tini", "--"]
