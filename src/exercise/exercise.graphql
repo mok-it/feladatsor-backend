@@ -1,11 +1,18 @@
 type Query {
-    searchExercises(query: ExerciseSearchQuery): [Exercise!]!
+    searchExercises(query: ExerciseSearchQuery): ExerciseSearchResult!
     exercises(take: Int!, skip: Int!): [Exercise!]!
     exercisesCount: Int!
     exercise(id: ID!): Exercise
 }
 
+type ExerciseSearchResult {
+    exercises: [Exercise!]!
+    totalCount: Int!
+}
+
 input ExerciseSearchQuery {
+    fromRow: Int!,
+    toRow: Int!,
     queryStr: String
     difficulty: [ExerciseDifficultyRange!]
     tags: [ID!]

@@ -41,8 +41,10 @@ export interface ExerciseCheckInput {
 }
 
 export interface ExerciseSearchQuery {
+    fromRow: number;
+    toRow: number;
     queryStr?: Nullable<string>;
-    difficulty?: Nullable<Nullable<ExerciseDifficultyRange>[]>;
+    difficulty?: Nullable<ExerciseDifficultyRange[]>;
     tags?: Nullable<string[]>;
     excludeTags?: Nullable<string[]>;
 }
@@ -104,12 +106,17 @@ export interface ExerciseCheck {
 }
 
 export interface IQuery {
-    searchExercises(query?: Nullable<ExerciseSearchQuery>): Exercise[] | Promise<Exercise[]>;
+    searchExercises(query?: Nullable<ExerciseSearchQuery>): ExerciseSearchResult | Promise<ExerciseSearchResult>;
     exercises(take: number, skip: number): Exercise[] | Promise<Exercise[]>;
     exercisesCount(): number | Promise<number>;
     exercise(id: string): Nullable<Exercise> | Promise<Nullable<Exercise>>;
     users(): User[] | Promise<User[]>;
     user(id: string): Nullable<User> | Promise<Nullable<User>>;
+}
+
+export interface ExerciseSearchResult {
+    exercises: Exercise[];
+    totalCount: number;
 }
 
 export interface Exercise {
