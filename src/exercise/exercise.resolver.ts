@@ -8,7 +8,7 @@ import {
 } from '@nestjs/graphql';
 import { ExerciseService } from './exercise.service';
 import { UseGuards } from '@nestjs/common';
-import { JwtAuthGuard } from '../guards/jwt-auth-guard';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth-guard';
 import {
   Exercise,
   ExerciseInput,
@@ -18,6 +18,8 @@ import { CurrentUser } from '../auth/user.auth.decorator';
 import { User } from '@prisma/client';
 import { ExerciseCheckService } from '../exercise-check/exercise-check.service';
 import { ExerciseSearchService } from './exercise-search.service';
+import { Roles } from '../auth/decorators/roles.decorator';
+import { RolesGuard } from '../auth/guards/roles.guard';
 
 @Resolver('Exercise')
 export class ExerciseResolver {
@@ -27,26 +29,27 @@ export class ExerciseResolver {
     private readonly exerciseCheckService: ExerciseCheckService,
   ) {}
 
-  @UseGuards(JwtAuthGuard)
   @Query('exercises')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN')
   async getExercises(@Args('take') take: number, @Args('skip') skip: number) {
     return this.exerciseService.getExercises(take, skip);
   }
 
-  @UseGuards(JwtAuthGuard)
   @Query('exercisesCount')
+  @UseGuards(JwtAuthGuard)
   async getExercisesCount() {
     return this.exerciseService.getExercisesCount();
   }
 
-  @UseGuards(JwtAuthGuard)
   @Query('searchExercises')
+  @UseGuards(JwtAuthGuard)
   async searchExercises(@Args('query') query: ExerciseSearchQuery) {
     return this.exerciseSearchService.searchExercises(query);
   }
 
-  @UseGuards(JwtAuthGuard)
   @Mutation('createExercise')
+  @UseGuards(JwtAuthGuard)
   async createExercise(
     @Args('input') data: ExerciseInput,
     @CurrentUser() user: User,

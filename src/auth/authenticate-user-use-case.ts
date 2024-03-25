@@ -17,6 +17,7 @@ export class AuthenticateUser {
     const payload: Omit<Omit<JwtPayload, 'iat'>, 'exp'> = {
       subject: user.id,
       user_name: user.userName,
+      roles: user.roles,
     };
     return {
       token: this.jwtService.sign(payload),

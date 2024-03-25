@@ -1,31 +1,37 @@
 type Query {
-    users: [User!]!
-    user(id: ID!): User
+  users: [User!]!
+  user(id: ID!): User
 }
 
 type Mutation {
-    register(data: UserRegisterInput!): User!
+  register(data: UserRegisterInput!): User!
+  changePermissions(userId: ID!, permissions: [Role!]!): User!
 }
 
-
 type LoginResponse {
-    token: String!
-    user: User!
+  token: String!
+  user: User!
 }
 
 input UserRegisterInput {
-    email: String!
-    password: String!
-    name: String!
-    userName: String!
+  email: String!
+  password: String!
+  name: String!
+  userName: String!
+}
+
+enum Role {
+  ADMIN
+  USER
 }
 
 type User {
-    id: ID!
-    email: String!
-    name: String!
-    userName: String!
-    createdAt: String!
-    updatedAt: String!
-    exercises: [Exercise!]!
+  id: ID!
+  email: String!
+  name: String!
+  userName: String!
+  createdAt: String!
+  updatedAt: String!
+  exercises: [Exercise!]!
+  roles: [Role!]!
 }

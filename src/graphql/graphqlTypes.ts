@@ -35,6 +35,11 @@ export enum ExerciseAgeGroup {
     JEGESMEDVE = "JEGESMEDVE"
 }
 
+export enum Role {
+    ADMIN = "ADMIN",
+    USER = "USER"
+}
+
 export interface ExerciseCheckInput {
     exerciseId: string;
     type: ExerciseCheckType;
@@ -93,6 +98,7 @@ export interface IMutation {
     createExerciseCheck(data: ExerciseCheckInput): ExerciseCheck | Promise<ExerciseCheck>;
     createExercise(input: ExerciseInput): Exercise | Promise<Exercise>;
     register(data: UserRegisterInput): User | Promise<User>;
+    changePermissions(userId: string, permissions: Role[]): User | Promise<User>;
 }
 
 export interface ExerciseCheck {
@@ -183,6 +189,7 @@ export interface User {
     createdAt: string;
     updatedAt: string;
     exercises: Exercise[];
+    roles: Role[];
 }
 
 type Nullable<T> = T | null;

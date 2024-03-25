@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { UserRegisterInput } from '../graphql/graphqlTypes';
+import { Role, UserRegisterInput } from '../graphql/graphqlTypes';
 import { Prisma, PrismaClient } from '@prisma/client';
 import { hash } from 'bcrypt';
 
@@ -74,6 +74,25 @@ export class UserService {
       data: {
         ...userInfo,
         firebaseId: googleId,
+      },
+    });
+  }
+
+  async changePermissions(userId: string, roles: Role[]) {
+    await this.prismaClient.user.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        roles: {
+          set: roles,
+        },
+      },
+    });
+
+    return this.prismaClient.user.findUnique({
+      where: {
+        id: userId,
       },
     });
   }
