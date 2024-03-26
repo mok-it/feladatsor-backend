@@ -75,36 +75,45 @@ export class ExerciseService {
     });
   }
 
-  updateExercise(id: string, data: ExerciseInput) {
-    return this.prismaClient.exercise.update({
-      where: {
-        id,
-      },
-      data: {
-        tags: {
-          connect: data.tags.map((id) => ({
-            id,
-          })),
+  async updateExercise(id: string, data: ExerciseInput) {
+    const res = await this.prismaClient.$transaction([
+      this.prismaClient.exerciseDifficulty.deleteMany({
+        where: {
+          exerciseId: id,
         },
-        status: data.status,
-        solveIdea: data.solveIdea,
-        isCompetitionFinal: data.isCompetitionFinal,
-        solutionOptions: data.solutionOptions,
-        difficulty: {
-          create: data.difficulty.map((d) => ({
-            ageGroup: d.ageGroup,
-            difficulty: d.difficulty,
-          })),
+      }),
+      this.prismaClient.exercise.update({
+        where: {
+          id,
         },
-        description: data.description,
-        exerciseImage: data.exerciseImage,
-        solution: data.solution,
-        elaboration: data.elaboration,
-        elaborationImage: data.elaborationImage,
-        helpingQuestions: data.helpingQuestions,
-        source: data.source,
-      },
-    });
+        data: {
+          tags: {
+            set: data.tags.map((id) => ({
+              id,
+            })),
+          },
+          status: data.status,
+          solveIdea: data.solveIdea,
+          isCompetitionFinal: data.isCompetitionFinal,
+          solutionOptions: data.solutionOptions,
+          difficulty: {
+            create: data.difficulty.map((d) => ({
+              ageGroup: d.ageGroup,
+              difficulty: d.difficulty,
+            })),
+          },
+          description: data.description,
+          exerciseImage: data.exerciseImage,
+          solution: data.solution,
+          elaboration: data.elaboration,
+          elaborationImage: data.elaborationImage,
+          helpingQuestions: data.helpingQuestions,
+          source: data.source,
+        },
+      }),
+    ]);
+
+    return res[res.length - 1];
   }
 
   getAlternativeDifficultyExercises(exerciseId: string) {
