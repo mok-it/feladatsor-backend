@@ -96,6 +96,9 @@ export interface IMutation {
     login(name: string, password: string): Nullable<LoginResponse> | Promise<Nullable<LoginResponse>>;
     loginWithGoogle(googleToken: string): Nullable<LoginResponse> | Promise<Nullable<LoginResponse>>;
     createExerciseCheck(data: ExerciseCheckInput): ExerciseCheck | Promise<ExerciseCheck>;
+    createExerciseTag(name: string, parentId?: Nullable<string>): ExerciseTag | Promise<ExerciseTag>;
+    updateExerciseTag(id: string, name: string): ExerciseTag | Promise<ExerciseTag>;
+    deleteExerciseTag(id: string): Nullable<ExerciseTag> | Promise<Nullable<ExerciseTag>>;
     createExercise(input: ExerciseInput): Exercise | Promise<Exercise>;
     register(data: UserRegisterInput): User | Promise<User>;
     changePermissions(userId: string, permissions: Role[]): User | Promise<User>;
@@ -112,12 +115,21 @@ export interface ExerciseCheck {
 }
 
 export interface IQuery {
+    exerciseTags(): ExerciseTag[] | Promise<ExerciseTag[]>;
+    exerciseTag(id: string): Nullable<ExerciseTag> | Promise<Nullable<ExerciseTag>>;
     searchExercises(query?: Nullable<ExerciseSearchQuery>): ExerciseSearchResult | Promise<ExerciseSearchResult>;
     exercises(take: number, skip: number): Exercise[] | Promise<Exercise[]>;
     exercisesCount(): number | Promise<number>;
     exercise(id: string): Nullable<Exercise> | Promise<Nullable<Exercise>>;
     users(): User[] | Promise<User[]>;
     user(id: string): Nullable<User> | Promise<Nullable<User>>;
+}
+
+export interface ExerciseTag {
+    id: string;
+    name: string;
+    parent?: Nullable<ExerciseTag>;
+    children: ExerciseTag[];
 }
 
 export interface ExerciseSearchResult {

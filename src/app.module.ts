@@ -9,6 +9,7 @@ import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { HealthModule } from './health/health.module';
 import { ExerciseCheckModule } from './exercise-check/exercise-check.module';
+import { ExerciseTagModule } from './exercise-tag/exercise-tag.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { ExerciseCheckModule } from './exercise-check/exercise-check.module';
     UserModule,
     AuthModule,
     ExerciseCheckModule,
+    ExerciseTagModule,
   ],
   controllers: [AppController],
   providers: [AppService],

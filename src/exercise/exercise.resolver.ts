@@ -20,11 +20,13 @@ import { ExerciseCheckService } from '../exercise-check/exercise-check.service';
 import { ExerciseSearchService } from './exercise-search.service';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { RolesGuard } from '../auth/guards/roles.guard';
+import { ExerciseTagService } from '../exercise-tag/exercise-tag.service';
 
 @Resolver('Exercise')
 export class ExerciseResolver {
   constructor(
     private readonly exerciseService: ExerciseService,
+    private readonly exerciseTagService: ExerciseTagService,
     private readonly exerciseSearchService: ExerciseSearchService,
     private readonly exerciseCheckService: ExerciseCheckService,
   ) {}

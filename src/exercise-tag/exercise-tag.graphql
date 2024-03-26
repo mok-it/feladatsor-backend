@@ -1,0 +1,17 @@
+type Query {
+  exerciseTags: [ExerciseTag!]!
+  exerciseTag(id: ID!): ExerciseTag
+}
+
+type Mutation {
+  createExerciseTag(name: String!, parentId: ID): ExerciseTag!
+  updateExerciseTag(id: ID!, name: String!): ExerciseTag!
+  deleteExerciseTag(id: ID!): Boolean!
+}
+
+type ExerciseTag {
+  id: ID!
+  name: String!
+  parent: ExerciseTag
+  children: [ExerciseTag!]!
+}
