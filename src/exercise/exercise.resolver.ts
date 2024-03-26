@@ -59,6 +59,15 @@ export class ExerciseResolver {
     return this.exerciseService.createExercise(data, user);
   }
 
+  @Mutation('updateExercise')
+  @UseGuards(JwtAuthGuard)
+  async updateExercise(
+    @Args('id') id: string,
+    @Args('input') data: ExerciseInput,
+  ) {
+    return this.exerciseService.updateExercise(id, data);
+  }
+
   @ResolveField('alternativeDifficultyExercises')
   async getAlternativeDifficultyExercises(@Parent() exercise: Exercise) {
     return this.exerciseService.getAlternativeDifficultyExercises(exercise.id);
@@ -82,7 +91,6 @@ export class ExerciseResolver {
 
   @ResolveField('tags')
   async getExerciseTags(@Parent() exercise: Exercise) {
-    //TODO: Move this to an exercise-tag service
-    return this.exerciseService.getTagsByExerciseId(exercise.id);
+    return this.exerciseTagService.getTagsByExerciseId(exercise.id);
   }
 }

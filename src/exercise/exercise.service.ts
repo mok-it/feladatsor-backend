@@ -44,6 +44,11 @@ export class ExerciseService {
         //    id: data.sameLogicParent,
         //  },
         //},
+        tags: {
+          connect: data.tags.map((tag) => ({
+            id: tag,
+          })),
+        },
         status: data.status,
         solveIdea: data.solveIdea,
         isCompetitionFinal: data.isCompetitionFinal,
@@ -70,6 +75,38 @@ export class ExerciseService {
     });
   }
 
+  updateExercise(id: string, data: ExerciseInput) {
+    return this.prismaClient.exercise.update({
+      where: {
+        id,
+      },
+      data: {
+        tags: {
+          connect: data.tags.map((id) => ({
+            id,
+          })),
+        },
+        status: data.status,
+        solveIdea: data.solveIdea,
+        isCompetitionFinal: data.isCompetitionFinal,
+        solutionOptions: data.solutionOptions,
+        difficulty: {
+          create: data.difficulty.map((d) => ({
+            ageGroup: d.ageGroup,
+            difficulty: d.difficulty,
+          })),
+        },
+        description: data.description,
+        exerciseImage: data.exerciseImage,
+        solution: data.solution,
+        elaboration: data.elaboration,
+        elaborationImage: data.elaborationImage,
+        helpingQuestions: data.helpingQuestions,
+        source: data.source,
+      },
+    });
+  }
+
   getAlternativeDifficultyExercises(exerciseId: string) {
     return this.prismaClient.exercise.findMany({
       where: {
@@ -90,18 +127,6 @@ export class ExerciseService {
     return this.prismaClient.exerciseDifficulty.findMany({
       where: {
         exerciseId: id,
-      },
-    });
-  }
-
-  getTagsByExerciseId(id: string) {
-    return this.prismaClient.exerciseTag.findMany({
-      where: {
-        exercises: {
-          some: {
-            id: id,
-          },
-        },
       },
     });
   }

@@ -88,4 +88,16 @@ export class ExerciseTagService {
     }
     return true;
   }
+
+  getTagsByExerciseId(id: string) {
+    return this.prismaService.exerciseTag.findMany({
+      where: {
+        exercises: {
+          some: {
+            id: id,
+          },
+        },
+      },
+    });
+  }
 }

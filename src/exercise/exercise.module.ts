@@ -5,9 +5,10 @@ import { ExerciseResolver } from './exercise.resolver';
 import { PrismaClient } from '@prisma/client';
 import { ExerciseCheckModule } from '../exercise-check/exercise-check.module';
 import { ExerciseSearchService } from './exercise-search.service';
+import { ExerciseTagModule } from '../exercise-tag/exercise-tag.module';
 
 @Module({
-  imports: [ExerciseCheckModule],
+  imports: [ExerciseCheckModule, ExerciseTagModule],
   providers: [
     ExerciseResolver,
     ExerciseService,
