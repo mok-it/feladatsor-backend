@@ -23,7 +23,7 @@ model ExerciseTag {
   parentTag           ExerciseTag?  @relation("parentExercises", fields: [parentExerciseTagId], references: [id])
   children            ExerciseTag[] @relation("parentExercises")
   exercises           Exercise[]
-  name                String
+  name                String        @unique
 }
 
 model Exercise {
