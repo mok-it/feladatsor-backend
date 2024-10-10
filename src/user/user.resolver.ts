@@ -8,7 +8,6 @@ import {
 } from '@nestjs/graphql';
 import { UserService } from './user.service';
 import { Role, User, UserRegisterInput } from '../graphql/graphqlTypes';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth-guard';
 import { UseGuards } from '@nestjs/common';
 import { ExerciseService } from '../exercise/exercise.service';
 import { RolesGuard } from '../auth/guards/roles.guard';
@@ -21,14 +20,13 @@ export class UserResolver {
     private readonly exerciseService: ExerciseService,
   ) {}
 
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  @UseGuards(RolesGuard)
   @Roles('ADMIN')
   @Query('users')
   async getUsers() {
     return this.userService.users();
   }
 
-  @UseGuards(JwtAuthGuard)
   @Query('user')
   async getUserById(@Args('id') id: string) {
     return this.userService.getUserById(id);
@@ -40,7 +38,7 @@ export class UserResolver {
   }
 
   @Mutation('changePermissions')
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  @UseGuards(RolesGuard)
   @Roles('ADMIN')
   async changePermissions(
     @Args('userId') userId: string,

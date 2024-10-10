@@ -10,12 +10,15 @@ import { AuthModule } from './auth/auth.module';
 import { HealthModule } from './health/health.module';
 import { ExerciseCheckModule } from './exercise-check/exercise-check.module';
 import { ExerciseTagModule } from './exercise-tag/exercise-tag.module';
+import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin/landingPage/default';
 
 @Module({
   imports: [
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       typePaths: ['./**/*.graphql'],
+      playground: false,
+      plugins: [ApolloServerPluginLandingPageLocalDefault()],
     }),
     Config,
     ExerciseModule,

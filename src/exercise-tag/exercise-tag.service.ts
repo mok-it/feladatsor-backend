@@ -9,6 +9,16 @@ export class ExerciseTagService {
     return this.prismaService.exerciseTag.findMany();
   }
 
+  async getAllTopLevelExerciseTags() {
+    return this.prismaService.exerciseTag.findMany({
+      where: {
+        children: {
+          some: {},
+        },
+      },
+    });
+  }
+
   async getExerciseTagById(id: string) {
     return this.prismaService.exerciseTag.findUnique({
       where: {

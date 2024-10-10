@@ -9,6 +9,7 @@ export class Config {
   jwt = {
     secret: get('JWT_SECRET').required().asString(),
     expiration: get('JWT_EXPIRATION').default('60s').asString(),
+    disableValidation: get('DISABLE_JWT_VALIDATION').default('false').asBool(),
   };
   firebaseValidateUrl = get('FIREBASE_VALIDATE_URL').required().asUrlString();
 }

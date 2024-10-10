@@ -27,7 +27,7 @@ export class AuthenticateUser {
 
   async execute(name: string, password: string) {
     const user = await this.userService.getUserByUserName(name);
-    if (!user) {
+    if (!user || !user.password) {
       return null;
     }
     const passwordHasMatch = await compare(password, user.password);
@@ -48,7 +48,7 @@ export class AuthenticateUser {
       json: true,
     }) as GoogleTokenPayload;
 
-    const user = await this.userService.upserUserByGoogleId(payload.user_id, {
+    const user = await this.userService.upsertUserByGoogleId(payload.user_id, {
       email: payload.email,
       name: payload.name,
       avatarUrl: payload.picture,

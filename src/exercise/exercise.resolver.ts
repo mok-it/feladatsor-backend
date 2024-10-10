@@ -8,7 +8,6 @@ import {
 } from '@nestjs/graphql';
 import { ExerciseService } from './exercise.service';
 import { UseGuards } from '@nestjs/common';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth-guard';
 import {
   Exercise,
   ExerciseInput,
@@ -32,26 +31,23 @@ export class ExerciseResolver {
   ) {}
 
   @Query('exercises')
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  @UseGuards(RolesGuard)
   @Roles('ADMIN')
   async getExercises(@Args('take') take: number, @Args('skip') skip: number) {
     return this.exerciseService.getExercises(take, skip);
   }
 
   @Query('exercisesCount')
-  @UseGuards(JwtAuthGuard)
   async getExercisesCount() {
     return this.exerciseService.getExercisesCount();
   }
 
   @Query('searchExercises')
-  @UseGuards(JwtAuthGuard)
   async searchExercises(@Args('query') query: ExerciseSearchQuery) {
     return this.exerciseSearchService.searchExercises(query);
   }
 
   @Mutation('createExercise')
-  @UseGuards(JwtAuthGuard)
   async createExercise(
     @Args('input') data: ExerciseInput,
     @CurrentUser() user: User,
@@ -60,7 +56,6 @@ export class ExerciseResolver {
   }
 
   @Mutation('updateExercise')
-  @UseGuards(JwtAuthGuard)
   async updateExercise(
     @Args('id') id: string,
     @Args('input') data: ExerciseInput,

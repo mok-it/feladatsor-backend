@@ -8,6 +8,8 @@ import { AuthResolver } from './auth.resolver';
 import { AuthService } from './auth.service';
 import { ConfigModule } from '../config/config.module';
 import { RolesGuard } from './guards/roles.guard';
+import { APP_GUARD } from '@nestjs/core';
+import { JwtAuthGuard } from './guards/jwt-auth-guard';
 
 const config = new Config();
 
@@ -26,7 +28,11 @@ const config = new Config();
     AuthResolver,
     AuthService,
     RolesGuard,
+    {
+      provide: APP_GUARD,
+      useClass: JwtAuthGuard,
+    },
   ],
-  exports: [JwtStrategy, JwtModule],
+  //exports: [JwtStrategy, JwtModule],
 })
 export class AuthModule {}

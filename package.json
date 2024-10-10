@@ -26,11 +26,11 @@
     "skaffold": "skaffold deploy --module=postgresql --port-forward"
   },
   "dependencies": {
-    "@apollo/server": "^4.4.0",
-    "@nestjs/apollo": "^10.2.0",
+    "@apollo/server": "4.11.0",
+    "@nestjs/apollo": "^12.2.0",
     "@nestjs/common": "^9.0.0",
     "@nestjs/core": "^9.0.0",
-    "@nestjs/graphql": "^10.2.0",
+    "@nestjs/graphql": "^12.2.0",
     "@nestjs/jwt": "^10.2.0",
     "@nestjs/mapped-types": "*",
     "@nestjs/passport": "^10.0.3",

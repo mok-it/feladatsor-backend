@@ -1,9 +1,11 @@
 import { PrismaClient } from '@prisma/client';
 import { UserService } from '../../user/user.service';
 import { faker } from '@faker-js/faker';
+import { Logger } from '@nestjs/common';
 
 export const seedUsers = async (prisma: PrismaClient) => {
-  const userService = new UserService(prisma);
+  const logger = new Logger('SeedUsers');
+  const userService = new UserService(prisma, logger);
   await userService.register({
     email: 'test@test.com',
     password: 'test',
