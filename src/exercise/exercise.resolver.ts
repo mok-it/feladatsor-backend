@@ -52,6 +52,7 @@ export class ExerciseResolver {
     @Args('input') data: ExerciseInput,
     @CurrentUser() user: User,
   ) {
+    console.log(user);
     return this.exerciseService.createExercise(data, user);
   }
 
