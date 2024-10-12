@@ -1,12 +1,26 @@
 version: '3.8'
 services:
 
+  db_migration:
+    container_name: be_feladatsor_migration
+    image: kosbalint/be-feladatsor:v0.0.21
+    entrypoint:
+      - /bin/bash
+      - -c
+      - 'npm run db:migrate:prod'
+    restart: on-failure:5
+    env_file:
+      - stack.env
+    depends_on:
+      postgres:
+        condition: service_healthy
+
   app:
     image: kosbalint/be-feladatsor:v0.0.21
     container_name: be_feladatsor
     restart: unless-stopped
     ports:
-      - 8080:8080
+      - 8099:8099
     depends_on:
       - postgres
     env_file:
@@ -23,8 +37,10 @@ services:
       - POSTGRES_PASSWORD=dev
       - POSTGRES_DB=be-febe
     volumes:
-      - /nfs/feladatbekuldo-be:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U root']
+      interval: 60s
 
 volumes:
-  postgres:
-    name: nest-db
+  postgres_data:
