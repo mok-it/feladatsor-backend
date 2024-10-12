@@ -8,7 +8,7 @@ on:
 jobs:
   push-image:
     runs-on: ubuntu-latest
-    name: Build and push ${{ github.repository }} to GitLab repository
+    name: Build and push ${{ github.repository }} to DockerHub repository
     steps:
       - name: Login to DockerHub
         uses: docker/login-action@v2
@@ -22,7 +22,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v4
         with:
-          images: kosbalint/be-calfraiser
+          images: kosbalint/be-feladatsor
           flavor: |
             latest=true
 
