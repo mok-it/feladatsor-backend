@@ -1,0 +1,17 @@
+type Query {
+  exerciseComment(id: ID!): ExerciseComment
+}
+
+type Mutation {
+  createExerciseComment(exerciseId: ID!, comment: String!): ExerciseComment!
+  updateExerciseComment(id: ID!, comment: String!): ExerciseComment!
+  deleteExerciseComment(id: ID!): ExerciseComment!
+}
+
+type ExerciseComment {
+  id: ID!
+  user: User!
+  comment: String!
+  createdAt: String!
+  updatedAt: String!
+}

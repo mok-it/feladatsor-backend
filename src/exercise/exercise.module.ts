@@ -7,9 +7,15 @@ import { ExerciseCheckModule } from '../exercise-check/exercise-check.module';
 import { ExerciseSearchService } from './exercise-search.service';
 import { ExerciseTagModule } from '../exercise-tag/exercise-tag.module';
 import { ImageModule } from '../image/image.module';
+import { ExerciseCommentModule } from 'src/exercise-comment/exercise-comment.module';
 
 @Module({
-  imports: [ExerciseCheckModule, ExerciseTagModule, ImageModule],
+  imports: [
+    ExerciseCheckModule,
+    ExerciseTagModule,
+    ImageModule,
+    ExerciseCommentModule,
+  ],
   providers: [
     ExerciseResolver,
     ExerciseService,

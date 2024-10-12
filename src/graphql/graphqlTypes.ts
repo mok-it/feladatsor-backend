@@ -94,6 +94,9 @@ export interface IMutation {
     login(name: string, password: string): Nullable<LoginResponse> | Promise<Nullable<LoginResponse>>;
     loginWithGoogle(googleToken: string): Nullable<LoginResponse> | Promise<Nullable<LoginResponse>>;
     createExerciseCheck(data: ExerciseCheckInput): ExerciseCheck | Promise<ExerciseCheck>;
+    createExerciseComment(exerciseId: string, comment: string): ExerciseComment | Promise<ExerciseComment>;
+    updateExerciseComment(id: string, comment: string): ExerciseComment | Promise<ExerciseComment>;
+    deleteExerciseComment(id: string): boolean | Promise<boolean>;
     createExerciseTag(name: string, parentId?: Nullable<string>): ExerciseTag | Promise<ExerciseTag>;
     updateExerciseTag(id: string, name: string): ExerciseTag | Promise<ExerciseTag>;
     deleteExerciseTag(id: string): boolean | Promise<boolean>;
@@ -114,6 +117,7 @@ export interface ExerciseCheck {
 }
 
 export interface IQuery {
+    exerciseComment(id: string): Nullable<ExerciseComment> | Promise<Nullable<ExerciseComment>>;
     exerciseTags(): ExerciseTag[] | Promise<ExerciseTag[]>;
     exerciseTag(id: string): Nullable<ExerciseTag> | Promise<Nullable<ExerciseTag>>;
     searchExercises(query?: Nullable<ExerciseSearchQuery>): ExerciseSearchResult | Promise<ExerciseSearchResult>;
@@ -122,6 +126,14 @@ export interface IQuery {
     exercise(id: string): Nullable<Exercise> | Promise<Nullable<Exercise>>;
     users(): User[] | Promise<User[]>;
     user(id: string): Nullable<User> | Promise<Nullable<User>>;
+}
+
+export interface ExerciseComment {
+    id: string;
+    user: User;
+    comment: string;
+    createdAt: string;
+    updatedAt: string;
 }
 
 export interface ExerciseTag {
@@ -157,14 +169,6 @@ export interface Exercise {
     comments: ExerciseComment[];
     isCompetitionFinal?: Nullable<boolean>;
     createdBy: User;
-    createdAt: string;
-    updatedAt: string;
-}
-
-export interface ExerciseComment {
-    id: string;
-    user: User;
-    comment: string;
     createdAt: string;
     updatedAt: string;
 }

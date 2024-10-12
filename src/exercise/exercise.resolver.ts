@@ -8,11 +8,7 @@ import {
 } from '@nestjs/graphql';
 import { ExerciseService } from './exercise.service';
 import { UseGuards } from '@nestjs/common';
-import {
-  Exercise,
-  ExerciseInput,
-  ExerciseSearchQuery,
-} from '../graphql/graphqlTypes';
+import { ExerciseInput, ExerciseSearchQuery } from '../graphql/graphqlTypes';
 import { CurrentUser } from '../auth/decorators/user.auth.decorator';
 import { Exercise as PrismaExercise, User } from '@prisma/client';
 import { ExerciseCheckService } from '../exercise-check/exercise-check.service';
@@ -21,6 +17,7 @@ import { Roles } from '../auth/decorators/roles.decorator';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { ExerciseTagService } from '../exercise-tag/exercise-tag.service';
 import { ImageService } from '../image/image.service';
+import { ExerciseCommentService } from 'src/exercise-comment/exercise-comment.service';
 
 @Resolver('Exercise')
 export class ExerciseResolver {
@@ -30,6 +27,7 @@ export class ExerciseResolver {
     private readonly exerciseSearchService: ExerciseSearchService,
     private readonly exerciseCheckService: ExerciseCheckService,
     private readonly imageService: ImageService,
+    private readonly exerciseCommentService: ExerciseCommentService,
   ) {}
 
   @Query('exercise')
@@ -112,5 +110,10 @@ export class ExerciseResolver {
   async getSolutionImage(@Parent() exercise: PrismaExercise) {
     //This is a string id, as we resolve this from prisma as a string
     return this.imageService.resolveGQLImage(exercise.solutionImageId);
+  }
+
+  @ResolveField('comments')
+  async getExerciseComments(@Parent() exercise: PrismaExercise) {
+    return this.exerciseCommentService.getCommentsByExerciseId(exercise.id);
   }
 }

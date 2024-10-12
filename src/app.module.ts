@@ -12,6 +12,7 @@ import { ExerciseCheckModule } from './exercise-check/exercise-check.module';
 import { ExerciseTagModule } from './exercise-tag/exercise-tag.module';
 import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin/landingPage/default';
 import { ImageModule } from './image/image.module';
+import { ExerciseCommentModule } from './exercise-comment/exercise-comment.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { ImageModule } from './image/image.module';
     ExerciseCheckModule,
     ExerciseTagModule,
     ImageModule,
+    ExerciseCommentModule,
   ],
   controllers: [AppController],
   providers: [AppService],
