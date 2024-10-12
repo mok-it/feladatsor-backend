@@ -21,7 +21,6 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
   canActivate(
     context: ExecutionContext,
   ): boolean | Promise<boolean> | Observable<boolean> {
-    const tryToActivate = super.canActivate(context);
     if (this.config.jwt.disableValidation) {
       return true;
     }
@@ -34,6 +33,6 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
       return true;
     }
 
-    return tryToActivate;
+    return super.canActivate(context);
   }
 }

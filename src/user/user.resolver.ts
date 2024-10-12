@@ -12,6 +12,7 @@ import { UseGuards } from '@nestjs/common';
 import { ExerciseService } from '../exercise/exercise.service';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
+import { Public } from '../auth/decorators/public.decorator';
 
 @Resolver('User')
 export class UserResolver {
@@ -32,6 +33,7 @@ export class UserResolver {
     return this.userService.getUserById(id);
   }
 
+  @Public()
   @Mutation('register')
   async register(@Args('data') data: UserRegisterInput) {
     return this.userService.register(data);

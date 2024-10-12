@@ -13,7 +13,7 @@ import {
   ExerciseInput,
   ExerciseSearchQuery,
 } from '../graphql/graphqlTypes';
-import { CurrentUser } from '../auth/user.auth.decorator';
+import { CurrentUser } from '../auth/decorators/user.auth.decorator';
 import { User } from '@prisma/client';
 import { ExerciseCheckService } from '../exercise-check/exercise-check.service';
 import { ExerciseSearchService } from './exercise-search.service';

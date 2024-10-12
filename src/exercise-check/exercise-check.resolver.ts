@@ -1,7 +1,7 @@
 import { Args, Mutation, Resolver } from '@nestjs/graphql';
 import { ExerciseCheckService } from './exercise-check.service';
 import { ExerciseCheckInput } from '../graphql/graphqlTypes';
-import { CurrentUser } from '../auth/user.auth.decorator';
+import { CurrentUser } from '../auth/decorators/user.auth.decorator';
 import { User } from '@prisma/client';
 
 @Resolver('exerciseCheck')
