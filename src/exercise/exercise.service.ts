@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { AgeGroup, PrismaClient, User } from '@prisma/client';
+import { AgeGroup, Exercise, PrismaClient, User } from '@prisma/client';
 import { ExerciseInput } from '../graphql/graphqlTypes';
 
 @Injectable()
@@ -101,12 +101,37 @@ export class ExerciseService {
     });
   }
 
-  async updateExercise(id: string, data: ExerciseInput) {
-    return await this.prismaClient.$transaction((tx) => {
+  async updateExercise(id: string, data: ExerciseInput, user: User) {
+    return await this.prismaClient.$transaction(async (tx) => {
       tx.exerciseDifficulty.deleteMany({
         where: {
           exerciseId: id,
         },
+      });
+      const oldExercise = await tx.exercise.findUnique({
+        where: {
+          id,
+        },
+      });
+      const differences = this.getDifferences(oldExercise, data);
+      differences.forEach(async (difference) => {
+        await tx.exerciseHistory.create({
+          data: {
+            exercise: {
+              connect: {
+                id: oldExercise.id,
+              },
+            },
+            field: difference.field,
+            oldValue: difference.oldValue.toString(),
+            newValue: difference.newValue.toString(),
+            user: {
+              connect: {
+                id: user.id,
+              },
+            },
+          },
+        });
       });
       return tx.exercise.update({
         where: {
@@ -160,5 +185,42 @@ export class ExerciseService {
         exerciseId: id,
       },
     });
+  }
+
+  getDifferences(oldExercise: Exercise, newExercise: ExerciseInput) {
+    const fieldsToCheck: (keyof Exercise)[] = [
+      'description',
+      'helpingQuestions',
+      'solution',
+      'solutionOptions',
+      'solveIdea',
+      'source',
+      'status',
+    ];
+
+    return fieldsToCheck
+      .map((fieldName) => {
+        const oldValue = oldExercise[fieldName];
+        const newValue = newExercise[fieldName];
+
+        const hasChanged = Array.isArray(oldValue)
+          ? this.arraysDiffer(oldValue, newValue)
+          : oldValue != newValue;
+
+        return hasChanged ? { field: fieldName, oldValue, newValue } : null;
+      })
+      .filter(Boolean);
+  }
+
+  arraysDiffer(arr1: string[], arr2: string[]): boolean {
+    if (arr1.length !== arr2.length) {
+      return true;
+    }
+    for (let i = 0; i < arr1.length; i++) {
+      if (arr1[i] !== arr2[i]) {
+        return true;
+      }
+    }
+    return false;
   }
 }
