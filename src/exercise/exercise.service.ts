@@ -42,7 +42,7 @@ export class ExerciseService {
     });
   }
 
-  createExercise(data: ExerciseInput, user: User) {
+  createExercise(data: ExerciseInput, user: User, id?: string) {
     const ageGroups: AgeGroup[] = [
       'KOALA',
       'MEDVEBOCS',
@@ -63,6 +63,7 @@ export class ExerciseService {
         //    id: data.sameLogicParent,
         //  },
         //},
+        id: id,
         tags: {
           connect: data.tags.map((tag) => ({
             id: tag,
@@ -101,13 +102,13 @@ export class ExerciseService {
   }
 
   async updateExercise(id: string, data: ExerciseInput) {
-    const res = await this.prismaClient.$transaction([
-      this.prismaClient.exerciseDifficulty.deleteMany({
+    return await this.prismaClient.$transaction((tx) => {
+      tx.exerciseDifficulty.deleteMany({
         where: {
           exerciseId: id,
         },
-      }),
-      this.prismaClient.exercise.update({
+      });
+      return tx.exercise.update({
         where: {
           id,
         },
@@ -133,10 +134,8 @@ export class ExerciseService {
           helpingQuestions: data.helpingQuestions,
           source: data.source,
         },
-      }),
-    ]);
-
-    return res[res.length - 1];
+      });
+    });
   }
 
   getAlternativeDifficultyExercises(exerciseId: string) {

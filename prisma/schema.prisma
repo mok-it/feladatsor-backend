@@ -102,6 +102,7 @@ model User {
   exercises       Exercise[]
   ExerciseCheck   ExerciseCheck[]
   ExerciseComment ExerciseComment[]
+  ExerciseHistory ExerciseHistory[]
 }
 
 model ExerciseCheck {
@@ -119,6 +120,13 @@ model ExerciseHistory {
   id         String   @id @default(uuid())
   exercise   Exercise @relation(fields: [exerciseId], references: [id])
   exerciseId String
+  field      String
+  oldValue   String
+  newValue   String
+  userId     String
+  user       User     @relation(fields: [userId], references: [id])
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @default(now()) @updatedAt
 }
 
 enum ExerciseCheckType {
