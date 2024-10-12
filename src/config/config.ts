@@ -12,4 +12,11 @@ export class Config {
     disableValidation: get('DISABLE_JWT_VALIDATION').default('false').asBool(),
   };
   firebaseValidateUrl = get('FIREBASE_VALIDATE_URL').required().asUrlString();
+  fileStorage = {
+    saveFolder: get('FILE_STORAGE_FOLDER').default('./data').asString(),
+    imageProcess: {
+      resizeWidth: get('IMAGE_RESIZE_WIDTH').default(1920).asIntPositive(),
+      resizeQuality: get('IMAGE_RESIZE_QUALITY').default(80).asIntPositive(),
+    },
+  };
 }

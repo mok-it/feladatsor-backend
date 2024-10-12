@@ -1,0 +1,25 @@
+version: '3.8'
+services:
+
+
+  app:
+    image: gcr.io/feladatsor-15604/feladatsor-backend:v0.0.18
+    container_name: be_feladatsor
+    restart: unless-stopped
+    ports:
+      - 3000:3000
+
+  postgres:
+    image: postgres:13
+    container_name: postgres
+    restart: always
+    ports:
+      - '5432:5432'
+    env_file:
+      - .env
+    volumes:
+      - /nfs/feladatbekuldo-be:/var/lib/postgresql/data
+
+volumes:
+  postgres:
+    name: nest-db

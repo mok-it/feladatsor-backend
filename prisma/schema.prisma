@@ -126,3 +126,11 @@ enum ExerciseCheckType {
   CHANGE_REQUIRED
   TO_DELETE
 }
+
+model Image {
+  id               String @id @default(uuid())
+  originalName     String
+  originalMimeType String
+  originalSize     BigInt
+  transformedSize  BigInt
+}

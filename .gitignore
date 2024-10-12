@@ -105,3 +105,6 @@ dist
 
 .idea
 .DS_Store
+
+#Nest JS file upload location
+data

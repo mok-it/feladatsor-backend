@@ -11,6 +11,7 @@ import { HealthModule } from './health/health.module';
 import { ExerciseCheckModule } from './exercise-check/exercise-check.module';
 import { ExerciseTagModule } from './exercise-tag/exercise-tag.module';
 import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin/landingPage/default';
+import { ImageModule } from './image/image.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin
     AuthModule,
     ExerciseCheckModule,
     ExerciseTagModule,
+    ImageModule,
   ],
   controllers: [AppController],
   providers: [AppService],
