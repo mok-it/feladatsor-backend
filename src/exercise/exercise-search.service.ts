@@ -40,8 +40,8 @@ export class ExerciseSearchService {
       where,
     });
     const dataPromise = this.prismaClient.exercise.findMany({
-      skip: query.fromRow,
-      take: query.toRow - query.fromRow,
+      skip: query.skip,
+      take: query.take,
       where,
     });
 
