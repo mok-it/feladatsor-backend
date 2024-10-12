@@ -64,8 +64,9 @@ export class ExerciseResolver {
   async updateExercise(
     @Args('id') id: string,
     @Args('input') data: ExerciseInput,
+    @CurrentUser() user: User,
   ) {
-    return this.exerciseService.updateExercise(id, data);
+    return this.exerciseService.updateExercise(id, data, user);
   }
 
   @ResolveField('alternativeDifficultyExercises')
