@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Role, UserRegisterInput } from '../graphql/graphqlTypes';
-import { Prisma, PrismaClient } from '@prisma/client';
+import { Prisma, PrismaClient, User } from '@prisma/client';
 import { hash } from 'bcrypt';
 
 @Injectable()
@@ -25,7 +25,7 @@ export class UserService {
   /**
    * Intended to use only under development
    */
-  getFirstUser() {
+  getFirstUser(): Promise<User> {
     return this.prismaClient.user.findFirst({
       where: {
         password: {

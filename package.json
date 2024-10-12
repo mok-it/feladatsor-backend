@@ -41,6 +41,7 @@
     "apollo-server-express": "^3.11.1",
     "bcrypt": "^5.1.1",
     "bcryptjs": "^2.4.3",
+    "csv-parse": "^5.5.6",
     "env-var": "^7.3.0",
     "graphql": "^16.6.0",
     "graphql-tools": "^8.3.18",
