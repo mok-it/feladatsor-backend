@@ -46,8 +46,8 @@ export interface ExerciseCheckInput {
 }
 
 export interface ExerciseSearchQuery {
-    fromRow: number;
-    toRow: number;
+    skip: number;
+    take: number;
     queryStr?: Nullable<string>;
     difficulty?: Nullable<ExerciseDifficultyRange[]>;
     tags?: Nullable<string[]>;
@@ -96,7 +96,7 @@ export interface IMutation {
     createExerciseCheck(data: ExerciseCheckInput): ExerciseCheck | Promise<ExerciseCheck>;
     createExerciseComment(exerciseId: string, comment: string): ExerciseComment | Promise<ExerciseComment>;
     updateExerciseComment(id: string, comment: string): ExerciseComment | Promise<ExerciseComment>;
-    deleteExerciseComment(id: string): boolean | Promise<boolean>;
+    deleteExerciseComment(id: string): ExerciseComment | Promise<ExerciseComment>;
     createExerciseTag(name: string, parentId?: Nullable<string>): ExerciseTag | Promise<ExerciseTag>;
     updateExerciseTag(id: string, name: string): ExerciseTag | Promise<ExerciseTag>;
     deleteExerciseTag(id: string): boolean | Promise<boolean>;

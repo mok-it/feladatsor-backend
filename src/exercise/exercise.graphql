@@ -16,8 +16,8 @@ type ExerciseSearchResult {
 }
 
 input ExerciseSearchQuery {
-  fromRow: Int!
-  toRow: Int!
+  skip: Int!
+  take: Int!
   queryStr: String
   difficulty: [ExerciseDifficultyRange!]
   tags: [ID!]
