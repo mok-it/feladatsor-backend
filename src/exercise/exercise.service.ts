@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaClient, User } from '@prisma/client';
+import { AgeGroup, PrismaClient, User } from '@prisma/client';
 import { ExerciseInput } from '../graphql/graphqlTypes';
 
 @Injectable()
@@ -43,6 +43,14 @@ export class ExerciseService {
   }
 
   createExercise(data: ExerciseInput, user: User) {
+    const ageGroups: AgeGroup[] = [
+      'KOALA',
+      'MEDVEBOCS',
+      'KISMEDVE',
+      'NAGYMEDVE',
+      'JEGESMEDVE',
+    ];
+
     return this.prismaClient.exercise.create({
       data: {
         //alternativeDifficultyExercise: {
@@ -64,10 +72,16 @@ export class ExerciseService {
         isCompetitionFinal: data.isCompetitionFinal,
         solutionOptions: data.solutionOptions,
         difficulty: {
-          create: data.difficulty.map((d) => ({
-            ageGroup: d.ageGroup,
-            difficulty: d.difficulty,
-          })),
+          //This mapping is done to fill all ageGroup difficulties, even if the frontend does not send every one of them
+          create: ageGroups.map((ageGroup) => {
+            const difficulty = data.difficulty.find(
+              (d) => d.ageGroup == ageGroup,
+            )?.difficulty;
+            return {
+              ageGroup,
+              difficulty: difficulty ?? 0,
+            };
+          }),
         },
         description: data.description,
         exerciseImageId: data.exerciseImage,
