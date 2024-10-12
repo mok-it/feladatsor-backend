@@ -24,10 +24,8 @@ export class ImageService {
     const sharpMeta = await webpImage.metadata();
     const imageMeta = await this.storeFileMeta(file, sharpMeta);
 
-    const outPath = path.join(
-      this.config.fileStorage.saveFolder,
-      imageMeta.id + '.webp',
-    );
+    const imgFileName = imageMeta.id + '.webp';
+    const outPath = path.join(this.config.fileStorage.saveFolder, imgFileName);
 
     if (!fs.existsSync(this.config.fileStorage.saveFolder)) {
       fs.mkdirSync(this.config.fileStorage.saveFolder, { recursive: true });
@@ -35,9 +33,12 @@ export class ImageService {
 
     await webpImage.toFile(outPath);
 
+    const imgURL = `${this.config.server.publicHost}/images/${imgFileName}`;
+
     return {
       id: imageMeta.id,
       transformedSize: Number(imageMeta.transformedSize),
+      url: imgURL,
     };
   }
 

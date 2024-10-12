@@ -2,11 +2,15 @@ version: '3.8'
 services:
 
   app:
-    image: gcr.io/feladatsor-15604/feladatsor-backend:v0.0.18
+    image: kosbalint/be-feladatsor:v0.0.21
     container_name: be_feladatsor
     restart: unless-stopped
     ports:
       - 8080:8080
+    depends_on:
+      - postgres
+    env_file:
+      - stack.env
 
   postgres:
     image: postgres:13

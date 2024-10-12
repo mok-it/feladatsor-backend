@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { Config } from './config/config';
 import { Logger } from '@nestjs/common';
+import * as express from 'express';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -16,8 +17,11 @@ async function bootstrap() {
     );
   }
 
+  app.use('/images', express.static(config.fileStorage.saveFolder, {}));
+
   const { port, host } = config.server;
-  logger.log(`Graphql running on http://${host}:${port}/graphql`);
+  logger.log(`Graphql running on ${config.server.publicHost}/graphql`);
+  logger.log(`Serving images from ${config.server.publicHost}/images`);
   await app.listen(port, host);
 }
 bootstrap();

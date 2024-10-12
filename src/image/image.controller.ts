@@ -1,6 +1,5 @@
 import {
   Controller,
-  FileTypeValidator,
   MaxFileSizeValidator,
   ParseFilePipe,
   Post,
@@ -23,7 +22,6 @@ export class ImageController {
           new MaxFileSizeValidator({
             maxSize: 1024 * 1024 * 10,
           }),
-          new FileTypeValidator({ fileType: 'image/jpeg' }),
         ],
       }),
     )

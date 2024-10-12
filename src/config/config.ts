@@ -5,6 +5,7 @@ export class Config {
   server = {
     host: get('HOST').default('0.0.0.0').asString(),
     port: get('PORT').default('3000').asString(),
+    publicHost: get('PUBLIC_HOST').default('http://localhost').asString(),
   };
   jwt = {
     secret: get('JWT_SECRET').required().asString(),
