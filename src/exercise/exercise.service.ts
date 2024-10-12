@@ -53,20 +53,29 @@ export class ExerciseService {
 
     return this.prismaClient.exercise.create({
       data: {
-        //alternativeDifficultyExercise: {
-        //  connect: {
-        //    id: data.alternativeDifficultyParent,
-        //  },
-        //},
-        //sameLogicExercise: {
-        //  connect: {
-        //    id: data.sameLogicParent,
-        //  },
-        //},
+        alternativeDifficultyExercise: data.alternativeDifficultyParent
+          ? {
+              connect: {
+                id: data.alternativeDifficultyParent,
+              },
+            }
+          : undefined,
+        sameLogicExercise: data.sameLogicParent
+          ? {
+              connect: {
+                id: data.sameLogicParent,
+              },
+            }
+          : undefined,
         id: id,
         tags: {
-          connect: data.tags.map((tag) => ({
-            id: tag,
+          connectOrCreate: data.tags.map((tag) => ({
+            where: {
+              name: tag,
+            },
+            create: {
+              name: tag,
+            },
           })),
         },
         status: data.status,
