@@ -10,12 +10,11 @@ jobs:
     runs-on: ubuntu-latest
     name: Build and push ${{ github.repository }} to GitLab repository
     steps:
-      - name: Login to GitLab
+      - name: Login to DockerHub
         uses: docker/login-action@v2
         with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - uses: actions/checkout@v3
 
@@ -23,15 +22,16 @@ jobs:
         id: meta
         uses: docker/metadata-action@v4
         with:
-          images: ghcr.io/mok-it/${{ github.event.repository.name }}
+          images: kosbalint/be-calfraiser
           flavor: |
-            latest=false
+            latest=true
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v3
         with:
-          registry: registry.gitlab.com
           context: .
+          build-args: |
+            "GENERATE_SOURCEMAP=false"
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
