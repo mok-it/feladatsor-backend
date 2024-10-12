@@ -3,7 +3,8 @@ import { PrismaService } from '../prisma/PrismaService';
 import * as sharp from 'sharp';
 import { Config } from 'src/config/config';
 import * as fs from 'fs';
-import { Image } from '../graphql/graphqlTypes';
+import { Image as GraphQLImage } from '../graphql/graphqlTypes';
+
 const path = require('node:path');
 
 @Injectable()
@@ -14,6 +15,19 @@ export class ImageService {
     private readonly prisma: PrismaService,
     private readonly config: Config,
   ) {}
+
+  async saveImageFromURL(url: string) {
+    const img = await (await fetch(url)).arrayBuffer();
+    const fileName = (url.match(/^\w+:(\/+([^\/#?\s]+)){2,}/) || [])[2] || '';
+
+    return this.processFile({
+      buffer: Buffer.from(img),
+      size: img.byteLength,
+      originalname: fileName,
+      filename: fileName,
+      mimetype: '',
+    } as Express.Multer.File);
+  }
 
   async processFile(file: Express.Multer.File) {
     const image = sharp(file.buffer);
@@ -62,7 +76,7 @@ export class ImageService {
     return savedImageMeta;
   }
 
-  resolveGQLImage(imageId?: string): Image | null {
+  resolveGQLImage(imageId?: string): GraphQLImage | null {
     if (!imageId) return null;
 
     const imgFileName = imageId + '.webp';

@@ -12,6 +12,8 @@ import {
 } from '../graphql/graphqlTypes';
 import { User } from '@prisma/client';
 import { faker } from '@faker-js/faker';
+import { ImageService } from '../image/image.service';
+import { ExerciseCommentService } from '../exercise-comment/exercise-comment.service';
 
 enum CSVHeaders {
   ID,
@@ -47,6 +49,8 @@ export class LoadOldExcelService {
     private readonly prisma: PrismaService,
     private readonly userService: UserService,
     private readonly exerciseService: ExerciseService,
+    private readonly imageService: ImageService,
+    private readonly commentService: ExerciseCommentService,
   ) {}
 
   async processExcelFile(file: Express.Multer.File) {
@@ -78,23 +82,52 @@ export class LoadOldExcelService {
 
   private async saveExercises(records: string[][], user: User) {
     let error = 0;
-    let sucess = 0;
+    let success = 0;
 
     for (const record of records) {
       try {
         const parent = await this.exerciseService.getExerciseById(
           record[CSVHeaders.ID],
         );
-        await this.exerciseService.createExercise(
+        let imgRes: { id: string; url: string } | undefined = undefined;
+        let failedToDownloadImage = false;
+        if (
+          record[CSVHeaders.image] &&
+          this.isValidHttpUrl(record[CSVHeaders.image])
+        ) {
+          try {
+            imgRes = await this.imageService.saveImageFromURL(
+              this.mapUrlToDownload(record[CSVHeaders.image]),
+            );
+          } catch (e) {
+            this.logger.warn(
+              `Could not download image for: ${record[CSVHeaders.ID]} URL: ${
+                record[CSVHeaders.image]
+              }`,
+            );
+            failedToDownloadImage = true;
+          }
+        }
+        const exercise = await this.exerciseService.createExercise(
           {
             ...this.mapRecordToCreateExerciseInput(record),
             sameLogicParent: parent?.id,
             alternativeDifficultyParent: parent?.id,
+            exerciseImage: imgRes?.id,
           },
           user,
           record[CSVHeaders.ID] + (parent ? `_${faker.string.alpha(4)}` : ''),
         );
-        sucess++;
+        if (failedToDownloadImage) {
+          await this.commentService.createExerciseComment(
+            exercise.id,
+            `Could not download img while importing Excel, URL: ${
+              record[CSVHeaders.image]
+            }`,
+            user,
+          );
+        }
+        success++;
       } catch (e) {
         this.logger.error(`Can't save record ${record[CSVHeaders.ID]}`);
         console.log(e);
@@ -102,10 +135,10 @@ export class LoadOldExcelService {
       }
     }
 
-    this.logger.log(`Saved: ${sucess}, Failed: ${error}`);
+    this.logger.log(`Saved: ${success}, Failed: ${error}`);
 
     return {
-      importedCount: sucess,
+      importedCount: success,
       failedCount: error,
     };
   }
@@ -174,5 +207,30 @@ export class LoadOldExcelService {
     if (isNaN(difficulty)) return 0;
 
     return difficulty;
+  }
+
+  private isValidHttpUrl(string) {
+    let url;
+
+    try {
+      url = new URL(string);
+    } catch (_) {
+      return false;
+    }
+
+    return url.protocol === 'http:' || url.protocol === 'https:';
+  }
+
+  private mapUrlToDownload(url: string) {
+    if (url.includes('https://drive.google.com/open?id=')) {
+      //https://drive.usercontent.google.com/u/0/uc?id=11Vjf5IL90CoGW8gnqhohk70jZzeDxejX&export=download
+      const id = new URL(url).search.split('?id=')[1];
+      return `https://drive.usercontent.google.com/u/0/uc?id=${id}&export=download`;
+    }
+    if (url.includes('https://drive.google.com/file/d/')) {
+      const id = new URL(url).pathname.split('/')[3];
+      return `https://drive.usercontent.google.com/u/0/uc?id=${id}&export=download`;
+    }
+    return url;
   }
 }
