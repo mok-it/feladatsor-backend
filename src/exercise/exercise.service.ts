@@ -6,6 +6,17 @@ import { ExerciseInput } from '../graphql/graphqlTypes';
 export class ExerciseService {
   constructor(private readonly prismaClient: PrismaClient) {}
 
+  getExerciseById(id: string) {
+    return this.prismaClient.exercise.findFirst({
+      where: {
+        id,
+      },
+      include: {
+        createdBy: true,
+      },
+    });
+  }
+
   async getExercises(take: number, skip: number) {
     return this.prismaClient.exercise.findMany({
       take,
@@ -50,7 +61,6 @@ export class ExerciseService {
           })),
         },
         status: data.status,
-        solveIdea: data.solveIdea,
         isCompetitionFinal: data.isCompetitionFinal,
         solutionOptions: data.solutionOptions,
         difficulty: {
@@ -60,10 +70,11 @@ export class ExerciseService {
           })),
         },
         description: data.description,
-        exerciseImage: data.exerciseImage,
+        exerciseImageId: data.exerciseImage,
         solution: data.solution,
-        elaboration: data.elaboration,
-        elaborationImage: data.elaborationImage,
+        solutionImageId: data.solutionImage,
+        solveIdea: data.solveIdea,
+        solveIdeaImageId: data.solveIdeaImage,
         helpingQuestions: data.helpingQuestions,
         source: data.source,
         createdBy: {
@@ -103,10 +114,8 @@ export class ExerciseService {
             })),
           },
           description: data.description,
-          exerciseImage: data.exerciseImage,
+          exerciseImageId: data.exerciseImage,
           solution: data.solution,
-          elaboration: data.elaboration,
-          elaborationImage: data.elaborationImage,
           helpingQuestions: data.helpingQuestions,
           source: data.source,
         },

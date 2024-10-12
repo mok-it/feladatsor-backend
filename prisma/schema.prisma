@@ -31,11 +31,11 @@ model Exercise {
   tags                            ExerciseTag[]
   status                          ExerciseStatus
   description                     String
-  exerciseImage                   String?
+  exerciseImageId                 String?
   solution                        String
+  solutionImageId                 String?
   solveIdea                       String?
-  elaboration                     String?
-  elaborationImage                String?
+  solveIdeaImageId                String?
   helpingQuestions                String[]
   solutionOptions                 String[]
   source                          String?

@@ -14,12 +14,13 @@ import {
   ExerciseSearchQuery,
 } from '../graphql/graphqlTypes';
 import { CurrentUser } from '../auth/decorators/user.auth.decorator';
-import { User } from '@prisma/client';
+import { Exercise as PrismaExercise, User } from '@prisma/client';
 import { ExerciseCheckService } from '../exercise-check/exercise-check.service';
 import { ExerciseSearchService } from './exercise-search.service';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { ExerciseTagService } from '../exercise-tag/exercise-tag.service';
+import { ImageService } from '../image/image.service';
 
 @Resolver('Exercise')
 export class ExerciseResolver {
@@ -28,7 +29,13 @@ export class ExerciseResolver {
     private readonly exerciseTagService: ExerciseTagService,
     private readonly exerciseSearchService: ExerciseSearchService,
     private readonly exerciseCheckService: ExerciseCheckService,
+    private readonly imageService: ImageService,
   ) {}
+
+  @Query('exercise')
+  async getExercise(@Args('id') id: string) {
+    return this.exerciseService.getExerciseById(id);
+  }
 
   @Query('exercises')
   @UseGuards(RolesGuard)
@@ -52,7 +59,6 @@ export class ExerciseResolver {
     @Args('input') data: ExerciseInput,
     @CurrentUser() user: User,
   ) {
-    console.log(user);
     return this.exerciseService.createExercise(data, user);
   }
 
@@ -65,28 +71,46 @@ export class ExerciseResolver {
   }
 
   @ResolveField('alternativeDifficultyExercises')
-  async getAlternativeDifficultyExercises(@Parent() exercise: Exercise) {
+  async getAlternativeDifficultyExercises(@Parent() exercise: PrismaExercise) {
     return this.exerciseService.getAlternativeDifficultyExercises(exercise.id);
   }
 
   //TODO: Move this out into a exerciseHistoryService
   @ResolveField('history')
-  async getHistory(@Parent() exercise: Exercise) {
+  async getHistory(@Parent() exercise: PrismaExercise) {
     return this.exerciseService.getHistory(exercise.id);
   }
 
   @ResolveField('checks')
-  async getChecks(@Parent() exercise: Exercise) {
+  async getChecks(@Parent() exercise: PrismaExercise) {
     return this.exerciseCheckService.getChecksByExerciseId(exercise.id);
   }
 
   @ResolveField('difficulty')
-  async getExerciseDifficulty(@Parent() exercise: Exercise) {
+  async getExerciseDifficulty(@Parent() exercise: PrismaExercise) {
     return this.exerciseService.getDifficultyByExercise(exercise.id);
   }
 
   @ResolveField('tags')
-  async getExerciseTags(@Parent() exercise: Exercise) {
+  async getExerciseTags(@Parent() exercise: PrismaExercise) {
     return this.exerciseTagService.getTagsByExerciseId(exercise.id);
+  }
+
+  @ResolveField('exerciseImage')
+  async getExerciseImage(@Parent() exercise: PrismaExercise) {
+    //This is a string id, as we resolve this from prisma as a string
+    return this.imageService.resolveGQLImage(exercise.exerciseImageId);
+  }
+
+  @ResolveField('solveIdeaImage')
+  async getSolveIdeaImage(@Parent() exercise: PrismaExercise) {
+    //This is a string id, as we resolve this from prisma as a string
+    return this.imageService.resolveGQLImage(exercise.solveIdeaImageId);
+  }
+
+  @ResolveField('solutionImage')
+  async getSolutionImage(@Parent() exercise: PrismaExercise) {
+    //This is a string id, as we resolve this from prisma as a string
+    return this.imageService.resolveGQLImage(exercise.solutionImageId);
   }
 }

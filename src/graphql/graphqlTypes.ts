@@ -69,8 +69,6 @@ export interface ExerciseInput {
     solutionImage?: Nullable<string>;
     solveIdea?: Nullable<string>;
     solveIdeaImage?: Nullable<string>;
-    elaboration?: Nullable<string>;
-    elaborationImage?: Nullable<string>;
     helpingQuestions: string[];
     solutionOptions: string[];
     source?: Nullable<string>;
@@ -98,8 +96,9 @@ export interface IMutation {
     createExerciseCheck(data: ExerciseCheckInput): ExerciseCheck | Promise<ExerciseCheck>;
     createExerciseTag(name: string, parentId?: Nullable<string>): ExerciseTag | Promise<ExerciseTag>;
     updateExerciseTag(id: string, name: string): ExerciseTag | Promise<ExerciseTag>;
-    deleteExerciseTag(id: string): Nullable<ExerciseTag> | Promise<Nullable<ExerciseTag>>;
+    deleteExerciseTag(id: string): boolean | Promise<boolean>;
     createExercise(input: ExerciseInput): Exercise | Promise<Exercise>;
+    updateExercise(id: string, input: ExerciseInput): Exercise | Promise<Exercise>;
     register(data: UserRegisterInput): User | Promise<User>;
     changePermissions(userId: string, permissions: Role[]): User | Promise<User>;
 }
@@ -142,11 +141,11 @@ export interface Exercise {
     tags: Tag[];
     status: ExerciseStatus;
     description: string;
-    exerciseImage?: Nullable<string>;
+    exerciseImage?: Nullable<Image>;
     solution: string;
+    solutionImage?: Nullable<Image>;
     solveIdea?: Nullable<string>;
-    elaboration?: Nullable<string>;
-    elaborationImage?: Nullable<string>;
+    solveIdeaImage?: Nullable<Image>;
     helpingQuestions: string[];
     solutionOptions: string[];
     source?: Nullable<string>;
@@ -186,6 +185,11 @@ export interface ExerciseDifficulty {
 export interface ExerciseHistory {
     id: string;
     exercise: Exercise;
+}
+
+export interface Image {
+    id: string;
+    url: string;
 }
 
 export interface LoginResponse {

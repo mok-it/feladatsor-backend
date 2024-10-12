@@ -9,5 +9,6 @@ import { Config } from '../config/config';
   controllers: [ImageController],
   imports: [MulterModule, Config],
   providers: [ImageService, PrismaService],
+  exports: [ImageService],
 })
 export class ImageModule {}

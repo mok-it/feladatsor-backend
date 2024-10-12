@@ -39,8 +39,6 @@ input ExerciseInput {
   solutionImage: String
   solveIdea: String
   solveIdeaImage: String
-  elaboration: String
-  elaborationImage: String
   helpingQuestions: [String!]!
   solutionOptions: [String!]!
   source: String
@@ -62,11 +60,11 @@ type Exercise {
   tags: [Tag!]!
   status: ExerciseStatus! #Authorization based, who can create what
   description: String! #text
-  exerciseImage: String
+  exerciseImage: Image
   solution: String!
+  solutionImage: Image
   solveIdea: String
-  elaboration: String
-  elaborationImage: String
+  solveIdeaImage: Image
   helpingQuestions: [String!]!
   solutionOptions: [String!]!
   source: String

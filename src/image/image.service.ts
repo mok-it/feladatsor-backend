@@ -3,6 +3,7 @@ import { PrismaService } from '../prisma/PrismaService';
 import * as sharp from 'sharp';
 import { Config } from 'src/config/config';
 import * as fs from 'fs';
+import { Image } from '../graphql/graphqlTypes';
 const path = require('node:path');
 
 @Injectable()
@@ -59,5 +60,16 @@ export class ImageService {
     );
 
     return savedImageMeta;
+  }
+
+  resolveGQLImage(imageId?: string): Image | null {
+    if (!imageId) return null;
+
+    const imgFileName = imageId + '.webp';
+    const imgURL = `${this.config.server.publicHost}/images/${imgFileName}`;
+    return {
+      id: imageId,
+      url: imgURL,
+    };
   }
 }

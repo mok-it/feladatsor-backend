@@ -52,7 +52,7 @@ export class UserService {
           this.logger.error(
             `There is a unique constraint violation, a new user cannot be created with username: ${data.userName}`,
           );
-          return new Error('This username already exists');
+          throw new Error('This username already exists');
         }
       }
       throw e;
