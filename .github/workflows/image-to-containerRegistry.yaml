@@ -10,12 +10,12 @@ jobs:
     runs-on: ubuntu-latest
     name: Build and push ${{ github.repository }} to GitLab repository
     steps:
-      - name: Login to GCR
-        uses: docker/login-action@v3
+      - name: Login to GitLab
+        uses: docker/login-action@v2
         with:
-          registry: gcr.io
-          username: _json_key
-          password: ${{ secrets.GCR_JSON_KEY }}
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
       - uses: actions/checkout@v3
 
@@ -23,16 +23,15 @@ jobs:
         id: meta
         uses: docker/metadata-action@v4
         with:
-          images: gcr.io/feladatsor-15604/${{ github.event.repository.name }}
+          images: ghcr.io/mok-it/${{ github.event.repository.name }}
           flavor: |
             latest=false
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v3
         with:
-          #registry: gcr.io
+          registry: registry.gitlab.com
           context: .
-          platforms: linux/x86_64
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
