@@ -27,6 +27,11 @@ export class ExcelExportService {
       tableNames.map(async (tableName) => {
         const data = await this.prismaClient[tableName.table_name].findMany({});
 
+        if (tableName.table_name === 'User') {
+          for (const i in data) {
+            delete data[i].password;
+          }
+        }
         const worksheet = workbook.addWorksheet(tableName.table_name);
         if (data.length > 0) {
           const columns = Object.keys(data[0]);
