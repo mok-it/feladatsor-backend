@@ -128,6 +128,7 @@ export interface ExerciseCheck {
 export interface IQuery {
     exerciseComment(id: string): Nullable<ExerciseComment> | Promise<Nullable<ExerciseComment>>;
     commentsByExercise(id: string): ExerciseComment[] | Promise<ExerciseComment[]>;
+    exerciseHistoryByExercise(id: string): ExerciseHistory[] | Promise<ExerciseHistory[]>;
     exerciseTags(): ExerciseTag[] | Promise<ExerciseTag[]>;
     exerciseTag(id: string): Nullable<ExerciseTag> | Promise<Nullable<ExerciseTag>>;
     searchExercises(query?: Nullable<ExerciseSearchQuery>): ExerciseSearchResult | Promise<ExerciseSearchResult>;
@@ -145,6 +146,17 @@ export interface ExerciseComment {
     createdAt: string;
     updatedAt: string;
     user: User;
+}
+
+export interface ExerciseHistory {
+    id: string;
+    exercise: Exercise;
+    field: string;
+    oldValue: string;
+    newValue: string;
+    createdBy: User;
+    createdAt: string;
+    updatedAt: string;
 }
 
 export interface ExerciseTag {

@@ -14,6 +14,7 @@ import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin
 import { ImageModule } from './image/image.module';
 import { LoadOldExcelModule } from './load-old-excel/load-old-excel.module';
 import { ExerciseCommentModule } from './exercise-comment/exercise-comment.module';
+import { ExerciseHistoryModule } from './exercise-history/exercise-history.module';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { ExerciseCommentModule } from './exercise-comment/exercise-comment.modul
     ImageModule,
     LoadOldExcelModule,
     ExerciseCommentModule,
+    ExerciseHistoryModule,
   ],
   controllers: [AppController],
   providers: [AppService],

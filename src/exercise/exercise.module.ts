@@ -9,6 +9,7 @@ import { ExerciseTagModule } from '../exercise-tag/exercise-tag.module';
 import { ImageModule } from '../image/image.module';
 import { ExerciseCommentModule } from 'src/exercise-comment/exercise-comment.module';
 import {UserModule} from "../user/user.module";
+import { ExerciseHistoryModule } from '../exercise-history/exercise-history.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import {UserModule} from "../user/user.module";
     ImageModule,
     ExerciseCommentModule,
     UserModule,
+    ExerciseHistoryModule,
   ],
   providers: [
     ExerciseResolver,

@@ -19,6 +19,7 @@ import { ExerciseTagService } from '../exercise-tag/exercise-tag.service';
 import { ImageService } from '../image/image.service';
 import { ExerciseCommentService } from 'src/exercise-comment/exercise-comment.service';
 import {UserService} from "../user/user.service";
+import { ExerciseHistoryService } from '../exercise-history/exercise-history.service';
 
 @Resolver('Exercise')
 export class ExerciseResolver {
@@ -30,6 +31,7 @@ export class ExerciseResolver {
     private readonly imageService: ImageService,
     private readonly exerciseCommentService: ExerciseCommentService,
     private readonly userService: UserService,
+    private readonly exerciseHistoryService: ExerciseHistoryService,
   ) {}
 
   @Query('exercise')
@@ -79,7 +81,7 @@ export class ExerciseResolver {
   //TODO: Move this out into a exerciseHistoryService
   @ResolveField('history')
   async getHistory(@Parent() exercise: PrismaExercise) {
-    return this.exerciseService.getHistory(exercise.id);
+    return this.exerciseHistoryService.getHistoryByExerciseId(exercise.id);
   }
 
   @ResolveField('checks')
