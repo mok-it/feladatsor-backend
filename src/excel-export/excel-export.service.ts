@@ -20,7 +20,7 @@ export class ExcelExportService {
 
     //delete the prisma migrations table
     tableNames = tableNames.filter((tableName) => {
-      return !tableName.table_name.startsWith('_');
+      return tableName.table_name != '_prisma_migrations';
     });
 
     await Promise.all(
