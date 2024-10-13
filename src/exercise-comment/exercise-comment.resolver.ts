@@ -23,6 +23,11 @@ export class ExerciseCommentResolver {
     return this.exerciseCommentService.getExerciseCommentById(id);
   }
 
+  @Query('commentsByExercise')
+  async getCommentsByExercise(@Args('id') exerciseId: string) {
+    return this.exerciseCommentService.getCommentsByExerciseId(exerciseId);
+  }
+
   @Mutation('createExerciseComment')
   async createExerciseComment(
     @Args('exerciseId') exerciseId: string,

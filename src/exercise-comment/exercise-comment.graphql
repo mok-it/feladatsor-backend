@@ -1,5 +1,6 @@
 type Query {
   exerciseComment(id: ID!): ExerciseComment
+  commentsByExercise(id: ID!): [ExerciseComment!]!
 }
 
 type Mutation {
