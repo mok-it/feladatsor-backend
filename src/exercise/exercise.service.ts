@@ -137,21 +137,23 @@ export class ExerciseService {
           }),
         ),
       );
-      await tx.exerciseComment.create({
-        data: {
-          exercise: {
-            connect: {
-              id: id,
+      if (data.comment) {
+        await tx.exerciseComment.create({
+          data: {
+            exercise: {
+              connect: {
+                id: id,
+              },
             },
-          },
-          user: {
-            connect: {
-              id: user.id,
+            user: {
+              connect: {
+                id: user.id,
+              },
             },
+            comment: data.comment,
           },
-          comment: data.comment,
-        },
-      });
+        });
+      }
       return tx.exercise.update({
         where: {
           id,
@@ -227,6 +229,9 @@ export class ExerciseService {
       'solveIdea',
       'source',
       'status',
+      'exerciseImageId',
+      'solutionImageId',
+      'solveIdeaImageId',
     ];
 
     return fieldsToCheck
