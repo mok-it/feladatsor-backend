@@ -7,7 +7,12 @@ import {
   Resolver,
 } from '@nestjs/graphql';
 import { UserService } from './user.service';
-import { Role, User, UserRegisterInput } from '../graphql/graphqlTypes';
+import {
+  Role,
+  User,
+  UserRegisterInput,
+  UserUpdateInput,
+} from '../graphql/graphqlTypes';
 import { UseGuards } from '@nestjs/common';
 import { ExerciseService } from '../exercise/exercise.service';
 import { RolesGuard } from '../auth/guards/roles.guard';
@@ -37,6 +42,11 @@ export class UserResolver {
   @Mutation('register')
   async register(@Args('data') data: UserRegisterInput) {
     return this.userService.register(data);
+  }
+
+  @Mutation('updateUser')
+  async updateUser(@Args('data') data: UserUpdateInput) {
+    return this.userService.updateUser(data);
   }
 
   @Mutation('changePermissions')

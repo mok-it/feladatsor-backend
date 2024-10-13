@@ -1,5 +1,9 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { Role, UserRegisterInput } from '../graphql/graphqlTypes';
+import {
+  Role,
+  UserRegisterInput,
+  UserUpdateInput,
+} from '../graphql/graphqlTypes';
 import { Prisma, PrismaClient, User } from '@prisma/client';
 import { hash } from 'bcrypt';
 
@@ -55,6 +59,28 @@ export class UserService {
           throw new Error('This username already exists');
         }
       }
+      throw e;
+    }
+  }
+
+  async updateUser(data: UserUpdateInput) {
+    let hashedPassword: string;
+    if (data.password) {
+      hashedPassword = await hash(data.password, 10);
+    }
+    try {
+      return await this.prismaClient.user.update({
+        data: {
+          email: data.email,
+          password: hashedPassword,
+          name: data.name,
+          customAvatarId: data.customAvatarId,
+        },
+        where: {
+          id: data.id,
+        },
+      });
+    } catch (e) {
       throw e;
     }
   }
