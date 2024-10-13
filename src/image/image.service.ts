@@ -40,10 +40,10 @@ export class ImageService {
     const imageMeta = await this.storeFileMeta(file, sharpMeta);
 
     const imgFileName = imageMeta.id + '.webp';
-    const outPath = path.join(this.config.fileStorage.saveFolder, imgFileName);
+    const outPath = path.join(this.config.fileStorage.imageFolder, imgFileName);
 
-    if (!fs.existsSync(this.config.fileStorage.saveFolder)) {
-      fs.mkdirSync(this.config.fileStorage.saveFolder, { recursive: true });
+    if (!fs.existsSync(this.config.fileStorage.imageFolder)) {
+      fs.mkdirSync(this.config.fileStorage.imageFolder, { recursive: true });
     }
 
     await webpImage.toFile(outPath);

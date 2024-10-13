@@ -15,6 +15,7 @@ import { ImageModule } from './image/image.module';
 import { LoadOldExcelModule } from './load-old-excel/load-old-excel.module';
 import { ExerciseCommentModule } from './exercise-comment/exercise-comment.module';
 import { ExerciseHistoryModule } from './exercise-history/exercise-history.module';
+import { ExcelExportModule } from './excel-export/excel-export.module';
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import { ExerciseHistoryModule } from './exercise-history/exercise-history.modul
     LoadOldExcelModule,
     ExerciseCommentModule,
     ExerciseHistoryModule,
+    ExcelExportModule,
   ],
   controllers: [AppController],
   providers: [AppService],

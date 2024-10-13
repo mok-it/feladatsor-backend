@@ -1,0 +1,8 @@
+type Mutation {
+    exportExcel : ExportResult
+}
+
+type ExportResult {
+    url: String!
+    #exerciseCount: Int!
+}
