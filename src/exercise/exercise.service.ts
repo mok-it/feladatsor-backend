@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { AgeGroup, Exercise, PrismaClient, User } from '@prisma/client';
-import { ExerciseInput } from '../graphql/graphqlTypes';
+import { AgeGroup, Exercise, Prisma, PrismaClient, User } from '@prisma/client';
+import { ExerciseInput, ExerciseUpdateInput } from '../graphql/graphqlTypes';
 
 @Injectable()
 export class ExerciseService {
@@ -101,63 +101,106 @@ export class ExerciseService {
     });
   }
 
-  async updateExercise(id: string, data: ExerciseInput, user: User) {
+  async updateExercise(id: string, data: ExerciseUpdateInput, user: User) {
     return await this.prismaClient.$transaction(async (tx) => {
-      tx.exerciseDifficulty.deleteMany({
-        where: {
-          exerciseId: id,
-        },
-      });
+      //Undefined means we should keep the data
+      //Null means an explicit delete
+      //Data is present means modify the data
+      if (data.difficulty !== undefined) {
+        tx.exerciseDifficulty.deleteMany({
+          where: {
+            exerciseId: id,
+          },
+        });
+      }
       const oldExercise = await tx.exercise.findUnique({
         where: {
           id,
         },
       });
       const differences = this.getDifferences(oldExercise, data);
-      differences.forEach(async (difference) => {
-        await tx.exerciseHistory.create({
-          data: {
-            exercise: {
-              connect: {
-                id: oldExercise.id,
+      //Save differences into history
+      await Promise.all(
+        differences.map((difference) =>
+          tx.exerciseHistory.create({
+            data: {
+              exercise: {
+                connect: {
+                  id: oldExercise.id,
+                },
+              },
+              field: difference.field,
+              oldValue: difference.oldValue.toString(),
+              newValue: difference.newValue.toString(),
+              user: {
+                connect: {
+                  id: user.id,
+                },
               },
             },
-            field: difference.field,
-            oldValue: difference.oldValue.toString(),
-            newValue: difference.newValue.toString(),
-            user: {
-              connect: {
-                id: user.id,
-              },
+          }),
+        ),
+      );
+      await tx.exerciseComment.create({
+        data: {
+          exercise: {
+            connect: {
+              id: id,
             },
           },
-        });
+          user: {
+            connect: {
+              id: user.id,
+            },
+          },
+          comment: data.comment,
+        },
       });
       return tx.exercise.update({
         where: {
           id,
         },
         data: {
-          tags: {
-            set: data.tags.map((id) => ({
-              id,
-            })),
-          },
+          tags: data.tags
+            ? {
+                set: data.tags.map((id) => ({
+                  id,
+                })),
+              }
+            : undefined,
           status: data.status,
           solveIdea: data.solveIdea,
           isCompetitionFinal: data.isCompetitionFinal,
           solutionOptions: data.solutionOptions,
-          difficulty: {
-            create: data.difficulty.map((d) => ({
-              ageGroup: d.ageGroup,
-              difficulty: d.difficulty,
-            })),
-          },
+          difficulty: data.difficulty
+            ? {
+                create: data.difficulty.map((d) => ({
+                  ageGroup: d.ageGroup,
+                  difficulty: d.difficulty,
+                })),
+              }
+            : undefined,
           description: data.description,
           exerciseImageId: data.exerciseImage,
           solution: data.solution,
           helpingQuestions: data.helpingQuestions,
           source: data.source,
+          alternativeDifficultyExercise: data.alternativeDifficultyParent
+            ? {
+                connect: {
+                  id: data.alternativeDifficultyParent,
+                },
+              }
+            : undefined,
+          sameLogicExercise: data.sameLogicParent
+            ? {
+                connect: {
+                  id: data.sameLogicParent,
+                },
+              }
+            : undefined,
+          solveIdeaImageId: data.solveIdeaImage,
+          solutionImageId: data.solutionImage,
         },
       });
     });
@@ -179,7 +222,7 @@ export class ExerciseService {
     });
   }
 
-  getDifferences(oldExercise: Exercise, newExercise: ExerciseInput) {
+  getDifferences(oldExercise: Exercise, newExercise: ExerciseUpdateInput) {
     const fieldsToCheck: (keyof Exercise)[] = [
       'description',
       'helpingQuestions',
@@ -192,6 +235,9 @@ export class ExerciseService {
 
     return fieldsToCheck
       .map((fieldName) => {
+        //Undefined means we kept the field as original => No difference
+        if (newExercise[fieldName] === undefined) return null;
+
         const oldValue = oldExercise[fieldName];
         const newValue = newExercise[fieldName];
 

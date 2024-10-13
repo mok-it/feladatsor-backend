@@ -8,7 +8,11 @@ import {
 } from '@nestjs/graphql';
 import { ExerciseService } from './exercise.service';
 import { UseGuards } from '@nestjs/common';
-import { ExerciseInput, ExerciseSearchQuery } from '../graphql/graphqlTypes';
+import {
+  ExerciseInput,
+  ExerciseSearchQuery,
+  ExerciseUpdateInput,
+} from '../graphql/graphqlTypes';
 import { CurrentUser } from '../auth/decorators/user.auth.decorator';
 import { Exercise as PrismaExercise, User } from '@prisma/client';
 import { ExerciseCheckService } from '../exercise-check/exercise-check.service';
@@ -67,7 +71,7 @@ export class ExerciseResolver {
   @Mutation('updateExercise')
   async updateExercise(
     @Args('id') id: string,
-    @Args('input') data: ExerciseInput,
+    @Args('input') data: ExerciseUpdateInput,
     @CurrentUser() user: User,
   ) {
     return this.exerciseService.updateExercise(id, data, user);

@@ -48,9 +48,9 @@ input ExerciseInput {
   isCompetitionFinal: Boolean
 }
 
-# Basically the same
+# Basically the same as ExerciseInput, but all fields are nullable
 input ExerciseUpdateInput {
-  tags: [ID]!
+  tags: [ID!]
   status: ExerciseStatus #Authorization based, who can create what
   description: String #text
   exerciseImage: String
@@ -65,6 +65,9 @@ input ExerciseUpdateInput {
   alternativeDifficultyParent: ID
   sameLogicParent: ID
   isCompetitionFinal: Boolean
+
+  #New fields that are not present in create
+  comment: String!
 }
 
 enum ExerciseStatus {
