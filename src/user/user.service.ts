@@ -1,5 +1,9 @@
 import { Injectable, Logger } from '@nestjs/common';
-import {Role, UserRegisterInput, UserUpdateInput} from '../graphql/graphqlTypes';
+import {
+  Role,
+  UserRegisterInput,
+  UserUpdateInput,
+} from '../graphql/graphqlTypes';
 import { Prisma, PrismaClient, User } from '@prisma/client';
 import { hash } from 'bcrypt';
 
@@ -61,7 +65,7 @@ export class UserService {
 
   async updateUser(data: UserUpdateInput) {
     let hashedPassword: string;
-    if(data.password) {
+    if (data.password) {
       hashedPassword = await hash(data.password, 10);
     }
     try {
@@ -74,7 +78,7 @@ export class UserService {
         },
         where: {
           id: data.id,
-        }
+        },
       });
     } catch (e) {
       throw e;
