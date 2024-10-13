@@ -1,6 +1,5 @@
 version: '3.8'
 services:
-
   db_migration:
     container_name: be_feladatsor_migration
     image: kosbalint/be-feladatsor:v0.0.21
