@@ -113,9 +113,3 @@ enum ExerciseAgeGroup {
   NAGYMEDVE
   JEGESMEDVE
 }
-
-type ExerciseHistory {
-  id: ID!
-  exercise: Exercise!
-  #TODO
-}

@@ -180,14 +180,6 @@ export class ExerciseService {
     });
   }
 
-  getHistory(id: string) {
-    return this.prismaClient.exerciseHistory.findMany({
-      where: {
-        exerciseId: id,
-      },
-    });
-  }
-
   getDifficultyByExercise(id: string) {
     return this.prismaClient.exerciseDifficulty.findMany({
       where: {

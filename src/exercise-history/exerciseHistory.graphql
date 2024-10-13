@@ -1,0 +1,14 @@
+type Query {
+  exerciseHistoryByExercise(id: ID!): [ExerciseHistory!]!
+}
+
+type ExerciseHistory {
+  id: ID!
+  exercise: Exercise!
+  field: String!
+  oldValue: String!
+  newValue: String!
+  createdBy: User!
+  createdAt: String!
+  updatedAt: String!
+}
