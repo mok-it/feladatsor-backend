@@ -19,9 +19,6 @@ export class ExerciseCommentService {
       where: {
         id: id,
       },
-      include: {
-        user: true,
-      },
     });
   }
 

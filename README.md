@@ -1,12 +1,11 @@
-
 ## Todo
 
- - [ ] Export the db into excel
- - [ ] Exercise compose API
- - [ ] User avatar upload
- - [ ] DB seed
- - [ ] Ellenőrzés
- - 
+- [ ] Export the db into excel
+- [ ] Exercise compose API
+- [ ] User avatar upload
+- [ ] DB seed
+- [ ] Ellenőrzés
+-
 
 ## Description
 
