@@ -130,10 +130,11 @@ export interface IQuery {
 
 export interface ExerciseComment {
     id: string;
-    user: User;
+    createdBy: User;
     comment: string;
     createdAt: string;
     updatedAt: string;
+    user: User;
 }
 
 export interface ExerciseTag {

@@ -10,7 +10,7 @@ type Mutation {
 
 type ExerciseComment {
   id: ID!
-  user: User!
+  createdBy: User!
   comment: String!
   createdAt: String!
   updatedAt: String!

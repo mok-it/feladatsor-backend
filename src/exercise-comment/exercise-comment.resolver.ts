@@ -1,12 +1,21 @@
-import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+import {
+  Args,
+  Mutation,
+  Parent,
+  Query,
+  ResolveField,
+  Resolver,
+} from '@nestjs/graphql';
 import { ExerciseCommentService } from './exercise-comment.service';
 import { CurrentUser } from 'src/auth/decorators/user.auth.decorator';
-import { User } from '@prisma/client';
+import { ExerciseComment, User } from '@prisma/client';
+import { UserService } from '../user/user.service';
 
 @Resolver('ExerciseComment')
 export class ExerciseCommentResolver {
   constructor(
     private readonly exerciseCommentService: ExerciseCommentService,
+    private readonly userService: UserService,
   ) {}
 
   @Query('exerciseComment')
@@ -38,5 +47,10 @@ export class ExerciseCommentResolver {
   @Mutation('deleteExerciseComment')
   async deleteExerciseComment(@Args('id') id: string) {
     return this.exerciseCommentService.deleteExerciseComment(id);
+  }
+
+  @ResolveField('createdBy')
+  async commentCreatedBy(@Parent() comment: ExerciseComment) {
+    return this.userService.getUserById(comment.userId);
   }
 }
