@@ -100,6 +100,7 @@ export class LoadOldExcelService {
               this.mapUrlToDownload(record[CSVHeaders.image]),
             );
           } catch (e) {
+            console.log(e);
             this.logger.warn(
               `Could not download image for: ${record[CSVHeaders.ID]} URL: ${
                 record[CSVHeaders.image]
@@ -108,12 +109,16 @@ export class LoadOldExcelService {
             failedToDownloadImage = true;
           }
         }
+        const tagIDs = await this.generateTagIds(
+          this.getTags(record[CSVHeaders.tags]),
+        );
         const exercise = await this.exerciseService.createExercise(
           {
             ...this.mapRecordToCreateExerciseInput(record),
             sameLogicParent: parent?.id,
             alternativeDifficultyParent: parent?.id,
             exerciseImage: imgRes?.id,
+            tags: tagIDs,
           },
           user,
           record[CSVHeaders.ID] + (parent ? `_${faker.string.alpha(4)}` : ''),
@@ -143,7 +148,9 @@ export class LoadOldExcelService {
     };
   }
 
-  private mapRecordToCreateExerciseInput(record: string[]): ExerciseInput {
+  private mapRecordToCreateExerciseInput(
+    record: string[],
+  ): Omit<ExerciseInput, 'tags'> {
     return {
       description: record[CSVHeaders.description].trim(),
       helpingQuestions: [record[CSVHeaders.helpingQuestions]],
@@ -183,7 +190,6 @@ export class LoadOldExcelService {
         },
       ],
       status: ExerciseStatus.CREATED,
-      tags: this.getTags(record[CSVHeaders.tags]),
     };
   }
 
@@ -232,5 +238,23 @@ export class LoadOldExcelService {
       return `https://drive.usercontent.google.com/u/0/uc?id=${id}&export=download`;
     }
     return url;
+  }
+
+  private async generateTagIds(tags: string[]): Promise<string[]> {
+    return (
+      await Promise.all(
+        tags.map((tag_name) => {
+          return this.prisma.exerciseTag.upsert({
+            where: {
+              name: tag_name,
+            },
+            update: {},
+            create: {
+              name: tag_name,
+            },
+          });
+        }),
+      )
+    ).map((tag) => tag.id);
   }
 }

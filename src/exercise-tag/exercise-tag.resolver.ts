@@ -15,7 +15,7 @@ export class ExerciseTagResolver {
 
   @Query('exerciseTags')
   async getExerciseTags() {
-    return this.exerciseTagService.getAllTopLevelExerciseTags();
+    return this.exerciseTagService.getAllExerciseTags();
   }
 
   @Query('exerciseTag')

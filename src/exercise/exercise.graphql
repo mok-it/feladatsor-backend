@@ -67,7 +67,7 @@ input ExerciseUpdateInput {
   isCompetitionFinal: Boolean
 
   #New fields that are not present in create
-  comment: String!
+  comment: String
 }
 
 enum ExerciseStatus {

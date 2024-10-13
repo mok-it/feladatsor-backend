@@ -20,7 +20,7 @@ async function main() {
 
   // Seed users
   console.log('🌱 Seeding users');
-  await seedUsers(prisma);
+  //await seedUsers(prisma);
 
   // Seed age groups
   console.log('🌱 Seeding age groups');

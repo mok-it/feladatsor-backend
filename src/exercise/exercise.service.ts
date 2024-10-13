@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { AgeGroup, Exercise, Prisma, PrismaClient, User } from '@prisma/client';
+import { AgeGroup, Exercise, PrismaClient, User } from '@prisma/client';
 import { ExerciseInput, ExerciseUpdateInput } from '../graphql/graphqlTypes';
 
 @Injectable()
@@ -44,6 +44,7 @@ export class ExerciseService {
 
     return this.prismaClient.exercise.create({
       data: {
+        id: id,
         alternativeDifficultyExercise: data.alternativeDifficultyParent
           ? {
               connect: {
@@ -58,17 +59,12 @@ export class ExerciseService {
               },
             }
           : undefined,
-        id: id,
         tags: {
-          connectOrCreate: data.tags.map((tag) => ({
-            where: {
-              name: tag,
-            },
-            create: {
-              name: tag,
-            },
+          connect: data.tags.map((tagID) => ({
+            id: tagID,
           })),
         },
+
         status: data.status,
         isCompetitionFinal: data.isCompetitionFinal,
         solutionOptions: data.solutionOptions,

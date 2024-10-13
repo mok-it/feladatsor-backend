@@ -18,6 +18,8 @@ import { ExerciseService } from '../exercise/exercise.service';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { Public } from '../auth/decorators/public.decorator';
+import { CurrentUser } from '../auth/decorators/user.auth.decorator';
+import { User as PrismaUser } from '@prisma/client';
 
 @Resolver('User')
 export class UserResolver {
@@ -45,8 +47,13 @@ export class UserResolver {
   }
 
   @Mutation('updateUser')
-  async updateUser(@Args('data') data: UserUpdateInput) {
-    return this.userService.updateUser(data);
+  async updateUser(
+    @CurrentUser() user: PrismaUser,
+    @Args('data') data: UserUpdateInput,
+    @Args('id') id?: string,
+  ) {
+    const userId = id ?? user.id;
+    return this.userService.updateUser(userId, data);
   }
 
   @Mutation('changePermissions')

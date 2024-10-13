@@ -43,6 +43,7 @@ export enum Role {
 export interface ExerciseCheckInput {
     exerciseId: string;
     type: ExerciseCheckType;
+    comment?: Nullable<string>;
 }
 
 export interface ExerciseSearchQuery {
@@ -94,7 +95,7 @@ export interface ExerciseUpdateInput {
     alternativeDifficultyParent?: Nullable<string>;
     sameLogicParent?: Nullable<string>;
     isCompetitionFinal?: Nullable<boolean>;
-    comment: string;
+    comment?: Nullable<string>;
 }
 
 export interface ExerciseDifficultyInput {
@@ -110,10 +111,10 @@ export interface UserRegisterInput {
 }
 
 export interface UserUpdateInput {
-    id: string;
     email?: Nullable<string>;
     password?: Nullable<string>;
     name?: Nullable<string>;
+    userName?: Nullable<string>;
     customAvatarId?: Nullable<string>;
 }
 
@@ -131,7 +132,7 @@ export interface IMutation {
     updateExercise(id: string, input: ExerciseUpdateInput): Exercise | Promise<Exercise>;
     register(data: UserRegisterInput): User | Promise<User>;
     changePermissions(userId: string, permissions: Role[]): User | Promise<User>;
-    updateUser(data: UserUpdateInput): User | Promise<User>;
+    updateUser(data: UserUpdateInput, id?: Nullable<string>): User | Promise<User>;
 }
 
 export interface ExerciseCheck {

@@ -4,7 +4,7 @@ import { Config } from 'src/config/config';
 import * as fs from 'fs';
 import { Image as GraphQLImage } from '../graphql/graphqlTypes';
 
-import path from 'node:path';
+import * as path from 'node:path';
 import { PrismaClient } from '@prisma/client';
 
 @Injectable()

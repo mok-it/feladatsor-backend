@@ -69,7 +69,7 @@ export class UserService {
     }
   }
 
-  async updateUser(data: UserUpdateInput) {
+  async updateUser(userId: string, data: UserUpdateInput) {
     let hashedPassword: string;
     if (data.password) {
       hashedPassword = await hash(data.password, 10);
@@ -80,10 +80,11 @@ export class UserService {
           email: data.email,
           password: hashedPassword,
           name: data.name,
+          userName: data.userName,
           customAvatarId: data.customAvatarId,
         },
         where: {
-          id: data.id,
+          id: userId,
         },
       });
     } catch (e) {

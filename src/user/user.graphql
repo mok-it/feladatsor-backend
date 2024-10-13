@@ -6,7 +6,7 @@ type Query {
 type Mutation {
   register(data: UserRegisterInput!): User!
   changePermissions(userId: ID!, permissions: [Role!]!): User!
-  updateUser(data: UserUpdateInput!): User!
+  updateUser(data: UserUpdateInput!, id: String): User!
 }
 
 type LoginResponse {
@@ -22,10 +22,10 @@ input UserRegisterInput {
 }
 
 input UserUpdateInput {
-  id: String!
   email: String
   password: String
   name: String
+  userName: String
   customAvatarId: String
 }
 

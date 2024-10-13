@@ -1,11 +1,22 @@
 import { Injectable } from '@nestjs/common';
 import { ExerciseCheckInput } from '../graphql/graphqlTypes';
 import { PrismaClient, User } from '@prisma/client';
+import { ExerciseCommentService } from '../exercise-comment/exercise-comment.service';
 
 @Injectable()
 export class ExerciseCheckService {
-  constructor(private readonly prismaClient: PrismaClient) {}
-  createExerciseCheck(input: ExerciseCheckInput, user: User) {
+  constructor(
+    private readonly prismaClient: PrismaClient,
+    private readonly exerciseCommentService: ExerciseCommentService,
+  ) {}
+  async createExerciseCheck(input: ExerciseCheckInput, user: User) {
+    if (input.comment) {
+      await this.exerciseCommentService.createExerciseComment(
+        input.exerciseId,
+        input.comment,
+        user,
+      );
+    }
     return this.prismaClient.exerciseCheck.create({
       data: {
         type: input.type,
