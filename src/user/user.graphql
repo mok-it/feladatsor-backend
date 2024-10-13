@@ -43,4 +43,5 @@ type User {
   updatedAt: String!
   exercises: [Exercise!]!
   roles: [Role!]!
+  avatarUrl: String
 }
