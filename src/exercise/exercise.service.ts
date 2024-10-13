@@ -126,8 +126,8 @@ export class ExerciseService {
                 },
               },
               field: difference.field,
-              oldValue: difference.oldValue.toString(),
-              newValue: difference.newValue.toString(),
+              oldValue: String(difference.oldValue),
+              newValue: String(difference.newValue),
               user: {
                 connect: {
                   id: user.id,
