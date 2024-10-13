@@ -16,7 +16,7 @@ import {UserModule} from "../user/user.module";
     ExerciseTagModule,
     ImageModule,
     ExerciseCommentModule,
-      UserModule
+    UserModule,
   ],
   providers: [
     ExerciseResolver,
