@@ -5,7 +5,7 @@ import { Config } from 'src/config/config';
 import * as fs from 'fs';
 import { Image as GraphQLImage } from '../graphql/graphqlTypes';
 
-const path = require('node:path');
+import path from "node:path";
 
 @Injectable()
 export class ImageService {

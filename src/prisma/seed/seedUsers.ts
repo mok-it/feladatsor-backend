@@ -5,7 +5,7 @@ import { Logger } from '@nestjs/common';
 import { Role } from '../../graphql/graphqlTypes';
 
 export const seedUsers = async (prisma: PrismaClient) => {
-  const logger = new Logger('SeedUsers');
+  /*const logger = new Logger('SeedUsers');
   const userService = new UserService(prisma, logger);
   const user = await userService.register({
     email: 'test@test.com',
@@ -27,5 +27,5 @@ export const seedUsers = async (prisma: PrismaClient) => {
         name: `${firstName} ${lastName}`,
       });
     }),
-  );
+  );*/
 };

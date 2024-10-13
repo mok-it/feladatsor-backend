@@ -18,6 +18,7 @@ import { RolesGuard } from '../auth/guards/roles.guard';
 import { ExerciseTagService } from '../exercise-tag/exercise-tag.service';
 import { ImageService } from '../image/image.service';
 import { ExerciseCommentService } from 'src/exercise-comment/exercise-comment.service';
+import {UserService} from "../user/user.service";
 
 @Resolver('Exercise')
 export class ExerciseResolver {
@@ -28,6 +29,7 @@ export class ExerciseResolver {
     private readonly exerciseCheckService: ExerciseCheckService,
     private readonly imageService: ImageService,
     private readonly exerciseCommentService: ExerciseCommentService,
+    private readonly userService: UserService,
   ) {}
 
   @Query('exercise')
@@ -116,5 +118,10 @@ export class ExerciseResolver {
   @ResolveField('comments')
   async getExerciseComments(@Parent() exercise: PrismaExercise) {
     return this.exerciseCommentService.getCommentsByExerciseId(exercise.id);
+  }
+
+  @ResolveField('createdBy')
+  async getExerciseCreatedBy(@Parent() exercise: PrismaExercise) {
+    return this.userService.getUserById(exercise.createdById);
   }
 }

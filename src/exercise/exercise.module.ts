@@ -8,6 +8,7 @@ import { ExerciseSearchService } from './exercise-search.service';
 import { ExerciseTagModule } from '../exercise-tag/exercise-tag.module';
 import { ImageModule } from '../image/image.module';
 import { ExerciseCommentModule } from 'src/exercise-comment/exercise-comment.module';
+import {UserModule} from "../user/user.module";
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { ExerciseCommentModule } from 'src/exercise-comment/exercise-comment.mod
     ExerciseTagModule,
     ImageModule,
     ExerciseCommentModule,
+      UserModule
   ],
   providers: [
     ExerciseResolver,

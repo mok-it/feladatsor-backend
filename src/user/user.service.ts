@@ -6,24 +6,28 @@ import {
 } from '../graphql/graphqlTypes';
 import { Prisma, PrismaClient, User } from '@prisma/client';
 import { hash } from 'bcrypt';
+import {ImageService} from "../image/image.service";
 
 @Injectable()
 export class UserService {
   constructor(
     private readonly prismaClient: PrismaClient,
     private readonly logger: Logger,
+    private readonly imageService: ImageService,
   ) {}
 
   async users() {
     return this.prismaClient.user.findMany();
   }
 
-  getUserById(id: string) {
-    return this.prismaClient.user.findUnique({
+  async getUserById (id: string) {
+    let user = await this.prismaClient.user.findUnique({
       where: {
         id,
       },
     });
+    user.avatarUrl = user.customAvatarId ? this.imageService.resolveGQLImage(user.customAvatarId).url : user.avatarUrl;
+    return user;
   }
 
   /**

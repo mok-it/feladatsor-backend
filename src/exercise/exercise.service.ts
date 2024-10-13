@@ -11,9 +11,6 @@ export class ExerciseService {
       where: {
         id,
       },
-      include: {
-        createdBy: true,
-      },
     });
   }
 
@@ -21,9 +18,6 @@ export class ExerciseService {
     return this.prismaClient.exercise.findMany({
       take,
       skip,
-      include: {
-        createdBy: true,
-      },
     });
   }
 
@@ -35,9 +29,6 @@ export class ExerciseService {
     return this.prismaClient.exercise.findMany({
       where: {
         createdById: id,
-      },
-      include: {
-        createdBy: true,
       },
     });
   }
