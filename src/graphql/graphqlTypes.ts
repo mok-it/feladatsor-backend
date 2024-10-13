@@ -90,6 +90,14 @@ export interface UserRegisterInput {
     userName: string;
 }
 
+export interface UserUpdateInput {
+    id: string;
+    email?: Nullable<string>;
+    password?: Nullable<string>;
+    name?: Nullable<string>;
+    customAvatarId?: Nullable<string>;
+}
+
 export interface IMutation {
     login(name: string, password: string): Nullable<LoginResponse> | Promise<Nullable<LoginResponse>>;
     loginWithGoogle(googleToken: string): Nullable<LoginResponse> | Promise<Nullable<LoginResponse>>;
@@ -104,6 +112,7 @@ export interface IMutation {
     updateExercise(id: string, input: ExerciseInput): Exercise | Promise<Exercise>;
     register(data: UserRegisterInput): User | Promise<User>;
     changePermissions(userId: string, permissions: Role[]): User | Promise<User>;
+    updateUser(data: UserUpdateInput): User | Promise<User>;
 }
 
 export interface ExerciseCheck {
@@ -118,6 +127,7 @@ export interface ExerciseCheck {
 
 export interface IQuery {
     exerciseComment(id: string): Nullable<ExerciseComment> | Promise<Nullable<ExerciseComment>>;
+    commentsByExercise(id: string): ExerciseComment[] | Promise<ExerciseComment[]>;
     exerciseTags(): ExerciseTag[] | Promise<ExerciseTag[]>;
     exerciseTag(id: string): Nullable<ExerciseTag> | Promise<Nullable<ExerciseTag>>;
     searchExercises(query?: Nullable<ExerciseSearchQuery>): ExerciseSearchResult | Promise<ExerciseSearchResult>;
