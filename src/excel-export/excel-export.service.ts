@@ -19,8 +19,9 @@ export class ExcelExportService {
   `) as { table_name: string }[];
 
     //delete the prisma migrations table
+    //TODO: dont delete all tables starting with '_'
     tableNames = tableNames.filter((tableName) => {
-      return tableName.table_name != '_prisma_migrations';
+      return !tableName.table_name.startsWith('_');
     });
 
     await Promise.all(
