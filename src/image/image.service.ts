@@ -1,18 +1,18 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { PrismaService } from '../prisma/PrismaService';
 import * as sharp from 'sharp';
 import { Config } from 'src/config/config';
 import * as fs from 'fs';
 import { Image as GraphQLImage } from '../graphql/graphqlTypes';
 
 import path from 'node:path';
+import { PrismaClient } from '@prisma/client';
 
 @Injectable()
 export class ImageService {
   private logger = new Logger(ImageService.name);
 
   constructor(
-    private readonly prisma: PrismaService,
+    private readonly prisma: PrismaClient,
     private readonly config: Config,
   ) {}
 

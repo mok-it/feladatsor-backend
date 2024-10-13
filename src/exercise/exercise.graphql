@@ -7,7 +7,7 @@ type Query {
 
 type Mutation {
   createExercise(input: ExerciseInput!): Exercise!
-  updateExercise(id: ID!, input: ExerciseInput!): Exercise!
+  updateExercise(id: ID!, input: ExerciseUpdateInput!): Exercise!
 }
 
 type ExerciseSearchResult {
@@ -43,6 +43,25 @@ input ExerciseInput {
   solutionOptions: [String!]!
   source: String
   difficulty: [ExerciseDifficultyInput!]!
+  alternativeDifficultyParent: ID
+  sameLogicParent: ID
+  isCompetitionFinal: Boolean
+}
+
+# Basically the same
+input ExerciseUpdateInput {
+  tags: [ID]!
+  status: ExerciseStatus #Authorization based, who can create what
+  description: String #text
+  exerciseImage: String
+  solution: String
+  solutionImage: String
+  solveIdea: String
+  solveIdeaImage: String
+  helpingQuestions: [String!]
+  solutionOptions: [String!]
+  source: String
+  difficulty: [ExerciseDifficultyInput!]
   alternativeDifficultyParent: ID
   sameLogicParent: ID
   isCompetitionFinal: Boolean

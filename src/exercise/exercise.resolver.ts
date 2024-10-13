@@ -78,7 +78,6 @@ export class ExerciseResolver {
     return this.exerciseService.getAlternativeDifficultyExercises(exercise.id);
   }
 
-  //TODO: Move this out into a exerciseHistoryService
   @ResolveField('history')
   async getHistory(@Parent() exercise: PrismaExercise) {
     return this.exerciseHistoryService.getHistoryByExerciseId(exercise.id);

@@ -2,7 +2,7 @@
 
 - [ ] Export the db into excel
 - [ ] Exercise compose API
-- [ ] User avatar upload
+- [X] User avatar upload
 - [ ] DB seed
 - [ ] Ellenőrzés
 -

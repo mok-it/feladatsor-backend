@@ -3,10 +3,14 @@ import { UserService } from '../../user/user.service';
 import { faker } from '@faker-js/faker';
 import { Logger } from '@nestjs/common';
 import { Role } from '../../graphql/graphqlTypes';
+import { ImageService } from '../../image/image.service';
+import { Config } from '../../config/config';
 
 export const seedUsers = async (prisma: PrismaClient) => {
   const logger = new Logger('SeedUsers');
-  const userService = new UserService(prisma, logger);
+  const config = new Config();
+  const imageService = new ImageService(prisma, config);
+  const userService = new UserService(prisma, logger, imageService);
   const user = await userService.register({
     email: 'test@test.com',
     password: 'test',
