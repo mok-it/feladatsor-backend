@@ -18,7 +18,7 @@ import { RolesGuard } from '../auth/guards/roles.guard';
 import { ExerciseTagService } from '../exercise-tag/exercise-tag.service';
 import { ImageService } from '../image/image.service';
 import { ExerciseCommentService } from 'src/exercise-comment/exercise-comment.service';
-import {UserService} from "../user/user.service";
+import { UserService } from '../user/user.service';
 import { ExerciseHistoryService } from '../exercise-history/exercise-history.service';
 
 @Resolver('Exercise')
