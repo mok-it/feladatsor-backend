@@ -1,4 +1,4 @@
-import { Parent, ResolveField, Resolver } from '@nestjs/graphql';
+import { Args, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
 import { UserService } from 'src/user/user.service';
 import { ExerciseHistoryService } from './exercise-history.service';
 import { ExerciseHistory } from '@prisma/client';
@@ -9,6 +9,11 @@ export class ExerciseHistoryResolver {
     private readonly exerciseHistoryService: ExerciseHistoryService,
     private readonly userService: UserService,
   ) {}
+
+  @Query('exerciseHistoryByExercise')
+  exerciseHistoryByExercise(@Args('id') id: string) {
+    return this.exerciseHistoryService.getHistoryByExerciseId(id);
+  }
 
   @ResolveField('createdBy')
   userForHistory(@Parent() exerciseHistory: ExerciseHistory) {
