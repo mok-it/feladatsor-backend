@@ -70,4 +70,9 @@ export class UserResolver {
   async getExercises(@Parent() user: User) {
     return this.exerciseService.getExercisesByUserId(user.id);
   }
+
+  @ResolveField('avatarUrl')
+  async getUserAvatar(@Parent() user: PrismaUser) {
+    return this.userService.getUserAvatar(user);
+  }
 }

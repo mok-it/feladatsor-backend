@@ -43,8 +43,8 @@ input ExerciseInput {
   solutionOptions: [String!]!
   source: String
   difficulty: [ExerciseDifficultyInput!]!
-  alternativeDifficultyParent: ID
-  sameLogicParent: ID
+  alternativeDifficultyGroup: ID
+  sameLogicGroup: ID
   isCompetitionFinal: Boolean
 }
 
@@ -62,8 +62,8 @@ input ExerciseUpdateInput {
   solutionOptions: [String!]
   source: String
   difficulty: [ExerciseDifficultyInput!]
-  alternativeDifficultyParent: ID
-  sameLogicParent: ID
+  alternativeDifficultyGroup: ID
+  sameLogicGroup: ID
   isCompetitionFinal: Boolean
 
   #New fields that are not present in create

@@ -74,8 +74,8 @@ export interface ExerciseInput {
     solutionOptions: string[];
     source?: Nullable<string>;
     difficulty: ExerciseDifficultyInput[];
-    alternativeDifficultyParent?: Nullable<string>;
-    sameLogicParent?: Nullable<string>;
+    alternativeDifficultyGroup?: Nullable<string>;
+    sameLogicGroup?: Nullable<string>;
     isCompetitionFinal?: Nullable<boolean>;
 }
 
@@ -92,8 +92,8 @@ export interface ExerciseUpdateInput {
     solutionOptions?: Nullable<string[]>;
     source?: Nullable<string>;
     difficulty?: Nullable<ExerciseDifficultyInput[]>;
-    alternativeDifficultyParent?: Nullable<string>;
-    sameLogicParent?: Nullable<string>;
+    alternativeDifficultyGroup?: Nullable<string>;
+    sameLogicGroup?: Nullable<string>;
     isCompetitionFinal?: Nullable<boolean>;
     comment?: Nullable<string>;
 }

@@ -45,17 +45,17 @@ export class ExerciseService {
     return this.prismaClient.exercise.create({
       data: {
         id: id,
-        alternativeDifficultyExercise: data.alternativeDifficultyParent
+        alternativeDifficultyExerciseGroup: data.alternativeDifficultyGroup
           ? {
               connect: {
-                id: data.alternativeDifficultyParent,
+                id: data.alternativeDifficultyGroup,
               },
             }
           : undefined,
-        sameLogicExercise: data.sameLogicParent
+        sameLogicExerciseGroup: data.sameLogicGroup
           ? {
               connect: {
-                id: data.sameLogicParent,
+                id: data.sameLogicGroup,
               },
             }
           : undefined,
@@ -183,17 +183,17 @@ export class ExerciseService {
           solution: data.solution,
           helpingQuestions: data.helpingQuestions,
           source: data.source,
-          alternativeDifficultyExercise: data.alternativeDifficultyParent
+          alternativeDifficultyExerciseGroup: data.alternativeDifficultyGroup
             ? {
                 connect: {
-                  id: data.alternativeDifficultyParent,
+                  id: data.alternativeDifficultyGroup,
                 },
               }
             : undefined,
-          sameLogicExercise: data.sameLogicParent
+          sameLogicExerciseGroup: data.sameLogicGroup
             ? {
                 connect: {
-                  id: data.sameLogicParent,
+                  id: data.sameLogicGroup,
                 },
               }
             : undefined,
@@ -204,10 +204,16 @@ export class ExerciseService {
     });
   }
 
-  getAlternativeDifficultyExercises(exerciseId: string) {
+  async getAlternativeDifficultyExercises(exerciseId: string) {
+    const otherExercise = await this.getExerciseById(exerciseId);
+    if (!otherExercise || !otherExercise.exerciseGroupAlternativeDifficultyId) {
+      return [];
+    }
     return this.prismaClient.exercise.findMany({
       where: {
-        alternativeDifficultyExerciseId: exerciseId,
+        alternativeDifficultyExerciseGroup: {
+          id: otherExercise.exerciseGroupAlternativeDifficultyId,
+        },
       },
     });
   }
@@ -220,7 +226,10 @@ export class ExerciseService {
     });
   }
 
-  getDifferences(oldExercise: Exercise, newExercise: ExerciseUpdateInput) {
+  private getDifferences(
+    oldExercise: Exercise,
+    newExercise: ExerciseUpdateInput,
+  ) {
     const fieldsToCheck: (keyof Exercise)[] = [
       'description',
       'helpingQuestions',
@@ -251,7 +260,7 @@ export class ExerciseService {
       .filter(Boolean);
   }
 
-  arraysDiffer(arr1: string[], arr2: string[]): boolean {
+  private arraysDiffer(arr1: string[], arr2: string[]): boolean {
     if (arr1.length !== arr2.length) {
       return true;
     }

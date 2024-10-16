@@ -14,6 +14,7 @@ import { User } from '@prisma/client';
 import { faker } from '@faker-js/faker';
 import { ImageService } from '../image/image.service';
 import { ExerciseCommentService } from '../exercise-comment/exercise-comment.service';
+import { ExerciseGroupService } from '../exercise-group/exercise-group.service';
 
 enum CSVHeaders {
   ID,
@@ -51,6 +52,7 @@ export class LoadOldExcelService {
     private readonly exerciseService: ExerciseService,
     private readonly imageService: ImageService,
     private readonly commentService: ExerciseCommentService,
+    private readonly exerciseGroupService: ExerciseGroupService,
   ) {}
 
   async processExcelFile(file: Express.Multer.File) {
@@ -86,42 +88,42 @@ export class LoadOldExcelService {
 
     for (const record of records) {
       try {
-        const parent = await this.exerciseService.getExerciseById(
+        const sameIdExercise = await this.exerciseService.getExerciseById(
           record[CSVHeaders.ID],
         );
-        let imgRes: { id: string; url: string } | undefined = undefined;
-        let failedToDownloadImage = false;
-        if (
-          record[CSVHeaders.image] &&
-          this.isValidHttpUrl(record[CSVHeaders.image])
-        ) {
-          try {
-            imgRes = await this.imageService.saveImageFromURL(
-              this.mapUrlToDownload(record[CSVHeaders.image]),
-            );
-          } catch (e) {
-            console.log(e);
-            this.logger.warn(
-              `Could not download image for: ${record[CSVHeaders.ID]} URL: ${
-                record[CSVHeaders.image]
-              }`,
-            );
-            failedToDownloadImage = true;
-          }
-        }
+
+        const alternativeDifficultyGroup = sameIdExercise
+          ? await this.exerciseGroupService.upsertExerciseGroupAlternativeDifficulty(
+              sameIdExercise.id,
+              user,
+            )
+          : null;
+
+        const sameLogicGroup = sameIdExercise
+          ? await this.exerciseGroupService.upsertExerciseGroupSameLogic(
+              sameIdExercise.id,
+              user,
+            )
+          : null;
+
+        const { imgRes, failedToDownloadImage } = await this.tryToDownloadImage(
+          record,
+        );
         const tagIDs = await this.generateTagIds(
           this.getTags(record[CSVHeaders.tags]),
         );
+
         const exercise = await this.exerciseService.createExercise(
           {
             ...this.mapRecordToCreateExerciseInput(record),
-            sameLogicParent: parent?.id,
-            alternativeDifficultyParent: parent?.id,
+            sameLogicGroup: sameLogicGroup?.id,
+            alternativeDifficultyGroup: alternativeDifficultyGroup?.id,
             exerciseImage: imgRes?.id,
             tags: tagIDs,
           },
           user,
-          record[CSVHeaders.ID] + (parent ? `_${faker.string.alpha(4)}` : ''),
+          record[CSVHeaders.ID] +
+            (sameIdExercise ? `_${faker.string.alpha(4)}` : ''),
         );
         if (failedToDownloadImage) {
           await this.commentService.createExerciseComment(
@@ -213,6 +215,33 @@ export class LoadOldExcelService {
     if (isNaN(difficulty)) return 0;
 
     return difficulty;
+  }
+
+  private async tryToDownloadImage(record: string[]) {
+    let imgRes: { id: string; url: string } | undefined = undefined;
+    let failedToDownloadImage = false;
+    if (
+      record[CSVHeaders.image] &&
+      this.isValidHttpUrl(record[CSVHeaders.image])
+    ) {
+      try {
+        imgRes = await this.imageService.saveImageFromURL(
+          this.mapUrlToDownload(record[CSVHeaders.image]),
+        );
+      } catch (e) {
+        console.log(e);
+        this.logger.warn(
+          `Could not download image for: ${record[CSVHeaders.ID]} URL: ${
+            record[CSVHeaders.image]
+          }`,
+        );
+        failedToDownloadImage = true;
+      }
+    }
+    return {
+      imgRes,
+      failedToDownloadImage,
+    };
   }
 
   private isValidHttpUrl(string) {

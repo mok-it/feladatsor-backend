@@ -21,15 +21,17 @@ export class UserService {
   }
 
   async getUserById(id: string) {
-    const user = await this.prismaClient.user.findUnique({
+    return this.prismaClient.user.findUnique({
       where: {
         id,
       },
     });
-    user.avatarUrl = user.customAvatarId
+  }
+
+  async getUserAvatar(user: User) {
+    return user.customAvatarId
       ? this.imageService.resolveGQLImage(user.customAvatarId).url
       : user.avatarUrl;
-    return user;
   }
 
   /**

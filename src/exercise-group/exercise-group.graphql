@@ -1,0 +1,22 @@
+type Query {
+  alternativeDifficultyExerciseGroups: [AlternativeDifficultyExerciseGroup!]!
+  sameLogicExerciseGroups: [SameLogicExerciseGroup!]!
+}
+
+type AlternativeDifficultyExerciseGroup {
+  id: String!
+  exercises: [Exercise!]!
+  description: String
+  createdBy: User!
+  createdAt: String!
+  updatedAt: String!
+}
+
+type SameLogicExerciseGroup {
+  id: String!
+  exercises: [Exercise!]!
+  description: String
+  createdBy: User!
+  createdAt: String!
+  updatedAt: String!
+}
