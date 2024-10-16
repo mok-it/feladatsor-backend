@@ -43,14 +43,8 @@ model Exercise {
   history                              ExerciseHistory[]
   alternativeDifficultyExerciseGroup   ExerciseGroupAlternativeDifficulty? @relation(fields: [exerciseGroupAlternativeDifficultyId], references: [id])
   exerciseGroupAlternativeDifficultyId String?
-  // alternativeDifficultyExerciseId String?
-  // alternativeDifficultyExercise   Exercise?            @relation("alternativeDifficultyExercises", fields: [alternativeDifficultyExerciseId], references: [id])
-  // alternativeDifficultyExercises  Exercise[]           @relation("alternativeDifficultyExercises")
   sameLogicExerciseGroup               ExerciseGroupSameLogic?             @relation(fields: [exerciseGroupSameLogicId], references: [id])
   exerciseGroupSameLogicId             String?
-  // sameLogicExerciseId             String?
-  // sameLogicExercise               Exercise?            @relation("sameLogicExercises", fields: [sameLogicExerciseId], references: [id])
-  // sameLogicExercises              Exercise[]           @relation("sameLogicExercises")
   checks                               ExerciseCheck[]
   comments                             ExerciseComment[]
   isCompetitionFinal                   Boolean                             @default(false)

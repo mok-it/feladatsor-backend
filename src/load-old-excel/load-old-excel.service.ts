@@ -42,7 +42,7 @@ enum CSVHeaders {
 export class LoadOldExcelService {
   private readonly logger = new Logger(LoadOldExcelService.name);
   private parser: Parser = parse({
-    delimiter: ',',
+    delimiter: ';',
   });
 
   constructor(

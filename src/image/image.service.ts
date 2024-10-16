@@ -17,7 +17,22 @@ export class ImageService {
   ) {}
 
   async saveImageFromURL(url: string) {
-    const img = await (await fetch(url)).arrayBuffer();
+    const isShrepointUrl = url.includes(
+      'https://mokegyesulet-my.sharepoint.com',
+    );
+    const img = await (
+      await fetch(
+        url,
+        //When dealing with sharepoint urls we should use an auth cookie, yes this is a hacky solution, but it only needs to work one time
+        isShrepointUrl
+          ? {
+              headers: {
+                cookie: this.config.sharepointCookie,
+              },
+            }
+          : undefined,
+      )
+    ).arrayBuffer();
     const fileName = (url.match(/^\w+:(\/+([^\/#?\s]+)){2,}/) || [])[2] || '';
 
     return this.processFile({

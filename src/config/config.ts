@@ -20,4 +20,5 @@ export class Config {
       resizeQuality: get('IMAGE_RESIZE_QUALITY').default(80).asIntPositive(),
     },
   };
+  sharepointCookie = get('SHAREPOINT_COOKIE').default('').asString();
 }
