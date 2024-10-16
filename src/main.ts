@@ -17,7 +17,11 @@ async function bootstrap() {
     );
   }
 
-  app.use('/images', express.static(config.fileStorage.saveFolder, {}));
+  app.use('/images', express.static(config.fileStorage.imageFolder, {}));
+  app.use(
+    '/generated',
+    express.static(config.fileStorage.generatedArtifactFolder, {}),
+  );
 
   const { port, host } = config.server;
   logger.log(`Graphql running on ${config.server.publicHost}/graphql`);
