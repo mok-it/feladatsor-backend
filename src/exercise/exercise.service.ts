@@ -33,7 +33,11 @@ export class ExerciseService {
     });
   }
 
-  createExercise(data: ExerciseInput, user: User, id?: string) {
+  createExercise(
+    data: ExerciseInput & { createdAt?: Date },
+    user: User,
+    id?: string,
+  ) {
     const ageGroups: AgeGroup[] = [
       'KOALA',
       'MEDVEBOCS',
@@ -88,6 +92,7 @@ export class ExerciseService {
         solveIdeaImageId: data.solveIdeaImage,
         helpingQuestions: data.helpingQuestions,
         source: data.source,
+        createdAt: data.createdAt,
         createdBy: {
           connect: {
             id: user.id,

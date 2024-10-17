@@ -7,6 +7,7 @@ import {
 import { Prisma, PrismaClient, User } from '@prisma/client';
 import { hash } from 'bcrypt';
 import { ImageService } from '../image/image.service';
+import { Config } from '../config/config';
 
 @Injectable()
 export class UserService {
@@ -14,6 +15,7 @@ export class UserService {
     private readonly prismaClient: PrismaClient,
     private readonly logger: Logger,
     private readonly imageService: ImageService,
+    private readonly config: Config,
   ) {}
 
   async users() {
@@ -37,13 +39,20 @@ export class UserService {
   /**
    * Intended to use only under development
    */
-  getFirstUser(): Promise<User> {
-    return this.prismaClient.user.findFirst({
+  async upsertTechnicalUser(): Promise<User> {
+    const technicalUser = await this.prismaClient.user.findFirst({
       where: {
         password: {
           not: null,
         },
       },
+    });
+    if (technicalUser) return technicalUser;
+    return await this.register({
+      email: this.config.technicalUser.email,
+      password: this.config.technicalUser.defaultPassword,
+      name: this.config.technicalUser.name,
+      userName: this.config.technicalUser.username,
     });
   }
 

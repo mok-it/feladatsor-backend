@@ -10,7 +10,7 @@ export const seedUsers = async (prisma: PrismaClient) => {
   const logger = new Logger('SeedUsers');
   const config = new Config();
   const imageService = new ImageService(prisma, config);
-  const userService = new UserService(prisma, logger, imageService);
+  const userService = new UserService(prisma, logger, imageService, config);
   const user = await userService.register({
     email: 'test@test.com',
     password: 'test',

@@ -58,13 +58,17 @@ export class LoadOldExcelService {
   async processExcelFile(file: Express.Multer.File) {
     this.logger.log(`Start to process old Excel file: [${file.originalname}]`);
 
-    const user = await this.userService.getFirstUser();
+    const technicalUser = await this.userService.upsertTechnicalUser();
     const records: string[][] = [];
 
     // Use the readable stream api to consume records
     this.parser.on('readable', async () => {
       let record;
       while ((record = this.parser.read()) !== null) {
+        if (String(record[CSVHeaders.ID]).trim().toUpperCase() === 'ID') {
+          //Drop the first row
+          continue;
+        }
         records.push(record);
       }
     });
@@ -75,14 +79,14 @@ export class LoadOldExcelService {
 
     this.parser.on('end', async () => {
       this.logger.log('Read excel, saving to DB...');
-      await this.saveExercises(records, user);
+      await this.saveExercises(records, technicalUser);
       this.logger.log('Saved exercises to DB');
     });
 
     Readable.from(file.buffer).pipe(this.parser);
   }
 
-  private async saveExercises(records: string[][], user: User) {
+  private async saveExercises(records: string[][], technicalUser: User) {
     let error = 0;
     let success = 0;
 
@@ -95,22 +99,19 @@ export class LoadOldExcelService {
         const alternativeDifficultyGroup = sameIdExercise
           ? await this.exerciseGroupService.upsertExerciseGroupAlternativeDifficulty(
               sameIdExercise.id,
-              user,
+              technicalUser,
             )
           : null;
 
         const sameLogicGroup = sameIdExercise
           ? await this.exerciseGroupService.upsertExerciseGroupSameLogic(
               sameIdExercise.id,
-              user,
+              technicalUser,
             )
           : null;
 
         const { imgRes, failedToDownloadImage } = await this.tryToDownloadImage(
           record,
-        );
-        const tagIDs = await this.generateTagIds(
-          this.getTags(record[CSVHeaders.tags]),
         );
 
         const exercise = await this.exerciseService.createExercise(
@@ -119,19 +120,32 @@ export class LoadOldExcelService {
             sameLogicGroup: sameLogicGroup?.id,
             alternativeDifficultyGroup: alternativeDifficultyGroup?.id,
             exerciseImage: imgRes?.id,
-            tags: tagIDs,
+            tags: await this.generateTagIds(
+              this.getTags(record[CSVHeaders.tags]),
+            ),
+            source: 'Imported from old excel file',
+            //The id's first two chars indicate the date
+            createdAt: new Date('20' + record[CSVHeaders.ID].slice(0, 2)),
           },
-          user,
+          technicalUser,
           record[CSVHeaders.ID] +
             (sameIdExercise ? `_${faker.string.alpha(4)}` : ''),
         );
+        if (record[CSVHeaders.comment] && record[CSVHeaders.comment] !== '0') {
+          await this.commentService.createExerciseComment(
+            exercise.id,
+            record[CSVHeaders.comment],
+            technicalUser,
+          );
+        }
+        //Failed to download, meaning it had an image, but we could not download it as an image
         if (failedToDownloadImage) {
           await this.commentService.createExerciseComment(
             exercise.id,
             `Could not download img while importing Excel, URL: ${
               record[CSVHeaders.image]
             }`,
-            user,
+            technicalUser,
           );
         }
         success++;
@@ -162,13 +176,11 @@ export class LoadOldExcelService {
         record[CSVHeaders.solutionOption2],
         record[CSVHeaders.solutionOption3],
       ],
-      isCompetitionFinal: (
-        record[CSVHeaders.koala] +
-        record[CSVHeaders.bocs] +
-        record[CSVHeaders.kis] +
-        record[CSVHeaders.nagy] +
+      isCompetitionFinal: `${record[CSVHeaders.koala]}${
+        record[CSVHeaders.bocs]
+      }${record[CSVHeaders.kis]}${record[CSVHeaders.nagy]}${
         record[CSVHeaders.jeges]
-      ).includes('dönt'),
+      }`.includes('dönt'),
       difficulty: [
         {
           ageGroup: ExerciseAgeGroup.KOALA,

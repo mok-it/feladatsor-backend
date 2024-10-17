@@ -148,6 +148,8 @@ export interface ExerciseCheck {
 export interface IQuery {
     exerciseComment(id: string): Nullable<ExerciseComment> | Promise<Nullable<ExerciseComment>>;
     commentsByExercise(id: string): ExerciseComment[] | Promise<ExerciseComment[]>;
+    alternativeDifficultyExerciseGroups(): AlternativeDifficultyExerciseGroup[] | Promise<AlternativeDifficultyExerciseGroup[]>;
+    sameLogicExerciseGroups(): SameLogicExerciseGroup[] | Promise<SameLogicExerciseGroup[]>;
     exerciseHistoryByExercise(id: string): ExerciseHistory[] | Promise<ExerciseHistory[]>;
     exerciseTags(): ExerciseTag[] | Promise<ExerciseTag[]>;
     exerciseTag(id: string): Nullable<ExerciseTag> | Promise<Nullable<ExerciseTag>>;
@@ -166,6 +168,24 @@ export interface ExerciseComment {
     createdAt: string;
     updatedAt: string;
     user: User;
+}
+
+export interface AlternativeDifficultyExerciseGroup {
+    id: string;
+    exercises: Exercise[];
+    description?: Nullable<string>;
+    createdBy: User;
+    createdAt: string;
+    updatedAt: string;
+}
+
+export interface SameLogicExerciseGroup {
+    id: string;
+    exercises: Exercise[];
+    description?: Nullable<string>;
+    createdBy: User;
+    createdAt: string;
+    updatedAt: string;
 }
 
 export interface ExerciseHistory {

@@ -20,5 +20,17 @@ export class Config {
       resizeQuality: get('IMAGE_RESIZE_QUALITY').default(80).asIntPositive(),
     },
   };
+  technicalUser = {
+    name: get('TECHNICAL_USER_NAME').default('Technical User').asString(),
+    username: get('TECHNICAL_USER_USERNAME')
+      .default('technical_user')
+      .asString(),
+    defaultPassword: get('TECHNICAL_USER_DEFAULT_PASSWORD')
+      .default('technical_user_password')
+      .asString(),
+    email: get('TECHNICAL_USER_EMAIL')
+      .default('technical@localhost')
+      .asString(),
+  };
   sharepointCookie = get('SHAREPOINT_COOKIE').default('').asString();
 }
