@@ -19,6 +19,7 @@ input ExerciseSearchQuery {
   skip: Int!
   take: Int!
   queryStr: String
+  isCompetitionFinal: Boolean
   difficulty: [ExerciseDifficultyRange!]
   tags: [ID!]
   excludeTags: [ID!]

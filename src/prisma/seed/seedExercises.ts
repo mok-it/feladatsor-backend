@@ -24,6 +24,7 @@ export const seedExercises = async (prisma: PrismaClient) => {
         id: tag.id,
       })),
     },
+    isCompetitionFinal: faker.datatype.boolean(0.1),
   }));
 
   await Promise.all(

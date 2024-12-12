@@ -50,6 +50,7 @@ export interface ExerciseSearchQuery {
     skip: number;
     take: number;
     queryStr?: Nullable<string>;
+    isCompetitionFinal?: Nullable<boolean>;
     difficulty?: Nullable<ExerciseDifficultyRange[]>;
     tags?: Nullable<string[]>;
     excludeTags?: Nullable<string[]>;

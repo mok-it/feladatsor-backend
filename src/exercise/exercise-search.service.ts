@@ -24,18 +24,21 @@ export class ExerciseSearchService {
           },
         },
       })),
-      /*tags: {
-        some: {
-          name: {
-            in: query.tags ?? [],
+      isCompetitionFinal: typeof query.isCompetitionFinal === "boolean" ? {
+        equals: query.isCompetitionFinal,
+      } : undefined,
+      tags: {
+        some: query.tags && query.tags.length > 0 ? {
+          id: {
+            in: query.tags,
           },
-        },
+        } : undefined,
         none: {
-          name: {
+          id: {
             in: query.excludeTags ?? [],
           },
         },
-      },*/
+      },
     };
     const countPromise = this.prismaService.exercise.count({
       where,
