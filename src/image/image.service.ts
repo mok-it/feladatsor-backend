@@ -1,11 +1,11 @@
 import {Injectable, Logger} from '@nestjs/common';
 import * as sharp from 'sharp';
-import {Config} from 'src/config/config';
 import * as fs from 'fs';
 import {Image as GraphQLImage} from '../graphql/graphqlTypes';
 
 import * as path from 'node:path';
 import {PrismaService} from "../prisma/PrismaService";
+import {Config} from "../config/config";
 
 @Injectable()
 export class ImageService {

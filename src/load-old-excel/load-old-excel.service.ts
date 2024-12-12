@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { Config } from 'src/config/config';
+import { Config } from '../config/config';
 import { parse, Parser } from 'csv-parse';
 import { Readable } from 'node:stream';
 import { PrismaService } from '../prisma/PrismaService';

@@ -1,7 +1,7 @@
-import { Args, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
-import { UserService } from 'src/user/user.service';
-import { ExerciseHistoryService } from './exercise-history.service';
-import { ExerciseHistory } from '@prisma/client';
+import {Args, Parent, Query, ResolveField, Resolver} from '@nestjs/graphql';
+import {UserService} from '../user/user.service';
+import {ExerciseHistoryService} from './exercise-history.service';
+import {ExerciseHistory} from '@prisma/client';
 
 @Resolver('ExerciseHistory')
 export class ExerciseHistoryResolver {

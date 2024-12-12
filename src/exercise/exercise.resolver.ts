@@ -21,9 +21,9 @@ import { Roles } from '../auth/decorators/roles.decorator';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { ExerciseTagService } from '../exercise-tag/exercise-tag.service';
 import { ImageService } from '../image/image.service';
-import { ExerciseCommentService } from 'src/exercise-comment/exercise-comment.service';
 import { UserService } from '../user/user.service';
 import { ExerciseHistoryService } from '../exercise-history/exercise-history.service';
+import {ExerciseCommentService} from "../exercise-comment/exercise-comment.service";
 
 @Resolver('Exercise')
 export class ExerciseResolver {
