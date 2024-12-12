@@ -1,15 +1,14 @@
-import { Module } from '@nestjs/common';
-import { ExerciseService } from './exercise.service';
-import { ExerciseResolver } from './exercise.resolver';
-
-import { PrismaClient } from '@prisma/client';
-import { ExerciseCheckModule } from '../exercise-check/exercise-check.module';
-import { ExerciseSearchService } from './exercise-search.service';
-import { ExerciseTagModule } from '../exercise-tag/exercise-tag.module';
-import { ImageModule } from '../image/image.module';
-import { ExerciseCommentModule } from 'src/exercise-comment/exercise-comment.module';
-import { UserModule } from '../user/user.module';
-import { ExerciseHistoryModule } from '../exercise-history/exercise-history.module';
+import {Module} from '@nestjs/common';
+import {ExerciseService} from './exercise.service';
+import {ExerciseResolver} from './exercise.resolver';
+import {ExerciseCheckModule} from '../exercise-check/exercise-check.module';
+import {ExerciseSearchService} from './exercise-search.service';
+import {ExerciseTagModule} from '../exercise-tag/exercise-tag.module';
+import {ImageModule} from '../image/image.module';
+import {ExerciseCommentModule} from 'src/exercise-comment/exercise-comment.module';
+import {UserModule} from '../user/user.module';
+import {ExerciseHistoryModule} from '../exercise-history/exercise-history.module';
+import {PrismaService} from "../prisma/PrismaService";
 
 @Module({
   imports: [
@@ -24,7 +23,7 @@ import { ExerciseHistoryModule } from '../exercise-history/exercise-history.modu
     ExerciseResolver,
     ExerciseService,
     ExerciseSearchService,
-    PrismaClient,
+    PrismaService,
   ],
   exports: [ExerciseService, ExerciseSearchService],
 })

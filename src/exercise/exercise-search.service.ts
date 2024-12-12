@@ -1,10 +1,11 @@
-import { Injectable } from '@nestjs/common';
-import { PrismaClient, Prisma } from '@prisma/client';
-import { ExerciseSearchQuery } from '../graphql/graphqlTypes';
+import {Injectable} from '@nestjs/common';
+import {Prisma} from '@prisma/client';
+import {ExerciseSearchQuery} from '../graphql/graphqlTypes';
+import {PrismaService} from "../prisma/PrismaService";
 
 @Injectable()
 export class ExerciseSearchService {
-  constructor(private readonly prismaClient: PrismaClient) {}
+  constructor(private readonly prismaService: PrismaService) {}
 
   async searchExercises(query: ExerciseSearchQuery) {
     const where: Prisma.ExerciseWhereInput = {
@@ -36,10 +37,10 @@ export class ExerciseSearchService {
         },
       },*/
     };
-    const countPromise = this.prismaClient.exercise.count({
+    const countPromise = this.prismaService.exercise.count({
       where,
     });
-    const dataPromise = this.prismaClient.exercise.findMany({
+    const dataPromise = this.prismaService.exercise.findMany({
       skip: query.skip,
       take: query.take,
       where,

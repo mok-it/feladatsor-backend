@@ -1,12 +1,12 @@
-import { PrismaClient } from '@prisma/client';
-import { UserService } from '../../user/user.service';
-import { faker } from '@faker-js/faker';
-import { Logger } from '@nestjs/common';
-import { Role } from '../../graphql/graphqlTypes';
-import { ImageService } from '../../image/image.service';
-import { Config } from '../../config/config';
+import {UserService} from '../../user/user.service';
+import {faker} from '@faker-js/faker';
+import {Logger} from '@nestjs/common';
+import {Role} from '../../graphql/graphqlTypes';
+import {ImageService} from '../../image/image.service';
+import {Config} from '../../config/config';
+import {PrismaService} from "../PrismaService";
 
-export const seedUsers = async (prisma: PrismaClient) => {
+export const seedUsers = async (prisma: PrismaService) => {
   const logger = new Logger('SeedUsers');
   const config = new Config();
   const imageService = new ImageService(prisma, config);

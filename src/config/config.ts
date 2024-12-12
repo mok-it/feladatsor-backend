@@ -1,11 +1,13 @@
-import { get } from 'env-var';
+import {get} from 'env-var';
+
+const host = get('HOST').default('0.0.0.0').asString();
+const port = get('PORT').default('3000').asString();
 
 export class Config {
-  applicationName: 'Nest Starter App';
   server = {
-    host: get('HOST').default('0.0.0.0').asString(),
-    port: get('PORT').default('3000').asString(),
-    publicHost: get('PUBLIC_HOST').default('http://localhost').asString(),
+    host,
+    port,
+    publicHost: get('PUBLIC_HOST').default(`http://${host}:${port}`).asString(),
   };
   jwt = {
     secret: get('JWT_SECRET').required().asString(),

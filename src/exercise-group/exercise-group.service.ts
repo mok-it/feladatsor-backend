@@ -1,9 +1,10 @@
-import { Injectable } from '@nestjs/common';
-import { PrismaClient, User } from '@prisma/client';
+import {Injectable} from '@nestjs/common';
+import {User} from '@prisma/client';
+import {PrismaService} from "../prisma/PrismaService";
 
 @Injectable()
 export class ExerciseGroupService {
-  constructor(private readonly prisma: PrismaClient) {}
+  constructor(private readonly prisma: PrismaService) {}
 
   async getAlternativeDifficultyExerciseGroups() {
     return this.prisma.exerciseGroupAlternativeDifficulty.findMany({

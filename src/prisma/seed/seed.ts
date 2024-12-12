@@ -1,9 +1,8 @@
-import { PrismaClient } from '@prisma/client';
-import { seedUsers } from './seedUsers';
-import { seedExerciseHistory } from './seedExerciseHistory';
-import { seedExerciseChecks } from './seedExerciseChecks';
-import { seedExercises } from './seedExercises';
-import { seedAgeGroups } from './seedAgeGroups';
+import {PrismaClient} from '@prisma/client';
+import {seedExerciseHistory} from './seedExerciseHistory';
+import {seedExerciseChecks} from './seedExerciseChecks';
+import {seedExercises} from './seedExercises';
+import {seedAgeGroups} from './seedAgeGroups';
 
 const prisma = new PrismaClient();
 

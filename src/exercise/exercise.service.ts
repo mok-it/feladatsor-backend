@@ -1,13 +1,14 @@
-import { Injectable } from '@nestjs/common';
-import { AgeGroup, Exercise, PrismaClient, User } from '@prisma/client';
-import { ExerciseInput, ExerciseUpdateInput } from '../graphql/graphqlTypes';
+import {Injectable} from '@nestjs/common';
+import {AgeGroup, Exercise, User} from '@prisma/client';
+import {ExerciseInput, ExerciseUpdateInput} from '../graphql/graphqlTypes';
+import {PrismaService} from "../prisma/PrismaService";
 
 @Injectable()
 export class ExerciseService {
-  constructor(private readonly prismaClient: PrismaClient) {}
+  constructor(private readonly prismaService: PrismaService) {}
 
   getExerciseById(id: string) {
-    return this.prismaClient.exercise.findFirst({
+    return this.prismaService.exercise.findFirst({
       where: {
         id,
       },
@@ -15,18 +16,18 @@ export class ExerciseService {
   }
 
   async getExercises(take: number, skip: number) {
-    return this.prismaClient.exercise.findMany({
+    return this.prismaService.exercise.findMany({
       take,
       skip,
     });
   }
 
   getExercisesCount() {
-    return this.prismaClient.exercise.count();
+    return this.prismaService.exercise.count();
   }
 
   getExercisesByUserId(id: string) {
-    return this.prismaClient.exercise.findMany({
+    return this.prismaService.exercise.findMany({
       where: {
         createdById: id,
       },
@@ -46,7 +47,7 @@ export class ExerciseService {
       'JEGESMEDVE',
     ];
 
-    return this.prismaClient.exercise.create({
+    return this.prismaService.exercise.create({
       data: {
         id: id,
         alternativeDifficultyExerciseGroup: data.alternativeDifficultyGroup
@@ -103,7 +104,7 @@ export class ExerciseService {
   }
 
   async updateExercise(id: string, data: ExerciseUpdateInput, user: User) {
-    return await this.prismaClient.$transaction(async (tx) => {
+    return await this.prismaService.$transaction(async (tx) => {
       //Undefined means we should keep the data
       //Null means an explicit delete
       //Data is present means modify the data
@@ -214,7 +215,7 @@ export class ExerciseService {
     if (!otherExercise || !otherExercise.exerciseGroupAlternativeDifficultyId) {
       return [];
     }
-    return this.prismaClient.exercise.findMany({
+    return this.prismaService.exercise.findMany({
       where: {
         alternativeDifficultyExerciseGroup: {
           id: otherExercise.exerciseGroupAlternativeDifficultyId,
@@ -224,7 +225,7 @@ export class ExerciseService {
   }
 
   getDifficultyByExercise(id: string) {
-    return this.prismaClient.exerciseDifficulty.findMany({
+    return this.prismaService.exerciseDifficulty.findMany({
       where: {
         exerciseId: id,
       },
