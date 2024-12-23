@@ -1,13 +1,15 @@
-import {get} from 'env-var';
-
-const host = get('HOST').default('0.0.0.0').asString();
-const port = get('PORT').default('3000').asString();
+import { get } from 'env-var';
 
 export class Config {
+  port = get('PORT').default('3000').asString();
+  host = get('HOST').default('0.0.0.0').asString();
+
   server = {
-    host,
-    port,
-    publicHost: get('PUBLIC_HOST').default(`http://${host}:${port}`).asString(),
+    host: this.host,
+    port: this.port,
+    publicHost: get('PUBLIC_HOST')
+      .default(`http://${this.host}:${this.port}`)
+      .asString(),
   };
   jwt = {
     secret: get('JWT_SECRET').required().asString(),

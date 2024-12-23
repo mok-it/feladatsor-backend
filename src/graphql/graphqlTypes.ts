@@ -46,6 +46,17 @@ export interface ExerciseCheckInput {
     comment?: Nullable<string>;
 }
 
+export interface ExerciseSheetInput {
+    name: string;
+    sheetItems: ExerciseSheetItemInput[];
+}
+
+export interface ExerciseSheetItemInput {
+    ageGroup: ExerciseAgeGroup;
+    level: number;
+    exercises: string[];
+}
+
 export interface ExerciseSearchQuery {
     skip: number;
     take: number;
@@ -126,6 +137,8 @@ export interface IMutation {
     createExerciseComment(exerciseId: string, comment: string): ExerciseComment | Promise<ExerciseComment>;
     updateExerciseComment(id: string, comment: string): ExerciseComment | Promise<ExerciseComment>;
     deleteExerciseComment(id: string): ExerciseComment | Promise<ExerciseComment>;
+    createExerciseSheet(sheetData: ExerciseSheetInput): ExerciseSheet | Promise<ExerciseSheet>;
+    updateExerciseSheet(id: string, sheetData: ExerciseSheetInput): ExerciseSheet | Promise<ExerciseSheet>;
     createExerciseTag(name: string, parentId?: Nullable<string>): ExerciseTag | Promise<ExerciseTag>;
     updateExerciseTag(id: string, name: string): ExerciseTag | Promise<ExerciseTag>;
     deleteExerciseTag(id: string): boolean | Promise<boolean>;
@@ -149,6 +162,8 @@ export interface ExerciseCheck {
 export interface IQuery {
     exerciseComment(id: string): Nullable<ExerciseComment> | Promise<Nullable<ExerciseComment>>;
     commentsByExercise(id: string): ExerciseComment[] | Promise<ExerciseComment[]>;
+    exerciseSheets(): ExerciseSheet[] | Promise<ExerciseSheet[]>;
+    exerciseSheet(id: string): Nullable<ExerciseSheet> | Promise<Nullable<ExerciseSheet>>;
     alternativeDifficultyExerciseGroups(): AlternativeDifficultyExerciseGroup[] | Promise<AlternativeDifficultyExerciseGroup[]>;
     sameLogicExerciseGroups(): SameLogicExerciseGroup[] | Promise<SameLogicExerciseGroup[]>;
     exerciseHistoryByExercise(id: string): ExerciseHistory[] | Promise<ExerciseHistory[]>;
@@ -169,6 +184,22 @@ export interface ExerciseComment {
     createdAt: string;
     updatedAt: string;
     user: User;
+}
+
+export interface ExerciseSheet {
+    id: string;
+    name: string;
+    sheetItems: ExerciseSheetItem[];
+    createdBy: User;
+    createdAt: string;
+    updatedAt: string;
+}
+
+export interface ExerciseSheetItem {
+    id: string;
+    ageGroup: ExerciseAgeGroup;
+    level: number;
+    exercises: Exercise[];
 }
 
 export interface AlternativeDifficultyExerciseGroup {

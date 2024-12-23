@@ -16,6 +16,7 @@ import { LoadOldExcelModule } from './load-old-excel/load-old-excel.module';
 import { ExerciseCommentModule } from './exercise-comment/exercise-comment.module';
 import { ExerciseHistoryModule } from './exercise-history/exercise-history.module';
 import { ExerciseGroupModule } from './exercise-group/exercise-group.module';
+import { ExerciseComposeModule } from './exercise-compose/exercise-compose.module';
 
 @Module({
   imports: [
@@ -37,6 +38,7 @@ import { ExerciseGroupModule } from './exercise-group/exercise-group.module';
     ExerciseCommentModule,
     ExerciseHistoryModule,
     ExerciseGroupModule,
+    ExerciseComposeModule,
   ],
   controllers: [AppController],
   providers: [AppService],

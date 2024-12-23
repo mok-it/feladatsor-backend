@@ -7,6 +7,8 @@
 - [X] Search exercise tag, excludeTag, isFinal
 - [X] DB seed
 - [X] Properly handle exercise groups
+- [ ] Exercise search page implement sorting
+- [ ] Permission management for resources
 
 ### Üzletre vár
 
