@@ -7,7 +7,10 @@ import {
   Resolver,
 } from '@nestjs/graphql';
 import { ExerciseComposeService } from './exercise-compose.service';
-import { ExerciseSheetInput } from '../graphql/graphqlTypes';
+import {
+  ExerciseSheetInput,
+  UpdateExerciseSheetInput,
+} from '../graphql/graphqlTypes';
 import { CurrentUser } from '../auth/decorators/user.auth.decorator';
 import { User, ExerciseSheet as PrismaExerciseSheet } from '@prisma/client';
 import { UserService } from '../user/user.service';
@@ -40,5 +43,13 @@ export class ExerciseComposeResolver {
     @CurrentUser() user: User,
   ) {
     return this.exerciseComposeService.createExerciseSheet(sheetData, user);
+  }
+
+  @Mutation('updateExerciseSheet')
+  updateExerciseSheet(
+    @Args('sheetData') sheetData: UpdateExerciseSheetInput,
+    @Args('id') id: string,
+  ) {
+    return this.exerciseComposeService.updateExerciseSheet(id, sheetData);
   }
 }

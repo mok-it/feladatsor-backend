@@ -5,12 +5,20 @@ type Query {
 
 type Mutation {
   createExerciseSheet(sheetData: ExerciseSheetInput!): ExerciseSheet!
-  updateExerciseSheet(id: ID!, sheetData: ExerciseSheetInput!): ExerciseSheet!
+  updateExerciseSheet(
+    id: ID!
+    sheetData: UpdateExerciseSheetInput!
+  ): ExerciseSheet!
 }
 
 input ExerciseSheetInput {
   name: String!
   sheetItems: [ExerciseSheetItemInput!]!
+}
+
+input UpdateExerciseSheetInput {
+  name: String
+  sheetItems: [ExerciseSheetItemInput!]
 }
 
 input ExerciseSheetItemInput {

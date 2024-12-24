@@ -1,6 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/PrismaService';
-import { ExerciseSheetInput } from '../graphql/graphqlTypes';
+import {
+  ExerciseSheetInput,
+  ExerciseSheetItemInput,
+  UpdateExerciseSheetInput,
+} from '../graphql/graphqlTypes';
 import { User } from '@prisma/client';
 
 @Injectable()
@@ -22,21 +26,7 @@ export class ExerciseComposeService {
 
   createExerciseSheet(sheetData: ExerciseSheetInput, user: User) {
     return this.prismaService.$transaction(async (tx) => {
-      const sheetItems = await Promise.all(
-        sheetData.sheetItems.map((item) => {
-          return tx.exerciseSheetItem.create({
-            data: {
-              exercises: {
-                connect: item.exercises.map((exerciseId) => ({
-                  id: exerciseId,
-                })),
-              },
-              ageGroup: item.ageGroup,
-              level: item.level,
-            },
-          });
-        }),
-      );
+      const sheetItems = await this.createSheetItems(tx, sheetData.sheetItems);
 
       return tx.exerciseSheet.create({
         data: {
@@ -49,5 +39,53 @@ export class ExerciseComposeService {
         include: { sheetItems: true },
       });
     });
+  }
+
+  async updateExerciseSheet(id: string, sheetData: UpdateExerciseSheetInput) {
+    return this.prismaService.$transaction(async (tx) => {
+      const sheetItems = sheetData.sheetItems
+        ? await this.createSheetItems(tx, sheetData.sheetItems)
+        : undefined;
+
+      return tx.exerciseSheet.update({
+        where: {
+          id,
+        },
+        data: {
+          sheetItems: sheetItems
+            ? {
+                deleteMany: {},
+                connect: sheetItems.map((item) => ({ id: item.id })),
+              }
+            : undefined,
+          name: sheetData.name ? sheetData.name : undefined,
+        },
+        include: { sheetItems: true },
+      });
+    });
+  }
+
+  private async createSheetItems(
+    tx: Omit<
+      PrismaService,
+      '$connect' | '$disconnect' | '$on' | '$transaction' | '$use'
+    >,
+    sheetItems: ExerciseSheetItemInput[],
+  ) {
+    return Promise.all(
+      sheetItems.map((item) => {
+        return tx.exerciseSheetItem.create({
+          data: {
+            exercises: {
+              connect: item.exercises.map((exerciseId) => ({
+                id: exerciseId,
+              })),
+            },
+            ageGroup: item.ageGroup,
+            level: item.level,
+          },
+        });
+      }),
+    );
   }
 }

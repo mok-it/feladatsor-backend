@@ -51,6 +51,11 @@ export interface ExerciseSheetInput {
     sheetItems: ExerciseSheetItemInput[];
 }
 
+export interface UpdateExerciseSheetInput {
+    name?: Nullable<string>;
+    sheetItems?: Nullable<ExerciseSheetItemInput[]>;
+}
+
 export interface ExerciseSheetItemInput {
     ageGroup: ExerciseAgeGroup;
     level: number;
@@ -138,7 +143,7 @@ export interface IMutation {
     updateExerciseComment(id: string, comment: string): ExerciseComment | Promise<ExerciseComment>;
     deleteExerciseComment(id: string): ExerciseComment | Promise<ExerciseComment>;
     createExerciseSheet(sheetData: ExerciseSheetInput): ExerciseSheet | Promise<ExerciseSheet>;
-    updateExerciseSheet(id: string, sheetData: ExerciseSheetInput): ExerciseSheet | Promise<ExerciseSheet>;
+    updateExerciseSheet(id: string, sheetData: UpdateExerciseSheetInput): ExerciseSheet | Promise<ExerciseSheet>;
     createExerciseTag(name: string, parentId?: Nullable<string>): ExerciseTag | Promise<ExerciseTag>;
     updateExerciseTag(id: string, name: string): ExerciseTag | Promise<ExerciseTag>;
     deleteExerciseTag(id: string): boolean | Promise<boolean>;
