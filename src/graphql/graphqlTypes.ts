@@ -48,7 +48,7 @@ export interface ExerciseCheckInput {
 
 export interface ExerciseSheetInput {
     name: string;
-    sheetItems: ExerciseSheetItemInput[];
+    sheetItems?: Nullable<ExerciseSheetItemInput[]>;
 }
 
 export interface UpdateExerciseSheetInput {

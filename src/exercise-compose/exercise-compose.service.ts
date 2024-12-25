@@ -26,14 +26,18 @@ export class ExerciseComposeService {
 
   createExerciseSheet(sheetData: ExerciseSheetInput, user: User) {
     return this.prismaService.$transaction(async (tx) => {
-      const sheetItems = await this.createSheetItems(tx, sheetData.sheetItems);
+      const sheetItems = sheetData.sheetItems
+        ? await this.createSheetItems(tx, sheetData.sheetItems)
+        : null;
 
       return tx.exerciseSheet.create({
         data: {
           name: sheetData.name,
-          sheetItems: {
-            connect: sheetItems.map((item) => ({ id: item.id })),
-          },
+          sheetItems: sheetItems
+            ? {
+                connect: sheetItems.map((item) => ({ id: item.id })),
+              }
+            : undefined,
           createdBy: { connect: { id: user.id } },
         },
         include: { sheetItems: true },
