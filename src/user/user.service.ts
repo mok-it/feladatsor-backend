@@ -1,10 +1,14 @@
-import {Injectable, Logger} from '@nestjs/common';
-import {Role, UserRegisterInput, UserUpdateInput,} from '../graphql/graphqlTypes';
-import {Prisma, User} from '@prisma/client';
-import {hash} from 'bcrypt';
-import {ImageService} from '../image/image.service';
-import {Config} from '../config/config';
-import {PrismaService} from "../prisma/PrismaService";
+import { Injectable, Logger } from '@nestjs/common';
+import {
+  Role,
+  UserRegisterInput,
+  UserUpdateInput,
+} from '../graphql/graphqlTypes';
+import { Prisma, User } from '@prisma/client';
+import { hash } from 'bcrypt';
+import { ImageService } from '../image/image.service';
+import { Config } from '../config/config';
+import { PrismaService } from '../prisma/PrismaService';
 
 @Injectable()
 export class UserService {
@@ -39,9 +43,7 @@ export class UserService {
   async upsertTechnicalUser(): Promise<User> {
     const technicalUser = await this.prismaService.user.findFirst({
       where: {
-        password: {
-          not: null,
-        },
+        userName: this.config.technicalUser.username,
       },
     });
     if (technicalUser) return technicalUser;
