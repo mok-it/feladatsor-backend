@@ -92,4 +92,11 @@ export class ExerciseComposeService {
       }),
     );
   }
+
+  async deleteExerciseSheet(id: string) {
+    await this.prismaService.exerciseSheet.delete({
+      where: { id },
+    });
+    return true;
+  }
 }

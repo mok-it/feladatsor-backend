@@ -144,6 +144,7 @@ export interface IMutation {
     deleteExerciseComment(id: string): ExerciseComment | Promise<ExerciseComment>;
     createExerciseSheet(sheetData: ExerciseSheetInput): ExerciseSheet | Promise<ExerciseSheet>;
     updateExerciseSheet(id: string, sheetData: UpdateExerciseSheetInput): ExerciseSheet | Promise<ExerciseSheet>;
+    deleteExerciseSheet(id: string): boolean | Promise<boolean>;
     createExerciseTag(name: string, parentId?: Nullable<string>): ExerciseTag | Promise<ExerciseTag>;
     updateExerciseTag(id: string, name: string): ExerciseTag | Promise<ExerciseTag>;
     deleteExerciseTag(id: string): boolean | Promise<boolean>;

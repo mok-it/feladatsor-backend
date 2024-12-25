@@ -52,4 +52,9 @@ export class ExerciseComposeResolver {
   ) {
     return this.exerciseComposeService.updateExerciseSheet(id, sheetData);
   }
+
+  @Mutation('deleteExerciseSheet')
+  deleteExerciseSheet(@Args('id') id: string) {
+    return this.exerciseComposeService.deleteExerciseSheet(id);
+  }
 }
