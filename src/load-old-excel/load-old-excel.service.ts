@@ -284,17 +284,19 @@ export class LoadOldExcelService {
   private async generateTagIds(tags: string[]): Promise<string[]> {
     return (
       await Promise.all(
-        tags.map((tag_name) => {
-          return this.prisma.exerciseTag.upsert({
-            where: {
-              name: tag_name,
-            },
-            update: {},
-            create: {
-              name: tag_name,
-            },
-          });
-        }),
+        tags
+          .filter((t) => t !== '')
+          .map((tag_name) => {
+            return this.prisma.exerciseTag.upsert({
+              where: {
+                name: tag_name,
+              },
+              update: {},
+              create: {
+                name: tag_name,
+              },
+            });
+          }),
       )
     ).map((tag) => tag.id);
   }

@@ -50,9 +50,4 @@ export class ExerciseTagResolver {
   async getParent(@Parent() exerciseTag: ExerciseTag) {
     return this.exerciseTagService.getParentById(exerciseTag.id);
   }
-
-  @ResolveField('exerciseCount')
-  async getExerciseCount(@Parent() exerciseTag: ExerciseTag) {
-    return this.exerciseTagService.getExerciseCount(exerciseTag.id);
-  }
 }

@@ -90,7 +90,8 @@ export class StatService {
       data: data.map((d) => ({
         date: d.day,
         count: d.count,
-        level: Math.round(((d.count - min) / (max - min)) * 4),
+        level:
+          min === max ? 4 : Math.round(((d.count - min) / (max - min)) * 4),
       })),
     };
   }
