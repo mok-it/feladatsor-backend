@@ -19,4 +19,14 @@ export class StatResolver {
   exerciseHourly() {
     return this.statService.aggregateExerciseHourly();
   }
+
+  @ResolveField('totalExerciseCount')
+  totalExerciseCount() {
+    return this.statService.getTotalExerciseCount();
+  }
+
+  @ResolveField('checkedExerciseCount')
+  checkedExerciseCount() {
+    return this.statService.getCheckedExerciseCount();
+  }
 }

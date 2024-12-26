@@ -5,6 +5,8 @@ type Query {
 type GlobalStats {
   userLeaderboard: [LeaderBoardUser!]!
   exerciseHourlyCount: [ExerciseHourlyGroup!]!
+  totalExerciseCount: Int!
+  checkedExerciseCount: Int!
 }
 
 type ExerciseHourlyGroup {

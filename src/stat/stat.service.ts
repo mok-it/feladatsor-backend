@@ -44,4 +44,20 @@ export class StatService {
       count: parseInt(a.count.toString(), 10),
     }));
   }
+
+  getTotalExerciseCount() {
+    return this.prismaService.exercise.count();
+  }
+
+  getCheckedExerciseCount() {
+    return this.prismaService.exercise.count({
+      where: {
+        checks: {
+          some: {
+            type: 'GOOD',
+          },
+        },
+      },
+    });
+  }
 }
