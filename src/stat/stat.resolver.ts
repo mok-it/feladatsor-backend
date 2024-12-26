@@ -29,4 +29,9 @@ export class StatResolver {
   checkedExerciseCount() {
     return this.statService.getCheckedExerciseCount();
   }
+
+  @ResolveField('contributionCalendar')
+  contributionCalendar() {
+    return this.statService.getContributionCalendar();
+  }
 }

@@ -60,4 +60,38 @@ export class StatService {
       },
     });
   }
+
+  async getContributionCalendar() {
+    // Query the data and group by the hour
+    const dailyCounts = await this.prismaService.$queryRaw`SELECT 
+        TO_CHAR(DATE_TRUNC('day', "createdAt"), 'YYYY-MM-DD') AS day,
+        COUNT(*) AS count
+    FROM 
+        "Exercise"
+    WHERE 
+        "createdAt" >= DATE_TRUNC('year', CURRENT_DATE)
+        AND "createdAt" < DATE_TRUNC('year', CURRENT_DATE) + INTERVAL '1 year'
+    GROUP BY 
+        day
+    ORDER BY 
+        day;`;
+
+    const data = (dailyCounts as { day: string; count: number }[]).map((a) => ({
+      ...a,
+      count: parseInt(a.count.toString(), 10),
+    }));
+
+    const min = Math.min(...data.map((d) => d.count));
+    const max = Math.max(...data.map((d) => d.count));
+
+    return {
+      fromDate: data[0].day,
+      toDate: data[data.length - 1].day,
+      data: data.map((d) => ({
+        date: d.day,
+        count: d.count,
+        level: Math.round(((d.count - min) / (max - min)) * 4),
+      })),
+    };
+  }
 }
