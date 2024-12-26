@@ -15,7 +15,8 @@ export const seedExercises = async (prisma: PrismaClient) => {
 
   const exercises: Prisma.ExerciseCreateInput[] = Array.from({
     length: 2000,
-  }).map(() => ({
+  }).map((_, index) => ({
+    id: new Date().getFullYear().toString() + index,
     description: faker.lorem.paragraph(),
     solution: faker.lorem.paragraph(),
     helpingQuestions: [faker.lorem.sentence(), faker.lorem.sentence()],

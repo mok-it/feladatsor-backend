@@ -1,7 +1,7 @@
-import {Injectable} from '@nestjs/common';
-import {Prisma} from '@prisma/client';
-import {ExerciseSearchQuery} from '../graphql/graphqlTypes';
-import {PrismaService} from "../prisma/PrismaService";
+import { Injectable } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
+import { ExerciseSearchQuery } from '../graphql/graphqlTypes';
+import { PrismaService } from '../prisma/PrismaService';
 
 @Injectable()
 export class ExerciseSearchService {
@@ -24,15 +24,21 @@ export class ExerciseSearchService {
           },
         },
       })),
-      isCompetitionFinal: typeof query.isCompetitionFinal === "boolean" ? {
-        equals: query.isCompetitionFinal,
-      } : undefined,
+      isCompetitionFinal:
+        typeof query.isCompetitionFinal === 'boolean'
+          ? {
+              equals: query.isCompetitionFinal,
+            }
+          : undefined,
       tags: {
-        some: query.tags && query.tags.length > 0 ? {
-          id: {
-            in: query.tags,
-          },
-        } : undefined,
+        some:
+          query.tags && query.tags.length > 0
+            ? {
+                id: {
+                  in: query.tags,
+                },
+              }
+            : undefined,
         none: {
           id: {
             in: query.excludeTags ?? [],
@@ -47,6 +53,11 @@ export class ExerciseSearchService {
       skip: query.skip,
       take: query.take,
       where,
+      orderBy: query.orderBy
+        ? {
+            [query.orderBy]: query.orderDirection.toLowerCase() ?? 'desc',
+          }
+        : undefined,
     });
 
     const [data, count] = await Promise.all([dataPromise, countPromise]);

@@ -21,8 +21,15 @@ input ExerciseSearchQuery {
   queryStr: String
   isCompetitionFinal: Boolean
   difficulty: [ExerciseDifficultyRange!]
+  orderBy: String
+  orderDirection: OrderDirection
   tags: [ID!]
   excludeTags: [ID!]
+}
+
+enum OrderDirection {
+  ASC
+  DESC
 }
 
 input ExerciseDifficultyRange {

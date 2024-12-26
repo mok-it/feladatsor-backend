@@ -20,6 +20,11 @@ export enum ExerciseCheckRole {
     LECTOR = "LECTOR"
 }
 
+export enum OrderDirection {
+    ASC = "ASC",
+    DESC = "DESC"
+}
+
 export enum ExerciseStatus {
     DRAFT = "DRAFT",
     CREATED = "CREATED",
@@ -68,6 +73,8 @@ export interface ExerciseSearchQuery {
     queryStr?: Nullable<string>;
     isCompetitionFinal?: Nullable<boolean>;
     difficulty?: Nullable<ExerciseDifficultyRange[]>;
+    orderBy?: Nullable<string>;
+    orderDirection?: Nullable<OrderDirection>;
     tags?: Nullable<string[]>;
     excludeTags?: Nullable<string[]>;
 }
@@ -296,6 +303,21 @@ export interface Image {
 export interface GlobalStats {
     userLeaderboard: LeaderBoardUser[];
     exerciseHourlyCount: ExerciseHourlyGroup[];
+    totalExerciseCount: number;
+    checkedExerciseCount: number;
+    contributionCalendar: ContributionCalendar;
+}
+
+export interface ContributionCalendar {
+    fromDate: string;
+    toDate: string;
+    data: ContributionCalendarDay[];
+}
+
+export interface ContributionCalendarDay {
+    date: string;
+    count: number;
+    level: number;
 }
 
 export interface ExerciseHourlyGroup {
