@@ -1,12 +1,13 @@
-import {seedExerciseHistory} from './seedExerciseHistory';
-import {seedExerciseChecks} from './seedExerciseChecks';
-import {seedExercises} from './seedExercises';
-import {seedUsers} from "./seedUsers";
-import {seedTags} from "./seedTags";
-import {NestFactory} from "@nestjs/core";
-import {Logger} from "@nestjs/common";
-import {PrismaService} from "../PrismaService";
-import {AppModule} from "../../app.module";
+import { seedExerciseHistory } from './seedExerciseHistory';
+import { seedExerciseChecks } from './seedExerciseChecks';
+import { seedExercises } from './seedExercises';
+import { seedUsers } from './seedUsers';
+import { seedTags } from './seedTags';
+import { NestFactory } from '@nestjs/core';
+import { Logger } from '@nestjs/common';
+import { PrismaService } from '../PrismaService';
+import { AppModule } from '../../app.module';
+import { seedExerciseSheets } from './seedExerciseSheets';
 
 async function main() {
   const logger = new Logger('Seed');
@@ -22,6 +23,8 @@ async function main() {
   await prisma.exerciseDifficulty.deleteMany();
   await prisma.exerciseHistory.deleteMany();
   await prisma.exercise.deleteMany();
+  await prisma.exerciseSheetItem.deleteMany();
+  await prisma.exerciseSheet.deleteMany();
   await prisma.user.deleteMany();
 
   // Seed users
@@ -36,6 +39,10 @@ async function main() {
   logger.log('🌱 Seeding exercises');
   await seedExercises(prisma);
 
+  //Seed exercise sheets
+  logger.log('🌱 Seeding exercise sheets');
+  await seedExerciseSheets(prisma);
+
   // Seed exercise checks
   logger.log('🌱 Seeding exercise checks');
   await seedExerciseChecks(prisma);
@@ -49,5 +56,4 @@ async function main() {
   await app.close();
 }
 
-main()
-  .catch((e) => console.error(e))
+main().catch((e) => console.error(e));

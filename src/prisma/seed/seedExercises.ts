@@ -1,10 +1,17 @@
-import {faker} from '@faker-js/faker';
-import {Prisma, PrismaClient} from '@prisma/client';
+import { faker } from '@faker-js/faker';
+import { AgeGroup, Prisma, PrismaClient } from '@prisma/client';
 
 export const seedExercises = async (prisma: PrismaClient) => {
   const users = await prisma.user.findMany();
 
   const tags = await prisma.exerciseTag.findMany();
+  const ageGroups: AgeGroup[] = [
+    'KOALA',
+    'MEDVEBOCS',
+    'KISMEDVE',
+    'NAGYMEDVE',
+    'JEGESMEDVE',
+  ];
 
   const exercises: Prisma.ExerciseCreateInput[] = Array.from({
     length: 30,
@@ -15,23 +22,38 @@ export const seedExercises = async (prisma: PrismaClient) => {
     source: faker.datatype.boolean() ? faker.internet.url() : null,
     createdBy: {
       connect: {
-        id:  faker.helpers.arrayElement(users).id,
-      }
+        id: faker.helpers.arrayElement(users).id,
+      },
     },
-    status: faker.helpers.arrayElement(["CREATED", "DELETED", "DRAFT", "APPROVED"]),
+    status: faker.helpers.arrayElement([
+      'CREATED',
+      'DELETED',
+      'DRAFT',
+      'APPROVED',
+    ]),
+    difficulty: {
+      createMany: {
+        data: ageGroups.map((ageGroup) => ({
+          ageGroup,
+          difficulty: faker.number.int({ min: 1, max: 4 }),
+        })),
+      },
+    },
     tags: {
-      connect: faker.helpers.arrayElements(tags, {min: 0, max: 5}).map(tag => ({
-        id: tag.id,
-      })),
+      connect: faker.helpers
+        .arrayElements(tags, { min: 1, max: 5 })
+        .map((tag) => ({
+          id: tag.id,
+        })),
     },
     isCompetitionFinal: faker.datatype.boolean(0.1),
   }));
 
   await Promise.all(
-      exercises.map(async (ex) => {
-        await prisma.exercise.create({
-          data: ex,
-        })
-      })
-  )
+    exercises.map(async (ex) => {
+      await prisma.exercise.create({
+        data: ex,
+      });
+    }),
+  );
 };

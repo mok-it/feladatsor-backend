@@ -14,6 +14,9 @@ export class ExerciseComposeService {
   getExerciseSheets() {
     return this.prismaService.exerciseSheet.findMany({
       include: { sheetItems: true },
+      orderBy: {
+        createdAt: 'desc',
+      },
     });
   }
 
