@@ -9,10 +9,20 @@ export class ExerciseSearchService {
 
   async searchExercises(query: ExerciseSearchQuery) {
     const where: Prisma.ExerciseWhereInput = {
-      description: {
-        mode: 'insensitive',
-        contains: query.queryStr,
-      },
+      OR: [
+        {
+          description: {
+            mode: 'insensitive',
+            contains: query.queryStr,
+          },
+        },
+        {
+          id: {
+            mode: 'insensitive',
+            contains: query.queryStr,
+          },
+        },
+      ],
       AND: (query.difficulty ?? []).map((d) => ({
         difficulty: {
           some: {
