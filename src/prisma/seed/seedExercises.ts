@@ -46,6 +46,7 @@ export const seedExercises = async (prisma: PrismaClient) => {
           id: tag.id,
         })),
     },
+    createdAt: faker.date.past({ years: 3 }),
     isCompetitionFinal: faker.datatype.boolean(0.1),
   }));
 

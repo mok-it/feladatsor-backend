@@ -17,6 +17,7 @@ import { ExerciseCommentModule } from './exercise-comment/exercise-comment.modul
 import { ExerciseHistoryModule } from './exercise-history/exercise-history.module';
 import { ExerciseGroupModule } from './exercise-group/exercise-group.module';
 import { ExerciseComposeModule } from './exercise-compose/exercise-compose.module';
+import { StatModule } from './stat/stat.module';
 
 @Module({
   imports: [
@@ -39,6 +40,7 @@ import { ExerciseComposeModule } from './exercise-compose/exercise-compose.modul
     ExerciseHistoryModule,
     ExerciseGroupModule,
     ExerciseComposeModule,
+    StatModule,
   ],
   controllers: [AppController],
   providers: [AppService],

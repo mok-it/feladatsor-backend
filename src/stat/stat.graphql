@@ -1,0 +1,19 @@
+type Query {
+  globalStats: GlobalStats
+}
+
+type GlobalStats {
+  userLeaderboard: [LeaderBoardUser!]!
+  exerciseHourlyCount: [ExerciseHourlyGroup!]!
+}
+
+type ExerciseHourlyGroup {
+  hour: String!
+  count: Int!
+}
+
+type LeaderBoardUser {
+  user: User!
+  rank: Int!
+  submittedExerciseCount: Int!
+}

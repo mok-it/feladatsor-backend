@@ -179,6 +179,7 @@ export interface IQuery {
     exercises(take: number, skip: number): Exercise[] | Promise<Exercise[]>;
     exercisesCount(): number | Promise<number>;
     exercise(id: string): Nullable<Exercise> | Promise<Nullable<Exercise>>;
+    globalStats(): Nullable<GlobalStats> | Promise<Nullable<GlobalStats>>;
     users(): User[] | Promise<User[]>;
     user(id: string): Nullable<User> | Promise<Nullable<User>>;
 }
@@ -290,6 +291,22 @@ export interface ExerciseDifficulty {
 export interface Image {
     id: string;
     url: string;
+}
+
+export interface GlobalStats {
+    userLeaderboard: LeaderBoardUser[];
+    exerciseHourlyCount: ExerciseHourlyGroup[];
+}
+
+export interface ExerciseHourlyGroup {
+    hour: string;
+    count: number;
+}
+
+export interface LeaderBoardUser {
+    user: User;
+    rank: number;
+    submittedExerciseCount: number;
 }
 
 export interface LoginResponse {
