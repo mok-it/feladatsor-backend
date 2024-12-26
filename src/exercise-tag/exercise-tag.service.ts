@@ -110,4 +110,16 @@ export class ExerciseTagService {
       },
     });
   }
+
+  getExerciseCount(id: string) {
+    return this.prismaService.exercise.count({
+      where: {
+        tags: {
+          some: {
+            id,
+          },
+        },
+      },
+    });
+  }
 }

@@ -250,6 +250,7 @@ export interface ExerciseTag {
     name: string;
     parent?: Nullable<ExerciseTag>;
     children: ExerciseTag[];
+    exerciseCount: number;
 }
 
 export interface ExerciseSearchResult {
