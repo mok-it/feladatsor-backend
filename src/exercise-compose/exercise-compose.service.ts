@@ -87,9 +87,9 @@ export class ExerciseComposeService {
               create: sheetItem.exercises.map((exercise) => ({
                 exerciseId: exercise.exerciseID,
                 order: exercise.order,
-                exercise: {
-                  connect: exercise.exerciseID,
-                },
+                // exercise: {
+                //   connect: exercise.exerciseID,
+                // },
               })),
             },
             ageGroup: sheetItem.ageGroup,
