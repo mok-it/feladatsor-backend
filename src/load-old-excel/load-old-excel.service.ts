@@ -96,13 +96,6 @@ export class LoadOldExcelService {
           record[CSVHeaders.ID],
         );
 
-        const alternativeDifficultyGroup = sameIdExercise
-          ? await this.exerciseGroupService.upsertExerciseGroupAlternativeDifficulty(
-              sameIdExercise.id,
-              technicalUser,
-            )
-          : null;
-
         const sameLogicGroup = sameIdExercise
           ? await this.exerciseGroupService.upsertExerciseGroupSameLogic(
               sameIdExercise.id,
@@ -118,7 +111,6 @@ export class LoadOldExcelService {
           {
             ...this.mapRecordToCreateExerciseInput(record),
             sameLogicGroup: sameLogicGroup?.id,
-            alternativeDifficultyGroup: alternativeDifficultyGroup?.id,
             exerciseImage: imgRes?.id,
             tags: await this.generateTagIds(
               this.getTags(record[CSVHeaders.tags]),

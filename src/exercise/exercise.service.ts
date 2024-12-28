@@ -1,7 +1,7 @@
-import {Injectable} from '@nestjs/common';
-import {AgeGroup, Exercise, User} from '@prisma/client';
-import {ExerciseInput, ExerciseUpdateInput} from '../graphql/graphqlTypes';
-import {PrismaService} from "../prisma/PrismaService";
+import { Injectable } from '@nestjs/common';
+import { AgeGroup, Exercise, User } from '@prisma/client';
+import { ExerciseInput, ExerciseUpdateInput } from '../graphql/graphqlTypes';
+import { PrismaService } from '../prisma/PrismaService';
 
 @Injectable()
 export class ExerciseService {
@@ -50,13 +50,6 @@ export class ExerciseService {
     return this.prismaService.exercise.create({
       data: {
         id: id,
-        alternativeDifficultyExerciseGroup: data.alternativeDifficultyGroup
-          ? {
-              connect: {
-                id: data.alternativeDifficultyGroup,
-              },
-            }
-          : undefined,
         sameLogicExerciseGroup: data.sameLogicGroup
           ? {
               connect: {
@@ -189,13 +182,6 @@ export class ExerciseService {
           solution: data.solution,
           helpingQuestions: data.helpingQuestions,
           source: data.source,
-          alternativeDifficultyExerciseGroup: data.alternativeDifficultyGroup
-            ? {
-                connect: {
-                  id: data.alternativeDifficultyGroup,
-                },
-              }
-            : undefined,
           sameLogicExerciseGroup: data.sameLogicGroup
             ? {
                 connect: {
@@ -210,15 +196,15 @@ export class ExerciseService {
     });
   }
 
-  async getAlternativeDifficultyExercises(exerciseId: string) {
+  async getSameLogicExercises(exerciseId: string) {
     const otherExercise = await this.getExerciseById(exerciseId);
-    if (!otherExercise || !otherExercise.exerciseGroupAlternativeDifficultyId) {
+    if (!otherExercise || !otherExercise.exerciseGroupSameLogicId) {
       return [];
     }
     return this.prismaService.exercise.findMany({
       where: {
-        alternativeDifficultyExerciseGroup: {
-          id: otherExercise.exerciseGroupAlternativeDifficultyId,
+        sameLogicExerciseGroup: {
+          id: otherExercise.exerciseGroupSameLogicId,
         },
       },
     });

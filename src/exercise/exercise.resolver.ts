@@ -23,7 +23,7 @@ import { ExerciseTagService } from '../exercise-tag/exercise-tag.service';
 import { ImageService } from '../image/image.service';
 import { UserService } from '../user/user.service';
 import { ExerciseHistoryService } from '../exercise-history/exercise-history.service';
-import {ExerciseCommentService} from "../exercise-comment/exercise-comment.service";
+import { ExerciseCommentService } from '../exercise-comment/exercise-comment.service';
 
 @Resolver('Exercise')
 export class ExerciseResolver {
@@ -77,9 +77,9 @@ export class ExerciseResolver {
     return this.exerciseService.updateExercise(id, data, user);
   }
 
-  @ResolveField('alternativeDifficultyExercises')
-  async getAlternativeDifficultyExercises(@Parent() exercise: PrismaExercise) {
-    return this.exerciseService.getAlternativeDifficultyExercises(exercise.id);
+  @ResolveField('sameLogicExercises')
+  async getSameDifficultyExercises(@Parent() exercise: PrismaExercise) {
+    return this.exerciseService.getSameLogicExercises(exercise.id);
   }
 
   @ResolveField('history')

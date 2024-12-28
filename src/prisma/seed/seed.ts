@@ -8,12 +8,7 @@ import { Logger } from '@nestjs/common';
 import { PrismaService } from '../PrismaService';
 import { AppModule } from '../../app.module';
 import { seedExerciseSheets } from './seedExerciseSheets';
-
-async function seedExerciseGroups(prisma: PrismaService) {
-  // prisma.exerciseGroupAlternativeDifficulty.createMany({
-  //   data: Array.from({length: 1000}).map()
-  // })
-}
+import { seedExerciseGroups } from './seedExerciseGroups';
 
 async function main() {
   const logger = new Logger('Seed');
@@ -28,7 +23,6 @@ async function main() {
   await prisma.exerciseTag.deleteMany();
   await prisma.exerciseDifficulty.deleteMany();
   await prisma.exerciseHistory.deleteMany();
-  await prisma.exerciseGroupAlternativeDifficulty.deleteMany();
   await prisma.exerciseGroupSameLogic.deleteMany();
   await prisma.exerciseComment.deleteMany();
   await prisma.exerciseOnExerciseSheetItem.deleteMany();

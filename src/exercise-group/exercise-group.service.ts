@@ -1,19 +1,11 @@
-import {Injectable} from '@nestjs/common';
-import {User} from '@prisma/client';
-import {PrismaService} from "../prisma/PrismaService";
+import { Injectable } from '@nestjs/common';
+import { User } from '@prisma/client';
+import { PrismaService } from '../prisma/PrismaService';
+import { SameLogicExerciseGroupInput } from '../graphql/graphqlTypes';
 
 @Injectable()
 export class ExerciseGroupService {
   constructor(private readonly prisma: PrismaService) {}
-
-  async getAlternativeDifficultyExerciseGroups() {
-    return this.prisma.exerciseGroupAlternativeDifficulty.findMany({
-      include: {
-        exercises: true,
-        createdBy: true,
-      },
-    });
-  }
 
   async getSameLogicExerciseGroups() {
     return this.prisma.exerciseGroupSameLogic.findMany({
@@ -21,42 +13,6 @@ export class ExerciseGroupService {
         exercises: true,
         createdBy: true,
       },
-    });
-  }
-
-  async upsertExerciseGroupAlternativeDifficulty(
-    exerciseID: string,
-    user: User,
-  ) {
-    return await this.prisma.$transaction(async (tx) => {
-      const exercise = await tx.exercise.findFirst({
-        where: {
-          id: exerciseID,
-        },
-      });
-
-      if (exercise.exerciseGroupAlternativeDifficultyId) {
-        return tx.exerciseGroupAlternativeDifficulty.findFirst({
-          where: {
-            id: exercise.exerciseGroupAlternativeDifficultyId,
-          },
-        });
-      }
-
-      return tx.exerciseGroupAlternativeDifficulty.create({
-        data: {
-          createdBy: {
-            connect: {
-              id: user.id,
-            },
-          },
-          exercises: {
-            connect: {
-              id: exercise.id,
-            },
-          },
-        },
-      });
     });
   }
 
@@ -90,6 +46,23 @@ export class ExerciseGroupService {
           },
         },
       });
+    });
+  }
+
+  createSameLogicExerciseGroup(data: SameLogicExerciseGroupInput, user: User) {
+    return this.prisma.exerciseGroupSameLogic.create({
+      data: {
+        createdBy: {
+          connect: {
+            id: user.id,
+          },
+        },
+        description: data.description,
+      },
+      include: {
+        exercises: true,
+        createdBy: true,
+      },
     });
   }
 }

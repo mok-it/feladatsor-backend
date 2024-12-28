@@ -1,15 +1,15 @@
 type Query {
-  alternativeDifficultyExerciseGroups: [AlternativeDifficultyExerciseGroup!]!
   sameLogicExerciseGroups: [SameLogicExerciseGroup!]!
 }
 
-type AlternativeDifficultyExerciseGroup {
-  id: String!
-  exercises: [Exercise!]!
+type Mutation {
+  createSameLogicExerciseGroup(
+    data: SameLogicExerciseGroupInput
+  ): SameLogicExerciseGroup!
+}
+
+input SameLogicExerciseGroupInput {
   description: String
-  createdBy: User!
-  createdAt: String!
-  updatedAt: String!
 }
 
 type SameLogicExerciseGroup {

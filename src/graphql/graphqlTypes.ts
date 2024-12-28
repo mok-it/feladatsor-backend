@@ -72,6 +72,10 @@ export interface OrderedExerciseInput {
     order: number;
 }
 
+export interface SameLogicExerciseGroupInput {
+    description?: Nullable<string>;
+}
+
 export interface ExerciseSearchQuery {
     skip: number;
     take: number;
@@ -103,7 +107,6 @@ export interface ExerciseInput {
     solutionOptions: string[];
     source?: Nullable<string>;
     difficulty: ExerciseDifficultyInput[];
-    alternativeDifficultyGroup?: Nullable<string>;
     sameLogicGroup?: Nullable<string>;
     isCompetitionFinal?: Nullable<boolean>;
 }
@@ -121,7 +124,6 @@ export interface ExerciseUpdateInput {
     solutionOptions?: Nullable<string[]>;
     source?: Nullable<string>;
     difficulty?: Nullable<ExerciseDifficultyInput[]>;
-    alternativeDifficultyGroup?: Nullable<string>;
     sameLogicGroup?: Nullable<string>;
     isCompetitionFinal?: Nullable<boolean>;
     comment?: Nullable<string>;
@@ -158,6 +160,7 @@ export interface IMutation {
     createExerciseSheet(sheetData: ExerciseSheetInput): ExerciseSheet | Promise<ExerciseSheet>;
     updateExerciseSheet(id: string, sheetData: UpdateExerciseSheetInput): ExerciseSheet | Promise<ExerciseSheet>;
     deleteExerciseSheet(id: string): boolean | Promise<boolean>;
+    createSameLogicExerciseGroup(data?: Nullable<SameLogicExerciseGroupInput>): SameLogicExerciseGroup | Promise<SameLogicExerciseGroup>;
     createExerciseTag(name: string, parentId?: Nullable<string>): ExerciseTag | Promise<ExerciseTag>;
     updateExerciseTag(id: string, name: string): ExerciseTag | Promise<ExerciseTag>;
     deleteExerciseTag(id: string): boolean | Promise<boolean>;
@@ -187,7 +190,6 @@ export interface IQuery {
     commentsByExercise(id: string): ExerciseComment[] | Promise<ExerciseComment[]>;
     exerciseSheets(): ExerciseSheet[] | Promise<ExerciseSheet[]>;
     exerciseSheet(id: string): Nullable<ExerciseSheet> | Promise<Nullable<ExerciseSheet>>;
-    alternativeDifficultyExerciseGroups(): AlternativeDifficultyExerciseGroup[] | Promise<AlternativeDifficultyExerciseGroup[]>;
     sameLogicExerciseGroups(): SameLogicExerciseGroup[] | Promise<SameLogicExerciseGroup[]>;
     exerciseHistoryByExercise(id: string): ExerciseHistory[] | Promise<ExerciseHistory[]>;
     exerciseTags(): ExerciseTag[] | Promise<ExerciseTag[]>;
@@ -238,15 +240,6 @@ export interface OrderedExercise {
     exercise: Exercise;
 }
 
-export interface AlternativeDifficultyExerciseGroup {
-    id: string;
-    exercises: Exercise[];
-    description?: Nullable<string>;
-    createdBy: User;
-    createdAt: string;
-    updatedAt: string;
-}
-
 export interface SameLogicExerciseGroup {
     id: string;
     exercises: Exercise[];
@@ -295,7 +288,6 @@ export interface Exercise {
     source?: Nullable<string>;
     difficulty: ExerciseDifficulty[];
     history: ExerciseHistory[];
-    alternativeDifficultyExercises: Exercise[];
     sameLogicExercises: Exercise[];
     checks: ExerciseCheck[];
     comments: ExerciseComment[];

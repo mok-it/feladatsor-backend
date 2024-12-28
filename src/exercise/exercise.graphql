@@ -51,7 +51,6 @@ input ExerciseInput {
   solutionOptions: [String!]!
   source: String
   difficulty: [ExerciseDifficultyInput!]!
-  alternativeDifficultyGroup: ID
   sameLogicGroup: ID
   isCompetitionFinal: Boolean
 }
@@ -70,7 +69,6 @@ input ExerciseUpdateInput {
   solutionOptions: [String!]
   source: String
   difficulty: [ExerciseDifficultyInput!]
-  alternativeDifficultyGroup: ID
   sameLogicGroup: ID
   isCompetitionFinal: Boolean
 
@@ -100,8 +98,7 @@ type Exercise {
   source: String
   difficulty: [ExerciseDifficulty!]!
   history: [ExerciseHistory!]!
-  alternativeDifficultyExercises: [Exercise!]! #[Hasonló] Difficulty is different
-  sameLogicExercises: [Exercise!]! #[Átadott] Logic is the same, everything is different
+  sameLogicExercises: [Exercise!]!
   checks: [ExerciseCheck!]! #User and TimeStamp
   comments: [ExerciseComment!]!
   isCompetitionFinal: Boolean
