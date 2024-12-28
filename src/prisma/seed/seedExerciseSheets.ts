@@ -12,7 +12,7 @@ export async function seedExerciseSheets(prisma: PrismaService) {
   await Promise.all(
     Array.from({ length: 5 }).map(() =>
       prisma.$transaction(async (tx) => {
-        const levels = [0, 1, 2, 3, 4];
+        const levels = [0, 1, 2, 3];
         const ageGroups = [
           ExerciseAgeGroup.KISMEDVE,
           ExerciseAgeGroup.KOALA,
