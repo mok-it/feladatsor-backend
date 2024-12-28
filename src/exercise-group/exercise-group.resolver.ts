@@ -4,7 +4,7 @@ import { SameLogicExerciseGroupInput } from '../graphql/graphqlTypes';
 import { CurrentUser } from '../auth/decorators/user.auth.decorator';
 import { User } from '@prisma/client';
 
-@Resolver()
+@Resolver('SameLogicExerciseGroup')
 export class ExerciseGroupResolver {
   constructor(private readonly exerciseGroupService: ExerciseGroupService) {}
 

@@ -98,7 +98,7 @@ type Exercise {
   source: String
   difficulty: [ExerciseDifficulty!]!
   history: [ExerciseHistory!]!
-  sameLogicExercises: [Exercise!]!
+  sameLogicExerciseGroup: SameLogicExerciseGroup
   checks: [ExerciseCheck!]! #User and TimeStamp
   comments: [ExerciseComment!]!
   isCompetitionFinal: Boolean

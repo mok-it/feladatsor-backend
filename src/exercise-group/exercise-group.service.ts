@@ -16,6 +16,19 @@ export class ExerciseGroupService {
     });
   }
 
+  getGroupById(exerciseGroupSameLogicId?: string) {
+    if (!exerciseGroupSameLogicId) return null;
+    return this.prisma.exerciseGroupSameLogic.findUnique({
+      where: {
+        id: exerciseGroupSameLogicId,
+      },
+      include: {
+        exercises: true,
+        createdBy: true,
+      },
+    });
+  }
+
   async upsertExerciseGroupSameLogic(exerciseID: string, user: User) {
     return this.prisma.$transaction(async (tx) => {
       const exercise = await tx.exercise.findFirst({

@@ -52,7 +52,6 @@ export class ExcelExportService {
             try {
               worksheet.addRow(row);
             } catch (e) {
-              console.log(row);
               console.log(e);
             }
           });

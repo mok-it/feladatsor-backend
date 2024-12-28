@@ -24,6 +24,7 @@ import { ImageService } from '../image/image.service';
 import { UserService } from '../user/user.service';
 import { ExerciseHistoryService } from '../exercise-history/exercise-history.service';
 import { ExerciseCommentService } from '../exercise-comment/exercise-comment.service';
+import { ExerciseGroupService } from '../exercise-group/exercise-group.service';
 
 @Resolver('Exercise')
 export class ExerciseResolver {
@@ -32,6 +33,7 @@ export class ExerciseResolver {
     private readonly exerciseTagService: ExerciseTagService,
     private readonly exerciseSearchService: ExerciseSearchService,
     private readonly exerciseCheckService: ExerciseCheckService,
+    private readonly exerciseGroupService: ExerciseGroupService,
     private readonly imageService: ImageService,
     private readonly exerciseCommentService: ExerciseCommentService,
     private readonly userService: UserService,
@@ -77,9 +79,11 @@ export class ExerciseResolver {
     return this.exerciseService.updateExercise(id, data, user);
   }
 
-  @ResolveField('sameLogicExercises')
+  @ResolveField('sameLogicExerciseGroup')
   async getSameDifficultyExercises(@Parent() exercise: PrismaExercise) {
-    return this.exerciseService.getSameLogicExercises(exercise.id);
+    return this.exerciseGroupService.getGroupById(
+      exercise.exerciseGroupSameLogicId,
+    );
   }
 
   @ResolveField('history')
