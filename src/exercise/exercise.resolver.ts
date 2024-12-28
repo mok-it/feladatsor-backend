@@ -23,7 +23,7 @@ import { ExerciseTagService } from '../exercise-tag/exercise-tag.service';
 import { ImageService } from '../image/image.service';
 import { UserService } from '../user/user.service';
 import { ExerciseHistoryService } from '../exercise-history/exercise-history.service';
-import {ExerciseCommentService} from "../exercise-comment/exercise-comment.service";
+import { ExerciseCommentService } from '../exercise-comment/exercise-comment.service';
 
 @Resolver('Exercise')
 export class ExerciseResolver {

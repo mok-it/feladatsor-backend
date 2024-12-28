@@ -1,7 +1,7 @@
-import {Injectable} from '@nestjs/common';
-import {AgeGroup, Exercise, User} from '@prisma/client';
-import {ExerciseInput, ExerciseUpdateInput} from '../graphql/graphqlTypes';
-import {PrismaService} from "../prisma/PrismaService";
+import { Injectable } from '@nestjs/common';
+import { AgeGroup, Exercise, User } from '@prisma/client';
+import { ExerciseInput, ExerciseUpdateInput } from '../graphql/graphqlTypes';
+import { PrismaService } from '../prisma/PrismaService';
 
 @Injectable()
 export class ExerciseService {

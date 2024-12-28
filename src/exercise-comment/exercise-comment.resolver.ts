@@ -1,8 +1,15 @@
-import {Args, Mutation, Parent, Query, ResolveField, Resolver,} from '@nestjs/graphql';
-import {ExerciseCommentService} from './exercise-comment.service';
-import {CurrentUser} from '../auth/decorators/user.auth.decorator';
-import {ExerciseComment, User} from '@prisma/client';
-import {UserService} from '../user/user.service';
+import {
+  Args,
+  Mutation,
+  Parent,
+  Query,
+  ResolveField,
+  Resolver,
+} from '@nestjs/graphql';
+import { ExerciseCommentService } from './exercise-comment.service';
+import { CurrentUser } from '../auth/decorators/user.auth.decorator';
+import { ExerciseComment, User } from '@prisma/client';
+import { UserService } from '../user/user.service';
 
 @Resolver('ExerciseComment')
 export class ExerciseCommentResolver {
