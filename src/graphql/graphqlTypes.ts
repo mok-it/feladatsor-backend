@@ -182,6 +182,7 @@ export interface IQuery {
     exerciseHistoryByExercise(id: string): ExerciseHistory[] | Promise<ExerciseHistory[]>;
     exerciseTags(): ExerciseTag[] | Promise<ExerciseTag[]>;
     exerciseTag(id: string): Nullable<ExerciseTag> | Promise<Nullable<ExerciseTag>>;
+    flatExerciseTags(): ExerciseTag[] | Promise<ExerciseTag[]>;
     searchExercises(query?: Nullable<ExerciseSearchQuery>): ExerciseSearchResult | Promise<ExerciseSearchResult>;
     exercises(take: number, skip: number): Exercise[] | Promise<Exercise[]>;
     exercisesCount(): number | Promise<number>;

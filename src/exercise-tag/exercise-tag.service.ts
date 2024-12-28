@@ -28,13 +28,30 @@ export class ExerciseTagService {
   }
 
   async getAllTopLevelExerciseTags() {
-    return this.prismaService.exerciseTag.findMany({
+    const tags = await this.prismaService.exerciseTag.findMany({
       where: {
         children: {
           some: {},
         },
       },
+      include: {
+        _count: {
+          select: {
+            exercises: true,
+          },
+        },
+      },
+      orderBy: {
+        exercises: {
+          _count: 'desc',
+        },
+      },
     });
+
+    return tags.map((tag) => ({
+      ...tag,
+      exerciseCount: tag._count.exercises,
+    }));
   }
 
   async getExerciseTagById(id: string) {
