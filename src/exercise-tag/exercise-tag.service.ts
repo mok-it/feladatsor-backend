@@ -6,17 +6,52 @@ export class ExerciseTagService {
   constructor(private readonly prismaService: PrismaService) {}
 
   async getAllExerciseTags() {
-    return this.prismaService.exerciseTag.findMany();
+    const tags = await this.prismaService.exerciseTag.findMany({
+      include: {
+        _count: {
+          select: {
+            exercises: true,
+          },
+        },
+      },
+      orderBy: {
+        exercises: {
+          _count: 'desc',
+        },
+      },
+    });
+
+    return tags.map((tag) => ({
+      ...tag,
+      exerciseCount: tag._count.exercises,
+    }));
   }
 
   async getAllTopLevelExerciseTags() {
-    return this.prismaService.exerciseTag.findMany({
+    const tags = await this.prismaService.exerciseTag.findMany({
       where: {
         children: {
           some: {},
         },
       },
+      include: {
+        _count: {
+          select: {
+            exercises: true,
+          },
+        },
+      },
+      orderBy: {
+        exercises: {
+          _count: 'desc',
+        },
+      },
     });
+
+    return tags.map((tag) => ({
+      ...tag,
+      exerciseCount: tag._count.exercises,
+    }));
   }
 
   async getExerciseTagById(id: string) {
@@ -105,6 +140,18 @@ export class ExerciseTagService {
         exercises: {
           some: {
             id: id,
+          },
+        },
+      },
+    });
+  }
+
+  getExerciseCount(id: string) {
+    return this.prismaService.exercise.count({
+      where: {
+        tags: {
+          some: {
+            id,
           },
         },
       },

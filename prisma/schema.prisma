@@ -27,33 +27,53 @@ model ExerciseTag {
 }
 
 model Exercise {
-  id                              String               @id @default(uuid())
-  tags                            ExerciseTag[]
-  status                          ExerciseStatus
-  description                     String
-  exerciseImageId                 String?
-  solution                        String
-  solutionImageId                 String?
-  solveIdea                       String?
-  solveIdeaImageId                String?
-  helpingQuestions                String[]
-  solutionOptions                 String[]
-  source                          String?
-  difficulty                      ExerciseDifficulty[]
-  history                         ExerciseHistory[]
-  alternativeDifficultyExerciseId String?
-  alternativeDifficultyExercise   Exercise?            @relation("alternativeDifficultyExercises", fields: [alternativeDifficultyExerciseId], references: [id])
-  alternativeDifficultyExercises  Exercise[]           @relation("alternativeDifficultyExercises")
-  sameLogicExerciseId             String?
-  sameLogicExercise               Exercise?            @relation("sameLogicExercises", fields: [sameLogicExerciseId], references: [id])
-  sameLogicExercises              Exercise[]           @relation("sameLogicExercises")
-  checks                          ExerciseCheck[]
-  comments                        ExerciseComment[]
-  isCompetitionFinal              Boolean              @default(false)
-  createdBy                       User                 @relation(fields: [createdById], references: [id])
-  createdById                     String
-  createdAt                       DateTime             @default(now())
-  updatedAt                       DateTime             @default(now()) @updatedAt
+  id                                   String                              @id @default(uuid())
+  tags                                 ExerciseTag[]
+  status                               ExerciseStatus
+  description                          String
+  exerciseImageId                      String?
+  solution                             String
+  solutionImageId                      String?
+  solveIdea                            String?
+  solveIdeaImageId                     String?
+  helpingQuestions                     String[]
+  solutionOptions                      String[]
+  source                               String?
+  difficulty                           ExerciseDifficulty[]
+  history                              ExerciseHistory[]
+  alternativeDifficultyExerciseGroup   ExerciseGroupAlternativeDifficulty? @relation(fields: [exerciseGroupAlternativeDifficultyId], references: [id])
+  exerciseGroupAlternativeDifficultyId String?
+  sameLogicExerciseGroup               ExerciseGroupSameLogic?             @relation(fields: [exerciseGroupSameLogicId], references: [id])
+  exerciseGroupSameLogicId             String?
+  checks                               ExerciseCheck[]
+  comments                             ExerciseComment[]
+  isCompetitionFinal                   Boolean                             @default(false)
+  createdBy                            User                                @relation(fields: [createdById], references: [id])
+  createdById                          String
+  createdAt                            DateTime                            @default(now())
+  updatedAt                            DateTime                            @default(now()) @updatedAt
+  ExerciseSheetItems                   ExerciseOnExerciseSheetItem[]
+  ExerciseSheet                        ExerciseSheet[]
+}
+
+model ExerciseGroupAlternativeDifficulty {
+  id          String     @id() @default(uuid())
+  description String?
+  exercises   Exercise[]
+  createdBy   User       @relation(fields: [createdById], references: [id])
+  createdById String
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @default(now()) @updatedAt
+}
+
+model ExerciseGroupSameLogic {
+  id          String     @id() @default(uuid())
+  description String?
+  exercises   Exercise[]
+  createdBy   User       @relation(fields: [createdById], references: [id])
+  createdById String
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @default(now()) @updatedAt
 }
 
 model ExerciseComment {
@@ -89,21 +109,24 @@ enum Role {
 }
 
 model User {
-  id              String            @id @default(uuid())
-  avatarUrl       String?
-  customAvatarId  String?
-  name            String
-  userName        String            @unique
-  email           String
-  password        String?
-  firebaseId      String?
-  roles           Role[]
-  createdAt       DateTime          @default(now())
-  updatedAt       DateTime          @default(now())
-  exercises       Exercise[]
-  ExerciseCheck   ExerciseCheck[]
-  ExerciseComment ExerciseComment[]
-  ExerciseHistory ExerciseHistory[]
+  id                                 String                               @id @default(uuid())
+  avatarUrl                          String?
+  customAvatarId                     String?
+  name                               String
+  userName                           String                               @unique
+  email                              String
+  password                           String?
+  firebaseId                         String?
+  roles                              Role[]
+  createdAt                          DateTime                             @default(now())
+  updatedAt                          DateTime                             @default(now())
+  exercises                          Exercise[]
+  ExerciseCheck                      ExerciseCheck[]
+  ExerciseComment                    ExerciseComment[]
+  ExerciseHistory                    ExerciseHistory[]
+  ExerciseGroupSameLogic             ExerciseGroupSameLogic[]
+  ExerciseGroupAlternativeDifficulty ExerciseGroupAlternativeDifficulty[]
+  ExerciseSheet                      ExerciseSheet[]
 }
 
 model ExerciseCheck {
@@ -142,4 +165,34 @@ model Image {
   originalMimeType String
   originalSize     BigInt
   transformedSize  BigInt
+}
+
+model ExerciseSheet {
+  id              String              @id @default(uuid())
+  name            String
+  sheetItems      ExerciseSheetItem[]
+  hookedExercises Exercise[]
+  createdById     String
+  createdBy       User                @relation(fields: [createdById], references: [id])
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @default(now()) @updatedAt
+}
+
+model ExerciseSheetItem {
+  id              String                        @id @default(uuid())
+  ageGroup        AgeGroup
+  level           Int
+  exercises       ExerciseOnExerciseSheetItem[]
+  ExerciseSheet   ExerciseSheet?                @relation(fields: [exerciseSheetId], references: [id])
+  exerciseSheetId String?
+}
+
+model ExerciseOnExerciseSheetItem {
+  exerciseId          String
+  exercise            Exercise          @relation(fields: [exerciseId], references: [id])
+  exerciseSheetItemId String
+  exerciseSheetItem   ExerciseSheetItem @relation(fields: [exerciseSheetItemId], references: [id])
+  order               Int
+
+  @@id([exerciseId, exerciseSheetItemId])
 }

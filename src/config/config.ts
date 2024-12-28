@@ -1,11 +1,15 @@
 import { get } from 'env-var';
 
 export class Config {
-  applicationName: 'Nest Starter App';
+  port = get('PORT').default('3000').asString();
+  host = get('HOST').default('0.0.0.0').asString();
+
   server = {
-    host: get('HOST').default('0.0.0.0').asString(),
-    port: get('PORT').default('3000').asString(),
-    publicHost: get('PUBLIC_HOST').default('http://localhost').asString(),
+    host: this.host,
+    port: this.port,
+    publicHost: get('PUBLIC_HOST')
+      .default(`http://${this.host}:${this.port}`)
+      .asString(),
   };
   jwt = {
     secret: get('JWT_SECRET').required().asString(),
@@ -23,4 +27,17 @@ export class Config {
       resizeQuality: get('IMAGE_RESIZE_QUALITY').default(80).asIntPositive(),
     },
   };
+  technicalUser = {
+    name: get('TECHNICAL_USER_NAME').default('Technical User').asString(),
+    username: get('TECHNICAL_USER_USERNAME')
+      .default('technical_user')
+      .asString(),
+    defaultPassword: get('TECHNICAL_USER_DEFAULT_PASSWORD')
+      .default('technical_user_password')
+      .asString(),
+    email: get('TECHNICAL_USER_EMAIL')
+      .default('technical@localhost')
+      .asString(),
+  };
+  sharepointCookie = get('SHAREPOINT_COOKIE').default('').asString();
 }

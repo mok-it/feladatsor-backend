@@ -1,12 +1,12 @@
-import { Injectable } from '@nestjs/common';
-import { PrismaClient } from '@prisma/client';
+import {Injectable} from '@nestjs/common';
+import {PrismaService} from "../prisma/PrismaService";
 
 @Injectable()
 export class ExerciseHistoryService {
-  constructor(private readonly prismaClient: PrismaClient) {}
+  constructor(private readonly prismaService: PrismaService) {}
 
   getHistoryByExerciseId(id: string) {
-    return this.prismaClient.exerciseHistory.findMany({
+    return this.prismaService.exerciseHistory.findMany({
       where: {
         exerciseId: id,
       },

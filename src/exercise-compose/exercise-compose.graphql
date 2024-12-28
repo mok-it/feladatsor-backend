@@ -1,0 +1,62 @@
+type Query {
+  exerciseSheets: [ExerciseSheet!]!
+  exerciseSheet(id: ID!): ExerciseSheet
+}
+
+type Mutation {
+  createExerciseSheet(sheetData: ExerciseSheetInput!): ExerciseSheet!
+  updateExerciseSheet(
+    id: ID!
+    sheetData: UpdateExerciseSheetInput!
+  ): ExerciseSheet!
+  deleteExerciseSheet(id: ID!): Boolean!
+}
+
+input ExerciseSheetInput {
+  name: String!
+  sheetItems: [ExerciseSheetItemInput!]
+}
+
+input UpdateExerciseSheetInput {
+  name: String
+  sheetItems: [ExerciseSheetItemInput!]
+}
+
+input ExerciseSheetItemInput {
+  ageGroup: ExerciseAgeGroup!
+  level: Int!
+  exercises: [OrderedExerciseInput!]!
+}
+
+input OrderedExerciseInput {
+  exerciseID: ID!
+  order: Int!
+}
+
+type ExerciseSheet {
+  id: ID!
+  name: String!
+  sheetItems: [ExerciseSheetItem!]!
+  #TODO: Talon items
+  talonItems: [ExerciseSheetTalonItem!]!
+  createdBy: User!
+  createdAt: String!
+  updatedAt: String!
+}
+
+type ExerciseSheetTalonItem {
+  id: ID!
+  exercises: [OrderedExercise!]!
+}
+
+type ExerciseSheetItem {
+  id: ID!
+  ageGroup: ExerciseAgeGroup!
+  level: Int!
+  exercises: [OrderedExercise!]!
+}
+
+type OrderedExercise {
+  order: Int!
+  exercise: Exercise!
+}

@@ -15,12 +15,17 @@ export class ExerciseTagResolver {
 
   @Query('exerciseTags')
   async getExerciseTags() {
-    return this.exerciseTagService.getAllExerciseTags();
+    return this.exerciseTagService.getAllTopLevelExerciseTags();
   }
 
   @Query('exerciseTag')
   async getExerciseTagById(@Args('id') id: string) {
     return this.exerciseTagService.getExerciseTagById(id);
+  }
+
+  @Query('flatExerciseTags')
+  async getFlatExerciseTags() {
+    return this.exerciseTagService.getAllExerciseTags();
   }
 
   @Mutation('createExerciseTag')

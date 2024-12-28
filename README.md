@@ -1,20 +1,37 @@
-## Todo
-
-- [ ] Export the db into excel
-- [ ] Exercise compose API
-- [x] User avatar upload
-- [ ] DB seed
-- [ ] Ellenőrzés
--
 
 ## Description
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+This is the backend repository for the <a href="https://medvematek.hu/">Medve Matek</a> voluntary organization.
+It is responsible for managing exercises.
+
+
+## Architecture
+
+The backend uses Nest JS, Prisma, and GraphQL
+
+## Initialization
+
+First of all, duplicate the `.env.example` file to a `.env` file.
+
+For running the app you will need to have a Postgre database running. 
+
+You can do this with docker
+```bash
+docker compose -f docker-compose.db.yml up
+```
+
+This will start a postgresql db
 
 ## Installation
 
 ```bash
-$ npm install
+npm install
+```
+
+Migrate the DB schema
+
+```bash
+npm run db:migrate:dev
 ```
 
 ## Running the app
@@ -29,30 +46,3 @@ $ npm run start:dev
 # production mode
 $ npm run start:prod
 ```
-
-## Test
-
-```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
-```
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](LICENSE).

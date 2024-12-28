@@ -4,51 +4,61 @@ import {
   UserRegisterInput,
   UserUpdateInput,
 } from '../graphql/graphqlTypes';
-import { Prisma, PrismaClient, User } from '@prisma/client';
+import { Prisma, User } from '@prisma/client';
 import { hash } from 'bcrypt';
 import { ImageService } from '../image/image.service';
+import { Config } from '../config/config';
+import { PrismaService } from '../prisma/PrismaService';
 
 @Injectable()
 export class UserService {
   constructor(
-    private readonly prismaClient: PrismaClient,
+    private readonly prismaService: PrismaService,
     private readonly logger: Logger,
     private readonly imageService: ImageService,
+    private readonly config: Config,
   ) {}
 
   async users() {
-    return this.prismaClient.user.findMany();
+    return this.prismaService.user.findMany();
   }
 
   async getUserById(id: string) {
-    const user = await this.prismaClient.user.findUnique({
+    return this.prismaService.user.findUnique({
       where: {
         id,
       },
     });
-    user.avatarUrl = user.customAvatarId
+  }
+
+  async getUserAvatar(user: User) {
+    return user.customAvatarId
       ? this.imageService.resolveGQLImage(user.customAvatarId).url
       : user.avatarUrl;
-    return user;
   }
 
   /**
    * Intended to use only under development
    */
-  getFirstUser(): Promise<User> {
-    return this.prismaClient.user.findFirst({
+  async upsertTechnicalUser(): Promise<User> {
+    const technicalUser = await this.prismaService.user.findFirst({
       where: {
-        password: {
-          not: null,
-        },
+        userName: this.config.technicalUser.username,
       },
+    });
+    if (technicalUser) return technicalUser;
+    return await this.register({
+      email: this.config.technicalUser.email,
+      password: this.config.technicalUser.defaultPassword,
+      name: this.config.technicalUser.name,
+      userName: this.config.technicalUser.username,
     });
   }
 
   async register(data: UserRegisterInput) {
     const hashedPassword = await hash(data.password, 10);
     try {
-      return await this.prismaClient.user.create({
+      return await this.prismaService.user.create({
         data: {
           email: data.email,
           password: hashedPassword,
@@ -75,7 +85,7 @@ export class UserService {
       hashedPassword = await hash(data.password, 10);
     }
     try {
-      return await this.prismaClient.user.update({
+      return await this.prismaService.user.update({
         data: {
           email: data.email,
           password: hashedPassword,
@@ -93,7 +103,7 @@ export class UserService {
   }
 
   async getUserByUserName(userName: string) {
-    return this.prismaClient.user.findUnique({
+    return this.prismaService.user.findUnique({
       where: {
         userName,
       },
@@ -104,7 +114,7 @@ export class UserService {
     googleId: string,
     userInfo: Prisma.UserCreateInput,
   ) {
-    const user = await this.prismaClient.user.findFirst({
+    const user = await this.prismaService.user.findFirst({
       where: {
         firebaseId: googleId,
       },
@@ -114,14 +124,14 @@ export class UserService {
       return user;
     }
 
-    const existingUser = await this.prismaClient.user.findFirst({
+    const existingUser = await this.prismaService.user.findFirst({
       where: {
         email: userInfo.email,
       },
     });
 
     if (existingUser) {
-      return this.prismaClient.user.update({
+      return this.prismaService.user.update({
         where: {
           id: existingUser.id,
         },
@@ -131,7 +141,7 @@ export class UserService {
       });
     }
 
-    return this.prismaClient.user.create({
+    return this.prismaService.user.create({
       data: {
         ...userInfo,
         firebaseId: googleId,
@@ -140,7 +150,7 @@ export class UserService {
   }
 
   async changePermissions(userId: string, roles: Role[]) {
-    await this.prismaClient.user.update({
+    await this.prismaService.user.update({
       where: {
         id: userId,
       },
@@ -151,7 +161,7 @@ export class UserService {
       },
     });
 
-    return this.prismaClient.user.findUnique({
+    return this.prismaService.user.findUnique({
       where: {
         id: userId,
       },

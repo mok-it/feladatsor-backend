@@ -19,6 +19,11 @@ export enum ExerciseCheckRole {
   LECTOR = 'LECTOR',
 }
 
+export enum OrderDirection {
+    ASC = "ASC",
+    DESC = "DESC"
+}
+
 export enum ExerciseStatus {
   DRAFT = 'DRAFT',
   CREATED = 'CREATED',
@@ -45,12 +50,35 @@ export interface ExerciseCheckInput {
   comment?: Nullable<string>;
 }
 
+export interface ExerciseSheetInput {
+    name: string;
+    sheetItems?: Nullable<ExerciseSheetItemInput[]>;
+}
+
+export interface UpdateExerciseSheetInput {
+    name?: Nullable<string>;
+    sheetItems?: Nullable<ExerciseSheetItemInput[]>;
+}
+
+export interface ExerciseSheetItemInput {
+    ageGroup: ExerciseAgeGroup;
+    level: number;
+    exercises: OrderedExerciseInput[];
+}
+
+export interface OrderedExerciseInput {
+    exerciseID: string;
+    order: number;
+}
+
 export interface ExerciseSearchQuery {
   skip: number;
   take: number;
   queryStr?: Nullable<string>;
-  difficulty?: Nullable<ExerciseDifficultyRange[]>;
-  tags?: Nullable<string[]>;
+  isCompetitionFinal?: Nullable<boolean>;difficulty?: Nullable<ExerciseDifficultyRange[]>;
+  orderBy?: Nullable<string>;
+    orderDirection?: Nullable<OrderDirection>;
+    includeTags?: Nullable<string[]>;
   excludeTags?: Nullable<string[]>;
 }
 
@@ -73,8 +101,8 @@ export interface ExerciseInput {
   solutionOptions: string[];
   source?: Nullable<string>;
   difficulty: ExerciseDifficultyInput[];
-  alternativeDifficultyParent?: Nullable<string>;
-  sameLogicParent?: Nullable<string>;
+  alternativeDifficultyGroup?: Nullable<string>;
+  sameLogicGroup?: Nullable<string>;
   isCompetitionFinal?: Nullable<boolean>;
 }
 
@@ -91,8 +119,8 @@ export interface ExerciseUpdateInput {
   solutionOptions?: Nullable<string[]>;
   source?: Nullable<string>;
   difficulty?: Nullable<ExerciseDifficultyInput[]>;
-  alternativeDifficultyParent?: Nullable<string>;
-  sameLogicParent?: Nullable<string>;
+  alternativeDifficultyGroup?: Nullable<string>;
+  sameLogicGroup?: Nullable<string>;
   isCompetitionFinal?: Nullable<boolean>;
   comment?: Nullable<string>;
 }
@@ -138,7 +166,9 @@ export interface IMutation {
     comment: string,
   ): ExerciseComment | Promise<ExerciseComment>;
   deleteExerciseComment(id: string): ExerciseComment | Promise<ExerciseComment>;
-  createExerciseTag(
+  createExerciseSheet(sheetData: ExerciseSheetInput): ExerciseSheet | Promise<ExerciseSheet>;
+    updateExerciseSheet(id: string, sheetData: UpdateExerciseSheetInput): ExerciseSheet | Promise<ExerciseSheet>;
+    deleteExerciseSheet(id: string): boolean | Promise<boolean>;createExerciseTag(
     name: string,
     parentId?: Nullable<string>,
   ): ExerciseTag | Promise<ExerciseTag>;
@@ -178,19 +208,22 @@ export interface IQuery {
   commentsByExercise(
     id: string,
   ): ExerciseComment[] | Promise<ExerciseComment[]>;
-  exerciseHistoryByExercise(
+  exerciseSheets(): ExerciseSheet[] | Promise<ExerciseSheet[]>;
+    exerciseSheet(id: string): Nullable<ExerciseSheet> | Promise<Nullable<ExerciseSheet>>;
+    alternativeDifficultyExerciseGroups(): AlternativeDifficultyExerciseGroup[] | Promise<AlternativeDifficultyExerciseGroup[]>;
+    sameLogicExerciseGroups(): SameLogicExerciseGroup[] | Promise<SameLogicExerciseGroup[]>;exerciseHistoryByExercise(
     id: string,
   ): ExerciseHistory[] | Promise<ExerciseHistory[]>;
   exerciseTags(): ExerciseTag[] | Promise<ExerciseTag[]>;
   exerciseTag(
     id: string,
-  ): Nullable<ExerciseTag> | Promise<Nullable<ExerciseTag>>;
+  ): Nullable<ExerciseTag> | Promise<Nullable<ExerciseTag>>;flatExerciseTags(): ExerciseTag[] | Promise<ExerciseTag[]>;
   searchExercises(
     query?: Nullable<ExerciseSearchQuery>,
   ): ExerciseSearchResult | Promise<ExerciseSearchResult>;
   exercises(take: number, skip: number): Exercise[] | Promise<Exercise[]>;
   exercisesCount(): number | Promise<number>;
-  exercise(id: string): Nullable<Exercise> | Promise<Nullable<Exercise>>;
+  exercise(id: string): Nullable<Exercise> | Promise<Nullable<Exercise>>;globalStats(): Nullable<GlobalStats> | Promise<Nullable<GlobalStats>>;
   users(): User[] | Promise<User[]>;
   user(id: string): Nullable<User> | Promise<Nullable<User>>;
 }
@@ -202,6 +235,51 @@ export interface ExerciseComment {
   createdAt: string;
   updatedAt: string;
   user: User;
+}
+
+export interface ExerciseSheet {
+    id: string;
+    name: string;
+    sheetItems: ExerciseSheetItem[];
+    talonItems: ExerciseSheetTalonItem[];
+    createdBy: User;
+    createdAt: string;
+    updatedAt: string;
+}
+
+export interface ExerciseSheetTalonItem {
+    id: string;
+    exercises: OrderedExercise[];
+}
+
+export interface ExerciseSheetItem {
+    id: string;
+    ageGroup: ExerciseAgeGroup;
+    level: number;
+    exercises: OrderedExercise[];
+}
+
+export interface OrderedExercise {
+    order: number;
+    exercise: Exercise;
+}
+
+export interface AlternativeDifficultyExerciseGroup {
+    id: string;
+    exercises: Exercise[];
+    description?: Nullable<string>;
+    createdBy: User;
+    createdAt: string;
+    updatedAt: string;
+}
+
+export interface SameLogicExerciseGroup {
+    id: string;
+    exercises: Exercise[];
+    description?: Nullable<string>;
+    createdBy: User;
+    createdAt: string;
+    updatedAt: string;
 }
 
 export interface ExerciseHistory {
@@ -220,6 +298,7 @@ export interface ExerciseTag {
   name: string;
   parent?: Nullable<ExerciseTag>;
   children: ExerciseTag[];
+    exerciseCount: number;
 }
 
 export interface ExerciseSearchResult {
@@ -268,6 +347,37 @@ export interface ExerciseDifficulty {
 export interface Image {
   id: string;
   url: string;
+}
+
+export interface GlobalStats {
+    userLeaderboard: LeaderBoardUser[];
+    exerciseHourlyCount: ExerciseHourlyGroup[];
+    totalExerciseCount: number;
+    checkedExerciseCount: number;
+    contributionCalendar: ContributionCalendar;
+}
+
+export interface ContributionCalendar {
+    fromDate: string;
+    toDate: string;
+    data: ContributionCalendarDay[];
+}
+
+export interface ContributionCalendarDay {
+    date: string;
+    count: number;
+    level: number;
+}
+
+export interface ExerciseHourlyGroup {
+    hour: string;
+    count: number;
+}
+
+export interface LeaderBoardUser {
+    user: User;
+    rank: number;
+    submittedExerciseCount: number;
 }
 
 export interface LoginResponse {

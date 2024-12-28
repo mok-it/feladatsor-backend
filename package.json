@@ -47,6 +47,7 @@
     "exceljs": "^4.4.0",
     "graphql": "^16.6.0",
     "graphql-tools": "^8.3.18",
+    "nestjs-create-param-decorator-with-injections": "^0.1.2",
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",
     "reflect-metadata": "^0.1.13",

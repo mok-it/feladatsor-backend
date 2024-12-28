@@ -1,27 +1,24 @@
-import { PrismaClient } from '@prisma/client';
 import { UserService } from '../../user/user.service';
 import { faker } from '@faker-js/faker';
-import { Logger } from '@nestjs/common';
+import { INestApplication } from '@nestjs/common';
 import { Role } from '../../graphql/graphqlTypes';
-import { ImageService } from '../../image/image.service';
 import { Config } from '../../config/config';
 
-export const seedUsers = async (prisma: PrismaClient) => {
-  const logger = new Logger('SeedUsers');
-  const config = new Config();
-  const imageService = new ImageService(prisma, config);
-  const userService = new UserService(prisma, logger, imageService);
+export const seedUsers = async (app: INestApplication) => {
+  const userService = app.get(UserService);
+  const config = app.get(Config);
+
   const user = await userService.register({
-    email: 'test@test.com',
-    password: 'test',
-    userName: 'test',
-    name: 'Test User',
+    email: config.technicalUser.email,
+    password: config.technicalUser.defaultPassword,
+    userName: config.technicalUser.username,
+    name: config.technicalUser.name,
   });
 
-  await userService.changePermissions(user.id, [Role.ADMIN]);
+  await userService.changePermissions(user.id, [Role.ADMIN, Role.USER]);
 
   await Promise.all(
-    Array.from({ length: 20 }).map(async (_, i) => {
+    Array.from({ length: 5 }).map(async (_, i) => {
       const firstName = faker.person.firstName();
       const lastName = faker.person.lastName();
       return await userService.register({

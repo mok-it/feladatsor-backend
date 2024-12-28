@@ -1,13 +1,14 @@
-import { Injectable } from '@nestjs/common';
-import { AgeGroup, Exercise, PrismaClient, User } from '@prisma/client';
-import { ExerciseInput, ExerciseUpdateInput } from '../graphql/graphqlTypes';
+import {Injectable} from '@nestjs/common';
+import {AgeGroup, Exercise, User} from '@prisma/client';
+import {ExerciseInput, ExerciseUpdateInput} from '../graphql/graphqlTypes';
+import {PrismaService} from "../prisma/PrismaService";
 
 @Injectable()
 export class ExerciseService {
-  constructor(private readonly prismaClient: PrismaClient) {}
+  constructor(private readonly prismaService: PrismaService) {}
 
   getExerciseById(id: string) {
-    return this.prismaClient.exercise.findFirst({
+    return this.prismaService.exercise.findFirst({
       where: {
         id,
       },
@@ -15,25 +16,29 @@ export class ExerciseService {
   }
 
   async getExercises(take: number, skip: number) {
-    return this.prismaClient.exercise.findMany({
+    return this.prismaService.exercise.findMany({
       take,
       skip,
     });
   }
 
   getExercisesCount() {
-    return this.prismaClient.exercise.count();
+    return this.prismaService.exercise.count();
   }
 
   getExercisesByUserId(id: string) {
-    return this.prismaClient.exercise.findMany({
+    return this.prismaService.exercise.findMany({
       where: {
         createdById: id,
       },
     });
   }
 
-  createExercise(data: ExerciseInput, user: User, id?: string) {
+  createExercise(
+    data: ExerciseInput & { createdAt?: Date },
+    user: User,
+    id?: string,
+  ) {
     const ageGroups: AgeGroup[] = [
       'KOALA',
       'MEDVEBOCS',
@@ -42,20 +47,20 @@ export class ExerciseService {
       'JEGESMEDVE',
     ];
 
-    return this.prismaClient.exercise.create({
+    return this.prismaService.exercise.create({
       data: {
         id: id,
-        alternativeDifficultyExercise: data.alternativeDifficultyParent
+        alternativeDifficultyExerciseGroup: data.alternativeDifficultyGroup
           ? {
               connect: {
-                id: data.alternativeDifficultyParent,
+                id: data.alternativeDifficultyGroup,
               },
             }
           : undefined,
-        sameLogicExercise: data.sameLogicParent
+        sameLogicExerciseGroup: data.sameLogicGroup
           ? {
               connect: {
-                id: data.sameLogicParent,
+                id: data.sameLogicGroup,
               },
             }
           : undefined,
@@ -88,6 +93,7 @@ export class ExerciseService {
         solveIdeaImageId: data.solveIdeaImage,
         helpingQuestions: data.helpingQuestions,
         source: data.source,
+        createdAt: data.createdAt,
         createdBy: {
           connect: {
             id: user.id,
@@ -98,7 +104,7 @@ export class ExerciseService {
   }
 
   async updateExercise(id: string, data: ExerciseUpdateInput, user: User) {
-    return await this.prismaClient.$transaction(async (tx) => {
+    return await this.prismaService.$transaction(async (tx) => {
       //Undefined means we should keep the data
       //Null means an explicit delete
       //Data is present means modify the data
@@ -183,17 +189,17 @@ export class ExerciseService {
           solution: data.solution,
           helpingQuestions: data.helpingQuestions,
           source: data.source,
-          alternativeDifficultyExercise: data.alternativeDifficultyParent
+          alternativeDifficultyExerciseGroup: data.alternativeDifficultyGroup
             ? {
                 connect: {
-                  id: data.alternativeDifficultyParent,
+                  id: data.alternativeDifficultyGroup,
                 },
               }
             : undefined,
-          sameLogicExercise: data.sameLogicParent
+          sameLogicExerciseGroup: data.sameLogicGroup
             ? {
                 connect: {
-                  id: data.sameLogicParent,
+                  id: data.sameLogicGroup,
                 },
               }
             : undefined,
@@ -204,23 +210,32 @@ export class ExerciseService {
     });
   }
 
-  getAlternativeDifficultyExercises(exerciseId: string) {
-    return this.prismaClient.exercise.findMany({
+  async getAlternativeDifficultyExercises(exerciseId: string) {
+    const otherExercise = await this.getExerciseById(exerciseId);
+    if (!otherExercise || !otherExercise.exerciseGroupAlternativeDifficultyId) {
+      return [];
+    }
+    return this.prismaService.exercise.findMany({
       where: {
-        alternativeDifficultyExerciseId: exerciseId,
+        alternativeDifficultyExerciseGroup: {
+          id: otherExercise.exerciseGroupAlternativeDifficultyId,
+        },
       },
     });
   }
 
   getDifficultyByExercise(id: string) {
-    return this.prismaClient.exerciseDifficulty.findMany({
+    return this.prismaService.exerciseDifficulty.findMany({
       where: {
         exerciseId: id,
       },
     });
   }
 
-  getDifferences(oldExercise: Exercise, newExercise: ExerciseUpdateInput) {
+  private getDifferences(
+    oldExercise: Exercise,
+    newExercise: ExerciseUpdateInput,
+  ) {
     const fieldsToCheck: (keyof Exercise)[] = [
       'description',
       'helpingQuestions',
@@ -251,7 +266,7 @@ export class ExerciseService {
       .filter(Boolean);
   }
 
-  arraysDiffer(arr1: string[], arr2: string[]): boolean {
+  private arraysDiffer(arr1: string[], arr2: string[]): boolean {
     if (arr1.length !== arr2.length) {
       return true;
     }

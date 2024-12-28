@@ -1,6 +1,7 @@
 type Query {
   exerciseTags: [ExerciseTag!]!
   exerciseTag(id: ID!): ExerciseTag
+  flatExerciseTags: [ExerciseTag!]!
 }
 
 type Mutation {
@@ -14,4 +15,5 @@ type ExerciseTag {
   name: String!
   parent: ExerciseTag
   children: [ExerciseTag!]!
+  exerciseCount: Int!
 }

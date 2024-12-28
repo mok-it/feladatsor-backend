@@ -1,12 +1,13 @@
-import { Injectable } from '@nestjs/common';
-import { ExerciseCheckInput } from '../graphql/graphqlTypes';
-import { PrismaClient, User } from '@prisma/client';
-import { ExerciseCommentService } from '../exercise-comment/exercise-comment.service';
+import {Injectable} from '@nestjs/common';
+import {ExerciseCheckInput} from '../graphql/graphqlTypes';
+import {User} from '@prisma/client';
+import {ExerciseCommentService} from '../exercise-comment/exercise-comment.service';
+import {PrismaService} from "../prisma/PrismaService";
 
 @Injectable()
 export class ExerciseCheckService {
   constructor(
-    private readonly prismaClient: PrismaClient,
+    private readonly prismaService: PrismaService,
     private readonly exerciseCommentService: ExerciseCommentService,
   ) {}
   async createExerciseCheck(input: ExerciseCheckInput, user: User) {
@@ -17,7 +18,7 @@ export class ExerciseCheckService {
         user,
       );
     }
-    return this.prismaClient.exerciseCheck.create({
+    return this.prismaService.exerciseCheck.create({
       data: {
         type: input.type,
         exercise: {
@@ -35,7 +36,7 @@ export class ExerciseCheckService {
   }
 
   getChecksByExerciseId(id: string) {
-    return this.prismaClient.exerciseCheck.findMany({
+    return this.prismaService.exerciseCheck.findMany({
       where: {
         exerciseId: id,
       },

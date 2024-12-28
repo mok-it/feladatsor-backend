@@ -1,17 +1,28 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaClient, Prisma } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 import { ExerciseSearchQuery } from '../graphql/graphqlTypes';
+import { PrismaService } from '../prisma/PrismaService';
 
 @Injectable()
 export class ExerciseSearchService {
-  constructor(private readonly prismaClient: PrismaClient) {}
+  constructor(private readonly prismaService: PrismaService) {}
 
   async searchExercises(query: ExerciseSearchQuery) {
     const where: Prisma.ExerciseWhereInput = {
-      description: {
-        mode: 'insensitive',
-        contains: query.queryStr,
-      },
+      OR: [
+        {
+          description: {
+            mode: 'insensitive',
+            contains: query.queryStr,
+          },
+        },
+        {
+          id: {
+            mode: 'insensitive',
+            contains: query.queryStr,
+          },
+        },
+      ],
       AND: (query.difficulty ?? []).map((d) => ({
         difficulty: {
           some: {
@@ -23,26 +34,40 @@ export class ExerciseSearchService {
           },
         },
       })),
-      /*tags: {
-        some: {
-          name: {
-            in: query.tags ?? [],
-          },
-        },
+      isCompetitionFinal:
+        typeof query.isCompetitionFinal === 'boolean'
+          ? {
+              equals: query.isCompetitionFinal,
+            }
+          : undefined,
+      tags: {
+        some:
+          query.includeTags && query.includeTags.length > 0
+            ? {
+                id: {
+                  in: query.includeTags,
+                },
+              }
+            : undefined,
         none: {
-          name: {
+          id: {
             in: query.excludeTags ?? [],
           },
         },
-      },*/
+      },
     };
-    const countPromise = this.prismaClient.exercise.count({
+    const countPromise = this.prismaService.exercise.count({
       where,
     });
-    const dataPromise = this.prismaClient.exercise.findMany({
+    const dataPromise = this.prismaService.exercise.findMany({
       skip: query.skip,
       take: query.take,
       where,
+      orderBy: query.orderBy
+        ? {
+            [query.orderBy]: query.orderDirection.toLowerCase() ?? 'desc',
+          }
+        : undefined,
     });
 
     const [data, count] = await Promise.all([dataPromise, countPromise]);

@@ -6,7 +6,8 @@ type Query {
 type Mutation {
   register(data: UserRegisterInput!): User!
   changePermissions(userId: ID!, permissions: [Role!]!): User!
-  updateUser(data: UserUpdateInput!, id: String): User!
+  "Update by id, or if not provided, use the user from the JWT token"
+  updateUser(data: UserUpdateInput!, id: ID): User!
 }
 
 type LoginResponse {

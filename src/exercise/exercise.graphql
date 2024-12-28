@@ -19,9 +19,17 @@ input ExerciseSearchQuery {
   skip: Int!
   take: Int!
   queryStr: String
+  isCompetitionFinal: Boolean
   difficulty: [ExerciseDifficultyRange!]
-  tags: [ID!]
+  orderBy: String
+  orderDirection: OrderDirection
+  includeTags: [ID!]
   excludeTags: [ID!]
+}
+
+enum OrderDirection {
+  ASC
+  DESC
 }
 
 input ExerciseDifficultyRange {
@@ -43,8 +51,8 @@ input ExerciseInput {
   solutionOptions: [String!]!
   source: String
   difficulty: [ExerciseDifficultyInput!]!
-  alternativeDifficultyParent: ID
-  sameLogicParent: ID
+  alternativeDifficultyGroup: ID
+  sameLogicGroup: ID
   isCompetitionFinal: Boolean
 }
 
@@ -62,8 +70,8 @@ input ExerciseUpdateInput {
   solutionOptions: [String!]
   source: String
   difficulty: [ExerciseDifficultyInput!]
-  alternativeDifficultyParent: ID
-  sameLogicParent: ID
+  alternativeDifficultyGroup: ID
+  sameLogicGroup: ID
   isCompetitionFinal: Boolean
 
   #New fields that are not present in create

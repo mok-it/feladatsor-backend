@@ -8,6 +8,7 @@ import { UserModule } from '../user/user.module';
 import { ExerciseModule } from '../exercise/exercise.module';
 import { ImageModule } from '../image/image.module';
 import { ExerciseCommentModule } from '../exercise-comment/exercise-comment.module';
+import { ExerciseGroupModule } from '../exercise-group/exercise-group.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { ExerciseCommentModule } from '../exercise-comment/exercise-comment.modu
     UserModule,
     ImageModule,
     ExerciseCommentModule,
+    ExerciseGroupModule,
   ],
   controllers: [LoadOldExcelController],
   providers: [LoadOldExcelService, PrismaService],
