@@ -5,6 +5,16 @@ import { Config } from '../config/config';
 import * as fs from 'fs';
 import * as path from 'node:path';
 
+declare global {
+  interface BigInt {
+    toJSON(): string;
+  }
+}
+
+BigInt.prototype.toJSON = function () {
+  return this.toString();
+};
+
 @Injectable()
 export class ExcelExportService {
   constructor(
@@ -19,26 +29,46 @@ export class ExcelExportService {
   `) as { table_name: string }[];
 
     //delete the prisma migrations table
-    //TODO: dont delete all tables starting with '_'
     tableNames = tableNames.filter((tableName) => {
-      return !tableName.table_name.startsWith('_');
+      return tableName.table_name !== '_prisma_migrations';
     });
 
     await Promise.all(
-      tableNames.map(async (tableName) => {
-        const data = await this.prismaClient[tableName.table_name].findMany({});
+      tableNames.map(async ({ table_name }) => {
+        const data = (await this.prismaClient.$queryRawUnsafe(
+          `SELECT * FROM "public"."${table_name}"`,
+        )) as any[];
 
-        if (tableName.table_name === 'User') {
+        if (table_name === 'User') {
           for (const i in data) {
             delete data[i].password;
           }
         }
-        const worksheet = workbook.addWorksheet(tableName.table_name);
+        const worksheet = workbook.addWorksheet(table_name);
         if (data.length > 0) {
           const columns = Object.keys(data[0]);
           worksheet.columns = columns.map((col) => ({ header: col, key: col }));
           data.forEach((row: any) => {
-            worksheet.addRow(row);
+            try {
+              worksheet.addRow(row);
+            } catch (e) {
+              console.log(row);
+              console.log(e);
+            }
+          });
+
+          worksheet.columns.forEach((column) => {
+            let maxLength = 0;
+            column['eachCell']({ includeEmpty: true }, function (cell) {
+              const columnLength = cell.value
+                ? cell.value.toString().length
+                : 10;
+              if (columnLength > maxLength) {
+                maxLength = columnLength;
+              }
+            });
+            column.width =
+              maxLength > 500 ? 500 : maxLength < 10 ? 10 : maxLength;
           });
         }
       }),
