@@ -22,6 +22,9 @@ async function main() {
   await prisma.exerciseTag.deleteMany();
   await prisma.exerciseDifficulty.deleteMany();
   await prisma.exerciseHistory.deleteMany();
+  await prisma.exerciseGroupAlternativeDifficulty.deleteMany();
+  await prisma.exerciseGroupSameLogic.deleteMany();
+  await prisma.exerciseComment.deleteMany();
   await prisma.exercise.deleteMany();
   await prisma.exerciseSheetItem.deleteMany();
   await prisma.exerciseSheet.deleteMany();
