@@ -80,7 +80,7 @@ export interface ExerciseSearchQuery {
     difficulty?: Nullable<ExerciseDifficultyRange[]>;
     orderBy?: Nullable<string>;
     orderDirection?: Nullable<OrderDirection>;
-    tags?: Nullable<string[]>;
+    includeTags?: Nullable<string[]>;
     excludeTags?: Nullable<string[]>;
 }
 

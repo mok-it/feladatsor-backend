@@ -37,6 +37,7 @@ type ExerciseSheet {
   id: ID!
   name: String!
   sheetItems: [ExerciseSheetItem!]!
+  #TODO: Talon items
   talonItems: [ExerciseSheetTalonItem!]!
   createdBy: User!
   createdAt: String!

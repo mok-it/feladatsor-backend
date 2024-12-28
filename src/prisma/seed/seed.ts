@@ -9,6 +9,12 @@ import { PrismaService } from '../PrismaService';
 import { AppModule } from '../../app.module';
 import { seedExerciseSheets } from './seedExerciseSheets';
 
+async function seedExerciseGroups(prisma: PrismaService) {
+  // prisma.exerciseGroupAlternativeDifficulty.createMany({
+  //   data: Array.from({length: 1000}).map()
+  // })
+}
+
 async function main() {
   const logger = new Logger('Seed');
   const app = await NestFactory.create(AppModule);
@@ -25,6 +31,7 @@ async function main() {
   await prisma.exerciseGroupAlternativeDifficulty.deleteMany();
   await prisma.exerciseGroupSameLogic.deleteMany();
   await prisma.exerciseComment.deleteMany();
+  await prisma.exerciseOnExerciseSheetItem.deleteMany();
   await prisma.exercise.deleteMany();
   await prisma.exerciseSheetItem.deleteMany();
   await prisma.exerciseSheet.deleteMany();
@@ -41,6 +48,10 @@ async function main() {
   // Seed exercises
   logger.log('🌱 Seeding exercises');
   await seedExercises(prisma);
+
+  // Seed exercise groups
+  logger.log('🌱 Seeding exercise groups');
+  await seedExerciseGroups(prisma);
 
   //Seed exercise sheets
   logger.log('🌱 Seeding exercise sheets');

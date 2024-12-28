@@ -42,10 +42,10 @@ export class ExerciseSearchService {
           : undefined,
       tags: {
         some:
-          query.tags && query.tags.length > 0
+          query.includeTags && query.includeTags.length > 0
             ? {
                 id: {
-                  in: query.tags,
+                  in: query.includeTags,
                 },
               }
             : undefined,

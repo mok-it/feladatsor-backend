@@ -23,7 +23,7 @@ input ExerciseSearchQuery {
   difficulty: [ExerciseDifficultyRange!]
   orderBy: String
   orderDirection: OrderDirection
-  tags: [ID!]
+  includeTags: [ID!]
   excludeTags: [ID!]
 }
 
