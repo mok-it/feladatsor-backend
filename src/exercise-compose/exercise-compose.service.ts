@@ -80,16 +80,20 @@ export class ExerciseComposeService {
     sheetItems: ExerciseSheetItemInput[],
   ) {
     return Promise.all(
-      sheetItems.map((item) => {
+      sheetItems.map((sheetItem) => {
         return tx.exerciseSheetItem.create({
           data: {
             exercises: {
-              connect: item.exercises.map((exerciseId) => ({
-                id: exerciseId,
+              create: sheetItem.exercises.map((exercise) => ({
+                exerciseId: exercise.exerciseID,
+                order: exercise.order,
+                exercise: {
+                  connect: exercise.exerciseID,
+                },
               })),
             },
-            ageGroup: item.ageGroup,
-            level: item.level,
+            ageGroup: sheetItem.ageGroup,
+            level: sheetItem.level,
           },
         });
       }),

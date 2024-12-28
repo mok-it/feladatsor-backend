@@ -5,11 +5,15 @@ import { PrismaService } from '../../prisma/PrismaService';
 export class ExerciseSheetItemService {
   constructor(private readonly prismaService: PrismaService) {}
 
-  getExercisesBySheetItemId(id: string) {
-    return this.prismaService.exerciseSheetItem
+  async getExercisesBySheetItemId(id: string) {
+    const ex = await this.prismaService.exerciseSheetItem
       .findUnique({
         where: { id },
       })
       .exercises();
+
+    console.log(ex);
+
+    return ex;
   }
 }

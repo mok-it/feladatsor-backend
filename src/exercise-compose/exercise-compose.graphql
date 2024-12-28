@@ -25,21 +25,37 @@ input UpdateExerciseSheetInput {
 input ExerciseSheetItemInput {
   ageGroup: ExerciseAgeGroup!
   level: Int!
-  exercises: [ID!]!
+  exercises: [OrderedExerciseInput!]!
+}
+
+input OrderedExerciseInput {
+  exerciseID: ID!
+  order: Int!
 }
 
 type ExerciseSheet {
   id: ID!
   name: String!
   sheetItems: [ExerciseSheetItem!]!
+  talonItems: [ExerciseSheetTalonItem!]!
   createdBy: User!
   createdAt: String!
   updatedAt: String!
+}
+
+type ExerciseSheetTalonItem {
+  id: ID!
+  exercises: [OrderedExercise!]!
 }
 
 type ExerciseSheetItem {
   id: ID!
   ageGroup: ExerciseAgeGroup!
   level: Int!
-  exercises: [Exercise!]!
+  exercises: [OrderedExercise!]!
+}
+
+type OrderedExercise {
+  order: Int!
+  exercise: Exercise!
 }

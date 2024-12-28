@@ -52,7 +52,8 @@ model Exercise {
   createdById                          String
   createdAt                            DateTime                            @default(now())
   updatedAt                            DateTime                            @default(now()) @updatedAt
-  ExerciseSheetItems                   ExerciseSheetItem[]
+  ExerciseSheetItems                   ExerciseOnExerciseSheetItem[]
+  ExerciseSheet                        ExerciseSheet[]
 }
 
 model ExerciseGroupAlternativeDifficulty {
@@ -167,20 +168,31 @@ model Image {
 }
 
 model ExerciseSheet {
-  id          String              @id @default(uuid())
-  name        String
-  sheetItems  ExerciseSheetItem[]
-  createdById String
-  createdBy   User                @relation(fields: [createdById], references: [id])
-  createdAt   DateTime            @default(now())
-  updatedAt   DateTime            @default(now()) @updatedAt
+  id              String              @id @default(uuid())
+  name            String
+  sheetItems      ExerciseSheetItem[]
+  hookedExercises Exercise[]
+  createdById     String
+  createdBy       User                @relation(fields: [createdById], references: [id])
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @default(now()) @updatedAt
 }
 
 model ExerciseSheetItem {
-  id              String         @id @default(uuid())
+  id              String                        @id @default(uuid())
   ageGroup        AgeGroup
   level           Int
-  exercises       Exercise[]
-  ExerciseSheet   ExerciseSheet? @relation(fields: [exerciseSheetId], references: [id])
+  exercises       ExerciseOnExerciseSheetItem[]
+  ExerciseSheet   ExerciseSheet?                @relation(fields: [exerciseSheetId], references: [id])
   exerciseSheetId String?
+}
+
+model ExerciseOnExerciseSheetItem {
+  exerciseId          String
+  exercise            Exercise          @relation(fields: [exerciseId], references: [id])
+  exerciseSheetItemId String
+  exerciseSheetItem   ExerciseSheetItem @relation(fields: [exerciseSheetItemId], references: [id])
+  order               Int
+
+  @@id([exerciseId, exerciseSheetItemId])
 }

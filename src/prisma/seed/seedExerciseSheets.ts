@@ -27,9 +27,16 @@ export async function seedExerciseSheets(prisma: PrismaService) {
               tx.exerciseSheetItem.create({
                 data: {
                   exercises: {
-                    connect: faker.helpers
+                    create: faker.helpers
                       .arrayElements(exerciseIds, { min: 0, max: 3 })
-                      .map((id) => ({ id })),
+                      .map((id, index) => ({
+                        order: index,
+                        exercise: {
+                          connect: {
+                            id,
+                          },
+                        },
+                      })),
                   },
                   ageGroup,
                   level,

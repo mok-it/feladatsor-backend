@@ -64,7 +64,12 @@ export interface UpdateExerciseSheetInput {
 export interface ExerciseSheetItemInput {
     ageGroup: ExerciseAgeGroup;
     level: number;
-    exercises: string[];
+    exercises: OrderedExerciseInput[];
+}
+
+export interface OrderedExerciseInput {
+    exerciseID: string;
+    order: number;
 }
 
 export interface ExerciseSearchQuery {
@@ -205,16 +210,27 @@ export interface ExerciseSheet {
     id: string;
     name: string;
     sheetItems: ExerciseSheetItem[];
+    talonItems: ExerciseSheetTalonItem[];
     createdBy: User;
     createdAt: string;
     updatedAt: string;
+}
+
+export interface ExerciseSheetTalonItem {
+    id: string;
+    exercises: OrderedExercise[];
 }
 
 export interface ExerciseSheetItem {
     id: string;
     ageGroup: ExerciseAgeGroup;
     level: number;
-    exercises: Exercise[];
+    exercises: OrderedExercise[];
+}
+
+export interface OrderedExercise {
+    order: number;
+    exercise: Exercise;
 }
 
 export interface AlternativeDifficultyExerciseGroup {
