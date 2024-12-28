@@ -15,6 +15,7 @@ import { ImageModule } from './image/image.module';
 import { LoadOldExcelModule } from './load-old-excel/load-old-excel.module';
 import { ExerciseCommentModule } from './exercise-comment/exercise-comment.module';
 import { ExerciseHistoryModule } from './exercise-history/exercise-history.module';
+import { ExcelExportModule } from './excel-export/excel-export.module';
 import { ExerciseGroupModule } from './exercise-group/exercise-group.module';
 import { ExerciseComposeModule } from './exercise-compose/exercise-compose.module';
 import { StatModule } from './stat/stat.module';
@@ -38,6 +39,7 @@ import { StatModule } from './stat/stat.module';
     LoadOldExcelModule,
     ExerciseCommentModule,
     ExerciseHistoryModule,
+    ExcelExportModule,
     ExerciseGroupModule,
     ExerciseComposeModule,
     StatModule,

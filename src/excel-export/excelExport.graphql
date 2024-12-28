@@ -1,0 +1,7 @@
+type Mutation {
+    exportExcel : ExportResult
+}
+
+type ExportResult {
+    url: String!
+}
