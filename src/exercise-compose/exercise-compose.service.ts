@@ -65,6 +65,15 @@ export class ExerciseComposeService {
                 connect: sheetItems.map((item) => ({ id: item.id })),
               }
             : undefined,
+          talonExercises: sheetData.talonItems
+            ? {
+                deleteMany: {},
+                create: sheetData.talonItems.map((item) => ({
+                  exerciseId: item.exerciseID,
+                  order: item.order,
+                })),
+              }
+            : undefined,
           name: sheetData.name ? sheetData.name : undefined,
         },
         include: { sheetItems: true, talonExercises: true },

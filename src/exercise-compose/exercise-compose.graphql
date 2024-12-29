@@ -20,6 +20,7 @@ input ExerciseSheetInput {
 input UpdateExerciseSheetInput {
   name: String
   sheetItems: [ExerciseSheetItemInput!]
+  talonItems: [OrderedExerciseInput!]
 }
 
 input ExerciseSheetItemInput {

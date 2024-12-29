@@ -59,6 +59,7 @@ export interface ExerciseSheetInput {
 export interface UpdateExerciseSheetInput {
     name?: Nullable<string>;
     sheetItems?: Nullable<ExerciseSheetItemInput[]>;
+    talonItems?: Nullable<OrderedExerciseInput[]>;
 }
 
 export interface ExerciseSheetItemInput {
@@ -218,15 +219,10 @@ export interface ExerciseSheet {
     id: string;
     name: string;
     sheetItems: ExerciseSheetItem[];
-    talonItems: ExerciseSheetTalonItem[];
+    talonItems: OrderedExercise[];
     createdBy: User;
     createdAt: string;
     updatedAt: string;
-}
-
-export interface ExerciseSheetTalonItem {
-    id: string;
-    exercises: OrderedExercise[];
 }
 
 export interface ExerciseSheetItem {
