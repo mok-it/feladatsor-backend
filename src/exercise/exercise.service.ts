@@ -218,6 +218,91 @@ export class ExerciseService {
     });
   }
 
+  async generateNextExerciseId(
+    tx: Omit<
+      PrismaService,
+      '$connect' | '$disconnect' | '$on' | '$transaction' | '$use'
+    >,
+  ) {
+    //ID format: <2 digi of year>-<3 digit incremental id>-<group_location(a,b,c ...)>
+
+    const currentYear = new Date().getFullYear();
+    const yearPrefix = currentYear.toString().slice(-2);
+
+    const lastExerciseInThisYear = await tx.exercise.findFirst({
+      where: {
+        id: {
+          startsWith: yearPrefix,
+        },
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+
+    if (lastExerciseInThisYear) {
+      const idParts = lastExerciseInThisYear.id.split('-');
+      if (idParts.length != 3)
+        throw new Error(
+          `Invalid id found: [${lastExerciseInThisYear.id}], can't generate next id`,
+        );
+      return `${idParts[0]}-${(Number(idParts[1]) + 1)
+        .toString()
+        .padStart(3, '0')}-${idParts[2]}`;
+    }
+
+    return `${yearPrefix}-001-a`;
+  }
+
+  async generateNextIdInGroup(
+    exerciseInGroupId: string,
+    tx: Omit<
+      PrismaService,
+      '$connect' | '$disconnect' | '$on' | '$transaction' | '$use'
+    >,
+  ) {
+    const exercise = await tx.exercise.findUnique({
+      where: {
+        id: exerciseInGroupId,
+      },
+      include: {
+        sameLogicExerciseGroup: {
+          include: {
+            exercises: true,
+          },
+        },
+      },
+    });
+
+    if (!exercise.sameLogicExerciseGroup) {
+      throw new Error(
+        `Exercise [${exerciseInGroupId}] must be in a group to generate nextGroupId for it`,
+      );
+    }
+
+    const idsInGroup = exercise.sameLogicExerciseGroup.exercises.map(
+      (exercise) => exercise.id,
+    );
+    const groupPrefix = `${idsInGroup[0].split('-')[0]}-${
+      idsInGroup[0].split('-')[1]
+    }`;
+
+    const largestLetter = idsInGroup
+      .map((id) => {
+        const idParts = id.split('-');
+        if (idParts.length != 3)
+          throw new Error(
+            `Invalid id found: [${id}], can't generate next id in group`,
+          );
+        return idParts[2];
+      })
+      .reduce((max, current) => (current > max ? current : max));
+
+    let nextGroupChar = String.fromCharCode(largestLetter.charCodeAt(0) + 1);
+
+    return `${groupPrefix}-${nextGroupChar}`;
+  }
+
   private getDifferences(
     oldExercise: Exercise,
     newExercise: ExerciseUpdateInput,

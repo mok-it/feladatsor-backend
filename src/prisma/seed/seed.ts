@@ -39,13 +39,13 @@ async function main() {
   logger.log('🌱 Seeding tags');
   await seedTags(prisma);
 
-  // Seed exercises
-  logger.log('🌱 Seeding exercises');
-  await seedExercises(prisma);
-
   // Seed exercise groups
   logger.log('🌱 Seeding exercise groups');
   await seedExerciseGroups(prisma);
+
+  // Seed exercises
+  logger.log('🌱 Seeding exercises');
+  await seedExercises(prisma);
 
   //Seed exercise sheets
   logger.log('🌱 Seeding exercise sheets');
