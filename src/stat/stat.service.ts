@@ -45,13 +45,22 @@ export class StatService {
     }));
   }
 
-  getTotalExerciseCount() {
-    return this.prismaService.exercise.count();
+  getTotalExerciseCount(userId?: string) {
+    return this.prismaService.exercise.count(
+      userId
+        ? {
+            where: {
+              createdById: userId,
+            },
+          }
+        : undefined,
+    );
   }
 
-  getCheckedExerciseCount() {
+  getCheckedExerciseCount(userId?: string) {
     return this.prismaService.exercise.count({
       where: {
+        createdById: userId,
         checks: {
           some: {
             type: 'GOOD',
@@ -61,9 +70,24 @@ export class StatService {
     });
   }
 
-  async getContributionCalendar() {
+  async getContributionCalendar(userId?: string) {
     // Query the data and group by the hour
-    const dailyCounts = await this.prismaService.$queryRaw`SELECT 
+    const dailyCounts = userId
+      ? await this.prismaService.$queryRaw`SELECT 
+        TO_CHAR(DATE_TRUNC('day', "createdAt"), 'YYYY-MM-DD') AS day,
+        COUNT(*) AS count
+    FROM 
+        "Exercise"
+    WHERE 
+        "createdById" = ${userId}
+        AND "createdAt" >= DATE_TRUNC('year', CURRENT_DATE)
+        AND "createdAt" < DATE_TRUNC('year', CURRENT_DATE) + INTERVAL '1 year'
+    GROUP BY 
+        day
+    ORDER BY 
+        day;`
+      : //If we want to query everything (no userId provided)
+        await this.prismaService.$queryRaw`SELECT 
         TO_CHAR(DATE_TRUNC('day', "createdAt"), 'YYYY-MM-DD') AS day,
         COUNT(*) AS count
     FROM 
@@ -88,7 +112,7 @@ export class StatService {
       fromDate: data[0] ? data[0].day : `${new Date().getFullYear()}-01-01`,
       toDate: data[0]
         ? data[data.length - 1].day
-        : `${new Date().getFullYear() + 1}-12-31`,
+        : `${new Date().getFullYear()}-12-31`,
       data: data.map((d) => ({
         date: d.day,
         count: d.count,

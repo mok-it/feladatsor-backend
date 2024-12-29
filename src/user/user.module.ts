@@ -3,10 +3,11 @@ import { UserService } from './user.service';
 import { UserResolver } from './user.resolver';
 import { ExerciseModule } from '../exercise/exercise.module';
 import { ImageModule } from '../image/image.module';
-import {PrismaService} from "../prisma/PrismaService";
+import { PrismaService } from '../prisma/PrismaService';
+import { StatModule } from '../stat/stat.module';
 
 @Module({
-  imports: [forwardRef(() => ExerciseModule), ImageModule],
+  imports: [forwardRef(() => ExerciseModule), StatModule, ImageModule],
   providers: [
     UserResolver,
     UserService,

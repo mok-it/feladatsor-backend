@@ -44,5 +44,13 @@ type User {
   updatedAt: String!
   exercises: [Exercise!]!
   roles: [Role!]!
+  stats: UserStats!
+  comments: [ExerciseComment!]!
   avatarUrl: String
+}
+
+type UserStats {
+  totalExerciseCount: Int!
+  checkedExerciseCount: Int!
+  contributionCalendar: ContributionCalendar!
 }

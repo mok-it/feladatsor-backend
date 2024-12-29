@@ -11,6 +11,7 @@ import {
   Role,
   User,
   UserRegisterInput,
+  UserStats,
   UserUpdateInput,
 } from '../graphql/graphqlTypes';
 import { UseGuards } from '@nestjs/common';
@@ -20,12 +21,14 @@ import { Roles } from '../auth/decorators/roles.decorator';
 import { Public } from '../auth/decorators/public.decorator';
 import { CurrentUser } from '../auth/decorators/user.auth.decorator';
 import { User as PrismaUser } from '@prisma/client';
+import { StatService } from '../stat/stat.service';
 
 @Resolver('User')
 export class UserResolver {
   constructor(
     private readonly userService: UserService,
     private readonly exerciseService: ExerciseService,
+    private readonly statService: StatService,
   ) {}
 
   @UseGuards(RolesGuard)
@@ -74,5 +77,23 @@ export class UserResolver {
   @ResolveField('avatarUrl')
   async getUserAvatar(@Parent() user: PrismaUser) {
     return this.userService.getUserAvatar(user);
+  }
+
+  @ResolveField('stats')
+  async getStats(@Parent() user: PrismaUser): Promise<UserStats> {
+    return {
+      totalExerciseCount: await this.statService.getTotalExerciseCount(user.id),
+      checkedExerciseCount: await this.statService.getCheckedExerciseCount(
+        user.id,
+      ),
+      contributionCalendar: await this.statService.getContributionCalendar(
+        user.id,
+      ),
+    };
+  }
+
+  @ResolveField('comments')
+  async getCommentsByUser(@Parent() user: PrismaUser) {
+    return this.userService.getUserComments(user.id);
   }
 }

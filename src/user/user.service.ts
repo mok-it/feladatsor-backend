@@ -167,4 +167,12 @@ export class UserService {
       },
     });
   }
+
+  getUserComments(id: string) {
+    return this.prismaService.exerciseComment.findMany({
+      where: {
+        userId: id,
+      },
+    });
+  }
 }

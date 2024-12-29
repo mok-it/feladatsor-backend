@@ -357,7 +357,14 @@ export interface User {
     updatedAt: string;
     exercises: Exercise[];
     roles: Role[];
+    stats: UserStats;
     avatarUrl?: Nullable<string>;
+}
+
+export interface UserStats {
+    totalExerciseCount: number;
+    checkedExerciseCount: number;
+    contributionCalendar: ContributionCalendar;
 }
 
 type Nullable<T> = T | null;
