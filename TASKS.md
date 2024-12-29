@@ -9,6 +9,7 @@
 - [X] Properly handle exercise groups
 - [X] Exercise search page implement sorting
 - [ ] Permission management for resources
+- [X] Feladathoz szükség van válaszopciók hozzáadására, jó megoldással együtt 4 db
 
 ### Üzletre vár
 
@@ -20,8 +21,6 @@
 
 Szükség van egy olyan compose jellegű oldara, ahol lehet látni hogy egy feladatsoron egy feladat hány kategóriában van használva.
 Feladatonként hány segítő kérdés, illetve hány (rósszz) válaszopció van megadva.
-
-Feladathoz szükség van válaszopciók hozzáadására, jó megoldással együtt 4 db
 
 ### Kontribúciók
 
@@ -36,6 +35,17 @@ Többen csinálhatják
 végeredményben arra van szüksége, hogy a felhasználók által végzett tevékenységek megtekinthetőek legyenek
 ki mikor mit csinált....
 Ki mennyit dolgozott ? 
+
+## Lektorálás - feladatsor ellenőrzése
+
+Szeretnénk tudni kommentet adni a: 
+- Teljes feladatsorhoz
+- Fontos: Kategórához (Koala, kismedve stb...)
+- Fontos: Feladathoz
+- Fontos: Lokációhoz (Zöld-koala-)
+
+Többen csinálhatják:
+- A feladatsorhoz tartozó kommentek (lektorálás)
 
 
 ## Profil oldal saját feladatok lista
