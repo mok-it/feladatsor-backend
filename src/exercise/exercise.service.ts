@@ -288,7 +288,7 @@ export class ExerciseService {
         },
       },
       orderBy: {
-        createdAt: 'desc',
+        id: 'desc',
       },
     });
 
