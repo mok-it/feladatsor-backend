@@ -61,8 +61,7 @@ export class ExerciseComposeService {
         data: {
           sheetItems: sheetItems
             ? {
-                deleteMany: {},
-                connect: sheetItems.map((item) => ({ id: item.id })),
+                set: sheetItems.map((item) => ({ id: item.id })),
               }
             : undefined,
           talonExercises: sheetData.talonItems
@@ -96,9 +95,6 @@ export class ExerciseComposeService {
               create: sheetItem.exercises.map((exercise) => ({
                 exerciseId: exercise.exerciseID,
                 order: exercise.order,
-                // exercise: {
-                //   connect: exercise.exerciseID,
-                // },
               })),
             },
             ageGroup: sheetItem.ageGroup,
