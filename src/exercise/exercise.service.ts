@@ -2,13 +2,17 @@ import { Injectable } from '@nestjs/common';
 import { AgeGroup, Exercise, User } from '@prisma/client';
 import { ExerciseInput, ExerciseUpdateInput } from '../graphql/graphqlTypes';
 import { PrismaService } from '../prisma/PrismaService';
+import { ExerciseGroupService } from '../exercise-group/exercise-group.service';
 
 @Injectable()
 export class ExerciseService {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(
+    private readonly prismaService: PrismaService,
+    private readonly exerciseGroupService: ExerciseGroupService,
+  ) {}
 
   getExerciseById(id: string) {
-    return this.prismaService.exercise.findFirst({
+    return this.prismaService.exercise.findUnique({
       where: {
         id,
       },
@@ -47,52 +51,100 @@ export class ExerciseService {
       'JEGESMEDVE',
     ];
 
-    return this.prismaService.exercise.create({
-      data: {
-        id: id,
-        sameLogicExerciseGroup: data.sameLogicGroup
-          ? {
-              connect: {
-                id: data.sameLogicGroup,
-              },
-            }
-          : undefined,
-        tags: {
-          connect: data.tags.map((tagID) => ({
-            id: tagID,
-          })),
-        },
+    return this.prismaService.$transaction(async (tx) => {
+      const generatedId = await this.generateNextExerciseId(tx);
+      return tx.exercise.create({
+        data: {
+          id: id ? id : generatedId,
+          sameLogicExerciseGroup: data.sameLogicGroup
+            ? {
+                connect: {
+                  id: data.sameLogicGroup,
+                },
+              }
+            : undefined,
+          tags: {
+            connect: data.tags.map((tagID) => ({
+              id: tagID,
+            })),
+          },
 
-        status: data.status,
-        isCompetitionFinal: data.isCompetitionFinal,
-        solutionOptions: data.solutionOptions,
-        difficulty: {
-          //This mapping is done to fill all ageGroup difficulties, even if the frontend does not send every one of them
-          create: ageGroups.map((ageGroup) => {
-            const difficulty = data.difficulty.find(
-              (d) => d.ageGroup == ageGroup,
-            )?.difficulty;
-            return {
-              ageGroup,
-              difficulty: difficulty ?? 0,
-            };
-          }),
-        },
-        description: data.description,
-        exerciseImageId: data.exerciseImage,
-        solution: data.solution,
-        solutionImageId: data.solutionImage,
-        solveIdea: data.solveIdea,
-        solveIdeaImageId: data.solveIdeaImage,
-        helpingQuestions: data.helpingQuestions,
-        source: data.source,
-        createdAt: data.createdAt,
-        createdBy: {
-          connect: {
-            id: user.id,
+          status: data.status,
+          isCompetitionFinal: data.isCompetitionFinal,
+          solutionOptions: data.solutionOptions,
+          difficulty: {
+            //This mapping is done to fill all ageGroup difficulties, even if the frontend does not send every one of them
+            create: ageGroups.map((ageGroup) => {
+              const difficulty = data.difficulty.find(
+                (d) => d.ageGroup == ageGroup,
+              )?.difficulty;
+              return {
+                ageGroup,
+                difficulty: difficulty ?? 0,
+              };
+            }),
+          },
+          description: data.description,
+          exerciseImageId: data.exerciseImage,
+          solution: data.solution,
+          solutionImageId: data.solutionImage,
+          solveIdea: data.solveIdea,
+          solveIdeaImageId: data.solveIdeaImage,
+          helpingQuestions: data.helpingQuestions,
+          source: data.source,
+          createdAt: data.createdAt,
+          createdBy: {
+            connect: {
+              id: user.id,
+            },
           },
         },
-      },
+      });
+    });
+  }
+
+  async cloneExerciseToNew(id: string, user: User, createdAt?: Date) {
+    //Create a new group if the exercise does not already have one
+    await this.exerciseGroupService.upsertExerciseGroupSameLogic(id, user);
+
+    return await this.prismaService.$transaction(async (tx) => {
+      const newId = await this.generateNextIdInGroup(id, tx);
+      const oldExercise = await tx.exercise.findUnique({
+        where: { id },
+        include: {
+          difficulty: true,
+          tags: true,
+        },
+      });
+      const propsToDelete: (keyof Exercise)[] = [
+        'id',
+        'createdAt',
+        'updatedAt',
+        'createdById',
+      ];
+      propsToDelete.forEach((key) => {
+        delete oldExercise[key];
+      });
+
+      return tx.exercise.create({
+        data: {
+          ...oldExercise,
+          difficulty: {
+            create: oldExercise.difficulty.map((diff) => ({
+              difficulty: diff.difficulty,
+              ageGroup: diff.ageGroup,
+            })),
+          },
+          tags: {
+            connect: oldExercise.tags.map((tag) => ({
+              id: tag.id,
+            })),
+          },
+          id: newId,
+          createdAt: createdAt,
+          createdById: user.id,
+        },
+      });
     });
   }
 

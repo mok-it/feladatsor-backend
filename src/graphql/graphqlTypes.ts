@@ -165,6 +165,7 @@ export interface IMutation {
     updateExerciseTag(id: string, name: string): ExerciseTag | Promise<ExerciseTag>;
     deleteExerciseTag(id: string): boolean | Promise<boolean>;
     createExercise(input: ExerciseInput): Exercise | Promise<Exercise>;
+    cloneExerciseToNew(id: string): Exercise | Promise<Exercise>;
     updateExercise(id: string, input: ExerciseUpdateInput): Exercise | Promise<Exercise>;
     register(data: UserRegisterInput): User | Promise<User>;
     changePermissions(userId: string, permissions: Role[]): User | Promise<User>;
@@ -288,7 +289,7 @@ export interface Exercise {
     source?: Nullable<string>;
     difficulty: ExerciseDifficulty[];
     history: ExerciseHistory[];
-    sameLogicExercises: Exercise[];
+    sameLogicExerciseGroup?: Nullable<SameLogicExerciseGroup>;
     checks: ExerciseCheck[];
     comments: ExerciseComment[];
     isCompetitionFinal?: Nullable<boolean>;

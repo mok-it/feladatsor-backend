@@ -79,6 +79,11 @@ export class ExerciseResolver {
     return this.exerciseService.updateExercise(id, data, user);
   }
 
+  @Mutation('cloneExerciseToNew')
+  async cloneExerciseToNew(@Args('id') id: string, @CurrentUser() user: User) {
+    return this.exerciseService.cloneExerciseToNew(id, user);
+  }
+
   @ResolveField('sameLogicExerciseGroup')
   async getSameDifficultyExercises(@Parent() exercise: PrismaExercise) {
     return this.exerciseGroupService.getGroupById(

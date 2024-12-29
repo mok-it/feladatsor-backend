@@ -85,8 +85,10 @@ export class StatService {
     const max = Math.max(...data.map((d) => d.count));
 
     return {
-      fromDate: data[0].day,
-      toDate: data[data.length - 1].day,
+      fromDate: data[0] ? data[0].day : `${new Date().getFullYear()}-01-01`,
+      toDate: data[0]
+        ? data[data.length - 1].day
+        : `${new Date().getFullYear() + 1}-12-31`,
       data: data.map((d) => ({
         date: d.day,
         count: d.count,

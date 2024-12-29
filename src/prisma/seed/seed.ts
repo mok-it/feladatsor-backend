@@ -45,7 +45,7 @@ async function main() {
 
   // Seed exercises
   logger.log('🌱 Seeding exercises');
-  await seedExercises(prisma);
+  await seedExercises(prisma, app);
 
   //Seed exercise sheets
   logger.log('🌱 Seeding exercise sheets');
