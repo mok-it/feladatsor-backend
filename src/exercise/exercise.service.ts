@@ -101,11 +101,13 @@ export class ExerciseService {
               id: user.id,
             },
           },
-          contributors: {
-            connect: data.contributors.map((id) => ({
-              id,
-            })),
-          },
+          contributors: data.contributors
+            ? {
+                connect: data.contributors.map((id) => ({
+                  id,
+                })),
+              }
+            : undefined,
         },
       });
     });
