@@ -9,6 +9,8 @@ import {
 import { ExerciseService } from './exercise.service';
 import { UseGuards } from '@nestjs/common';
 import {
+  AlertSeverity,
+  ExerciseAlert,
   ExerciseInput,
   ExerciseSearchQuery,
   ExerciseUpdateInput,
@@ -89,6 +91,15 @@ export class ExerciseResolver {
     return this.exerciseGroupService.getGroupById(
       exercise.exerciseGroupSameLogicId,
     );
+  }
+
+  @ResolveField('alert')
+  getAlert(@Parent() exercise: PrismaExercise): ExerciseAlert {
+    if (!exercise.alertSeverty || !exercise.alertDescription) return null;
+    return {
+      severity: exercise.alertSeverty as AlertSeverity,
+      description: exercise.alertDescription,
+    };
   }
 
   @ResolveField('history')

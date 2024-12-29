@@ -2,7 +2,11 @@ import { faker } from '@faker-js/faker';
 import { PrismaClient } from '@prisma/client';
 import { INestApplication } from '@nestjs/common';
 import { ExerciseService } from '../../exercise/exercise.service';
-import { ExerciseAgeGroup, ExerciseStatus } from '../../graphql/graphqlTypes';
+import {
+  AlertSeverity,
+  ExerciseAgeGroup,
+  ExerciseStatus,
+} from '../../graphql/graphqlTypes';
 
 export const seedExercises = async (
   prisma: PrismaClient,
@@ -24,8 +28,9 @@ export const seedExercises = async (
     ['22', '23', '24'].flatMap((year) =>
       Array.from({
         length: faker.helpers.rangeToNumber({ min: 20, max: 200 }),
-      }).map((_, id) =>
-        exerciseService.createExercise(
+      }).map((_, id) => {
+        const shouldAddAlert = faker.number.int(100) > 50;
+        return exerciseService.createExercise(
           {
             description: faker.lorem.paragraph(),
             solution: faker.lorem.paragraph(),
@@ -37,6 +42,17 @@ export const seedExercises = async (
               ExerciseStatus.DELETED,
               ExerciseStatus.DRAFT,
             ]),
+            alert: shouldAddAlert
+              ? {
+                  description: faker.lorem.sentence(),
+                  severity: faker.helpers.arrayElement([
+                    'SUCCESS',
+                    'INFO',
+                    'ERROR',
+                    'WARNING',
+                  ]) as AlertSeverity,
+                }
+              : undefined,
             difficulty: ageGroups.map((ageGroup) => ({
               ageGroup,
               difficulty: faker.number.int({ min: 1, max: 4 }),
@@ -52,8 +68,8 @@ export const seedExercises = async (
           },
           faker.helpers.arrayElement(users),
           `${year}-${String(id).padStart(3, '0')}-a`,
-        ),
-      ),
+        );
+      }),
     ),
   );
 

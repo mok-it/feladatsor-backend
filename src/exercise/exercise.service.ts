@@ -68,8 +68,9 @@ export class ExerciseService {
               id: tagID,
             })),
           },
-
           status: data.status,
+          alertDescription: data.alert && data.alert.description,
+          alertSeverty: data.alert && data.alert.severity,
           isCompetitionFinal: data.isCompetitionFinal,
           solutionOptions: data.solutionOptions,
           difficulty: {
@@ -218,6 +219,8 @@ export class ExerciseService {
               }
             : undefined,
           status: data.status,
+          alertDescription: data.alert.description,
+          alertSeverty: data.alert.severity,
           solveIdea: data.solveIdea,
           isCompetitionFinal: data.isCompetitionFinal,
           solutionOptions: data.solutionOptions,

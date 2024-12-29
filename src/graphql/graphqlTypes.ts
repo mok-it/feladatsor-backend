@@ -32,6 +32,13 @@ export enum ExerciseStatus {
     DELETED = "DELETED"
 }
 
+export enum AlertSeverity {
+    SUCCESS = "SUCCESS",
+    INFO = "INFO",
+    WARNING = "WARNING",
+    ERROR = "ERROR"
+}
+
 export enum ExerciseAgeGroup {
     KOALA = "KOALA",
     MEDVEBOCS = "MEDVEBOCS",
@@ -98,6 +105,7 @@ export interface ExerciseDifficultyRange {
 export interface ExerciseInput {
     tags: Nullable<string>[];
     status: ExerciseStatus;
+    alert?: Nullable<ExerciseAlertInput>;
     description: string;
     exerciseImage?: Nullable<string>;
     solution: string;
@@ -115,6 +123,7 @@ export interface ExerciseInput {
 export interface ExerciseUpdateInput {
     tags?: Nullable<string[]>;
     status?: Nullable<ExerciseStatus>;
+    alert?: Nullable<ExerciseAlertInput>;
     description?: Nullable<string>;
     exerciseImage?: Nullable<string>;
     solution?: Nullable<string>;
@@ -128,6 +137,11 @@ export interface ExerciseUpdateInput {
     sameLogicGroup?: Nullable<string>;
     isCompetitionFinal?: Nullable<boolean>;
     comment?: Nullable<string>;
+}
+
+export interface ExerciseAlertInput {
+    severity: AlertSeverity;
+    description: string;
 }
 
 export interface ExerciseDifficultyInput {
@@ -274,6 +288,7 @@ export interface Exercise {
     id: string;
     tags: Tag[];
     status: ExerciseStatus;
+    alert?: Nullable<ExerciseAlert>;
     description: string;
     exerciseImage?: Nullable<Image>;
     solution: string;
@@ -292,6 +307,11 @@ export interface Exercise {
     createdBy: User;
     createdAt: string;
     updatedAt: string;
+}
+
+export interface ExerciseAlert {
+    severity: AlertSeverity;
+    description: string;
 }
 
 export interface Tag {
@@ -358,6 +378,7 @@ export interface User {
     exercises: Exercise[];
     roles: Role[];
     stats: UserStats;
+    comments: ExerciseComment[];
     avatarUrl?: Nullable<string>;
 }
 

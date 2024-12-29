@@ -42,6 +42,7 @@ input ExerciseDifficultyRange {
 input ExerciseInput {
   tags: [ID]!
   status: ExerciseStatus! #Authorization based, who can create what
+  alert: ExerciseAlertInput
   description: String! #text
   exerciseImage: String
   solution: String!
@@ -60,6 +61,7 @@ input ExerciseInput {
 input ExerciseUpdateInput {
   tags: [ID!]
   status: ExerciseStatus #Authorization based, who can create what
+  alert: ExerciseAlertInput
   description: String #text
   exerciseImage: String
   solution: String
@@ -88,6 +90,7 @@ type Exercise {
   id: ID!
   tags: [Tag!]!
   status: ExerciseStatus! #Authorization based, who can create what
+  alert: ExerciseAlert
   description: String! #text
   exerciseImage: Image
   solution: String!
@@ -106,6 +109,23 @@ type Exercise {
   createdBy: User!
   createdAt: String!
   updatedAt: String!
+}
+
+type ExerciseAlert {
+  severity: AlertSeverity!
+  description: String!
+}
+
+input ExerciseAlertInput {
+  severity: AlertSeverity!
+  description: String!
+}
+
+enum AlertSeverity {
+  SUCCESS
+  INFO
+  WARNING
+  ERROR
 }
 
 type ExerciseComment {

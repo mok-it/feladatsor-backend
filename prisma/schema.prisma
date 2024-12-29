@@ -30,6 +30,8 @@ model Exercise {
   id                       String                        @id @default(uuid())
   tags                     ExerciseTag[]
   status                   ExerciseStatus
+  alertSeverty             ExerciseAlertSeverity?
+  alertDescription         String?
   description              String
   exerciseImageId          String?
   solution                 String
@@ -53,6 +55,13 @@ model Exercise {
   ExerciseSheetItems       ExerciseOnExerciseSheetItem[]
   ExerciseSheet            ExerciseSheet[]
   Talon                    TalonItem[]
+}
+
+enum ExerciseAlertSeverity {
+  SUCCESS
+  INFO
+  WARNING
+  ERROR
 }
 
 model ExerciseGroupSameLogic {
