@@ -185,6 +185,7 @@ export interface IMutation {
     createExercise(input: ExerciseInput): Exercise | Promise<Exercise>;
     cloneExerciseToNew(id: string): Exercise | Promise<Exercise>;
     updateExercise(id: string, input: ExerciseUpdateInput): Exercise | Promise<Exercise>;
+    voteOnDeveloper(id: string): Nullable<Developer> | Promise<Nullable<Developer>>;
     register(data: UserRegisterInput): User | Promise<User>;
     changePermissions(userId: string, permissions: Role[]): User | Promise<User>;
     updateUser(data: UserUpdateInput, id?: Nullable<string>): User | Promise<User>;
@@ -219,6 +220,7 @@ export interface IQuery {
     exercises(take: number, skip: number): Exercise[] | Promise<Exercise[]>;
     exercisesCount(): number | Promise<number>;
     exercise(id: string): Nullable<Exercise> | Promise<Nullable<Exercise>>;
+    funkyPool(): Developer[] | Promise<Developer[]>;
     globalStats(): Nullable<GlobalStats> | Promise<Nullable<GlobalStats>>;
     users(): User[] | Promise<User[]>;
     user(id: string): Nullable<User> | Promise<Nullable<User>>;
@@ -331,6 +333,12 @@ export interface Tag {
 export interface ExerciseDifficulty {
     ageGroup: ExerciseAgeGroup;
     difficulty: number;
+}
+
+export interface Developer {
+    id: string;
+    name: string;
+    count: number;
 }
 
 export interface Image {

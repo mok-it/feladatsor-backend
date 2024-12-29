@@ -19,6 +19,7 @@ import { ExcelExportModule } from './excel-export/excel-export.module';
 import { ExerciseGroupModule } from './exercise-group/exercise-group.module';
 import { ExerciseComposeModule } from './exercise-compose/exercise-compose.module';
 import { StatModule } from './stat/stat.module';
+import { FunkyPoolModule } from './funky-pool/funky-pool.module';
 
 @Module({
   imports: [
@@ -43,6 +44,7 @@ import { StatModule } from './stat/stat.module';
     ExerciseGroupModule,
     ExerciseComposeModule,
     StatModule,
+    FunkyPoolModule,
   ],
   controllers: [AppController],
   providers: [AppService],

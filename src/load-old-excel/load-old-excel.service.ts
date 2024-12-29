@@ -128,7 +128,6 @@ export class LoadOldExcelService {
             exercise.id,
             record[CSVHeaders.comment],
             technicalUser,
-            contributors,
           );
         }
         //Failed to download, meaning it had an image, but we could not download it as an image
@@ -139,7 +138,6 @@ export class LoadOldExcelService {
               record[CSVHeaders.image]
             }`,
             technicalUser,
-            contributors,
           );
         }
         success++;

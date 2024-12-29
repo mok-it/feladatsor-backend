@@ -26,7 +26,7 @@ export class ExerciseCommentService {
     exerciseId: string,
     comment: string,
     user: User,
-    contributors: string[],
+    contributors?: string[],
   ) {
     return this.prismaService.exerciseComment.create({
       data: {

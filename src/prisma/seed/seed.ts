@@ -10,6 +10,7 @@ import { AppModule } from '../../app.module';
 import { seedExerciseSheets } from './seedExerciseSheets';
 import { seedExerciseGroups } from './seedExerciseGroups';
 import { seedTalons } from './seedTalons';
+import { seedFunkyPool } from './seedFunkyPool';
 
 async function main() {
   const logger = new Logger('Seed');
@@ -64,6 +65,10 @@ async function main() {
   //Seed exercise sheet talons
   logger.log('🌱 Seeding talons');
   await seedTalons(prisma);
+
+  //Seed funky Pool
+  logger.log('🌱 Seeding funky pool');
+  await seedFunkyPool(prisma);
 
   logger.log('🔥 Seeding finished');
 

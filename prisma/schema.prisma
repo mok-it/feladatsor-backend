@@ -210,3 +210,9 @@ model TalonItem {
 
   @@id([exerciseId, exerciseSheetId])
 }
+
+model Developer {
+  id    String @id @default(uuid())
+  name  String
+  count Int
+}

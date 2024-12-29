@@ -1,0 +1,13 @@
+type Query {
+  funkyPool: [Developer!]!
+}
+
+type Mutation {
+  voteOnDeveloper(id: ID!): Developer
+}
+
+type Developer {
+  id: ID!
+  name: String!
+  count: Int!
+}
