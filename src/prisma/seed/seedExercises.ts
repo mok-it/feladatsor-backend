@@ -60,7 +60,7 @@ export const seedExercises = async (
   for (const a in Array.from({ length: 200 })) {
     const exercise = faker.helpers.arrayElement(exercises);
     for (const b in Array.from({
-      length: faker.number.int({ min: 1, max: 5 }),
+      length: faker.number.int({ min: 1, max: 3 }),
     })) {
       await exerciseService.cloneExerciseToNew(
         exercise.id,

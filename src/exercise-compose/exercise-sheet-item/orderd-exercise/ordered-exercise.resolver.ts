@@ -1,6 +1,7 @@
 import { Parent, ResolveField, Resolver } from '@nestjs/graphql';
 import { ExerciseOnExerciseSheetItem } from '.prisma/client';
 import { ExerciseService } from '../../../exercise/exercise.service';
+import { TalonItem } from '@prisma/client';
 
 @Resolver('OrderedExercise')
 export class OrderedExerciseResolver {
@@ -8,7 +9,7 @@ export class OrderedExerciseResolver {
 
   @ResolveField('exercise')
   getExerciseFromOrderedExercise(
-    @Parent() parent: ExerciseOnExerciseSheetItem,
+    @Parent() parent: ExerciseOnExerciseSheetItem | TalonItem,
   ) {
     return this.exerciseService.getExerciseById(parent.exerciseId);
   }

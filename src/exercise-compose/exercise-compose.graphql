@@ -37,16 +37,10 @@ type ExerciseSheet {
   id: ID!
   name: String!
   sheetItems: [ExerciseSheetItem!]!
-  #TODO: Talon items
-  talonItems: [ExerciseSheetTalonItem!]!
+  talonItems: [OrderedExercise!]!
   createdBy: User!
   createdAt: String!
   updatedAt: String!
-}
-
-type ExerciseSheetTalonItem {
-  id: ID!
-  exercises: [OrderedExercise!]!
 }
 
 type ExerciseSheetItem {

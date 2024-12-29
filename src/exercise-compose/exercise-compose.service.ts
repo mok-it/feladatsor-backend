@@ -13,7 +13,7 @@ export class ExerciseComposeService {
 
   getExerciseSheets() {
     return this.prismaService.exerciseSheet.findMany({
-      include: { sheetItems: true },
+      include: { sheetItems: true, talonExercises: true },
       orderBy: {
         createdAt: 'desc',
       },
@@ -23,7 +23,7 @@ export class ExerciseComposeService {
   getExerciseSheetById(id: string) {
     return this.prismaService.exerciseSheet.findUnique({
       where: { id },
-      include: { sheetItems: true },
+      include: { sheetItems: true, talonExercises: true },
     });
   }
 
@@ -43,7 +43,7 @@ export class ExerciseComposeService {
             : undefined,
           createdBy: { connect: { id: user.id } },
         },
-        include: { sheetItems: true },
+        include: { sheetItems: true, talonExercises: true },
       });
     });
   }
@@ -67,7 +67,7 @@ export class ExerciseComposeService {
             : undefined,
           name: sheetData.name ? sheetData.name : undefined,
         },
-        include: { sheetItems: true },
+        include: { sheetItems: true, talonExercises: true },
       });
     });
   }

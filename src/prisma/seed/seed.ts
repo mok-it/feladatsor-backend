@@ -9,6 +9,7 @@ import { PrismaService } from '../PrismaService';
 import { AppModule } from '../../app.module';
 import { seedExerciseSheets } from './seedExerciseSheets';
 import { seedExerciseGroups } from './seedExerciseGroups';
+import { seedTalons } from './seedTalons';
 
 async function main() {
   const logger = new Logger('Seed');
@@ -26,6 +27,7 @@ async function main() {
   await prisma.exerciseGroupSameLogic.deleteMany();
   await prisma.exerciseComment.deleteMany();
   await prisma.exerciseOnExerciseSheetItem.deleteMany();
+  await prisma.talonItem.deleteMany();
   await prisma.exercise.deleteMany();
   await prisma.exerciseSheetItem.deleteMany();
   await prisma.exerciseSheet.deleteMany();
@@ -47,10 +49,6 @@ async function main() {
   logger.log('🌱 Seeding exercises');
   await seedExercises(prisma, app);
 
-  //Seed exercise sheets
-  logger.log('🌱 Seeding exercise sheets');
-  await seedExerciseSheets(prisma);
-
   // Seed exercise checks
   logger.log('🌱 Seeding exercise checks');
   await seedExerciseChecks(prisma);
@@ -58,6 +56,14 @@ async function main() {
   // Seed exercise history
   logger.log('🌱 Seeding exercise history');
   await seedExerciseHistory(prisma);
+
+  //Seed exercise sheets
+  logger.log('🌱 Seeding exercise sheets');
+  await seedExerciseSheets(prisma);
+
+  //Seed exercise sheet talons
+  logger.log('🌱 Seeding talons');
+  await seedTalons(prisma);
 
   logger.log('🔥 Seeding finished');
 

@@ -52,6 +52,7 @@ model Exercise {
   updatedAt                DateTime                      @default(now()) @updatedAt
   ExerciseSheetItems       ExerciseOnExerciseSheetItem[]
   ExerciseSheet            ExerciseSheet[]
+  Talon                    TalonItem[]
 }
 
 model ExerciseGroupSameLogic {
@@ -155,14 +156,16 @@ model Image {
 }
 
 model ExerciseSheet {
-  id              String              @id @default(uuid())
-  name            String
-  sheetItems      ExerciseSheetItem[]
-  hookedExercises Exercise[]
-  createdById     String
-  createdBy       User                @relation(fields: [createdById], references: [id])
-  createdAt       DateTime            @default(now())
-  updatedAt       DateTime            @default(now()) @updatedAt
+  id             String              @id @default(uuid())
+  name           String
+  sheetItems     ExerciseSheetItem[]
+  talonExercises TalonItem[]
+  createdById    String
+  createdBy      User                @relation(fields: [createdById], references: [id])
+  createdAt      DateTime            @default(now())
+  updatedAt      DateTime            @default(now()) @updatedAt
+  Exercise       Exercise?           @relation(fields: [exerciseId], references: [id])
+  exerciseId     String?
 }
 
 model ExerciseSheetItem {
@@ -182,4 +185,14 @@ model ExerciseOnExerciseSheetItem {
   order               Int
 
   @@id([exerciseId, exerciseSheetItemId])
+}
+
+model TalonItem {
+  exerciseId      String
+  exercise        Exercise      @relation(fields: [exerciseId], references: [id])
+  exerciseSheetId String
+  exerciseSheet   ExerciseSheet @relation(fields: [exerciseSheetId], references: [id])
+  order           Int
+
+  @@id([exerciseId, exerciseSheetId])
 }

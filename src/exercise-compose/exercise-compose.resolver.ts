@@ -12,7 +12,12 @@ import {
   UpdateExerciseSheetInput,
 } from '../graphql/graphqlTypes';
 import { CurrentUser } from '../auth/decorators/user.auth.decorator';
-import { User, ExerciseSheet as PrismaExerciseSheet } from '@prisma/client';
+import {
+  User,
+  ExerciseSheet as PrismaExerciseSheet,
+  ExerciseSheetItem,
+  TalonItem,
+} from '@prisma/client';
 import { UserService } from '../user/user.service';
 
 @Resolver('ExerciseSheet')
@@ -35,6 +40,17 @@ export class ExerciseComposeResolver {
   @ResolveField('createdBy')
   resolveCreatedBy(@Parent() parent: PrismaExerciseSheet) {
     return this.userService.getUserById(parent.createdById);
+  }
+
+  @ResolveField('talonItems')
+  resolveTalonItems(
+    @Parent()
+    parent: PrismaExerciseSheet & {
+      sheetItems: ExerciseSheetItem[];
+      talonExercises: TalonItem[];
+    },
+  ) {
+    return parent.talonExercises;
   }
 
   @Mutation('createExerciseSheet')
