@@ -14,7 +14,7 @@ export const seedExercises = async (
   const exerciseService = await app.get(ExerciseService);
   const ageGroups: ExerciseAgeGroup[] = [
     ExerciseAgeGroup.KOALA,
-    ExerciseAgeGroup.JEGESMEDVE,
+    ExerciseAgeGroup.MEDVEBOCS,
     ExerciseAgeGroup.KISMEDVE,
     ExerciseAgeGroup.NAGYMEDVE,
     ExerciseAgeGroup.JEGESMEDVE,
