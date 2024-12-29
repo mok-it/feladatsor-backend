@@ -53,6 +53,7 @@ input ExerciseInput {
   solutionOptions: [String!]!
   source: String
   difficulty: [ExerciseDifficultyInput!]!
+  contributors: [ID!]
   sameLogicGroup: ID
   isCompetitionFinal: Boolean
 }
@@ -72,6 +73,7 @@ input ExerciseUpdateInput {
   solutionOptions: [String!]
   source: String
   difficulty: [ExerciseDifficultyInput!]
+  contributors: [ID!]
   sameLogicGroup: ID
   isCompetitionFinal: Boolean
 
@@ -107,6 +109,7 @@ type Exercise {
   comments: [ExerciseComment!]!
   isCompetitionFinal: Boolean
   createdBy: User!
+  contributors: [User!]!
   createdAt: String!
   updatedAt: String!
 }

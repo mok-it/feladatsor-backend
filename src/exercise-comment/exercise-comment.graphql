@@ -4,14 +4,23 @@ type Query {
 }
 
 type Mutation {
-  createExerciseComment(exerciseId: ID!, comment: String!): ExerciseComment!
-  updateExerciseComment(id: ID!, comment: String!): ExerciseComment!
+  createExerciseComment(
+    exerciseId: ID!
+    comment: String!
+    contributors: [ID!]
+  ): ExerciseComment!
+  updateExerciseComment(
+    id: ID!
+    comment: String!
+    contributors: [ID!]
+  ): ExerciseComment!
   deleteExerciseComment(id: ID!): ExerciseComment!
 }
 
 type ExerciseComment {
   id: ID!
   createdBy: User!
+  contributors: [User!]!
   comment: String!
   createdAt: String!
   updatedAt: String!

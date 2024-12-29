@@ -1,8 +1,15 @@
-import {Args, Mutation, Parent, Query, ResolveField, Resolver,} from '@nestjs/graphql';
-import {ExerciseCommentService} from './exercise-comment.service';
-import {CurrentUser} from '../auth/decorators/user.auth.decorator';
-import {ExerciseComment, User} from '@prisma/client';
-import {UserService} from '../user/user.service';
+import {
+  Args,
+  Mutation,
+  Parent,
+  Query,
+  ResolveField,
+  Resolver,
+} from '@nestjs/graphql';
+import { ExerciseCommentService } from './exercise-comment.service';
+import { CurrentUser } from '../auth/decorators/user.auth.decorator';
+import { ExerciseComment, User } from '@prisma/client';
+import { UserService } from '../user/user.service';
 
 @Resolver('ExerciseComment')
 export class ExerciseCommentResolver {
@@ -26,11 +33,13 @@ export class ExerciseCommentResolver {
     @Args('exerciseId') exerciseId: string,
     @Args('comment') comment: string,
     @CurrentUser() user: User,
+    @Args('contributors') contributors?: string[],
   ) {
     return this.exerciseCommentService.createExerciseComment(
       exerciseId,
       comment,
       user,
+      contributors,
     );
   }
 
@@ -38,8 +47,13 @@ export class ExerciseCommentResolver {
   async updateExerciseComment(
     @Args('id') id: string,
     @Args('comment') comment: string,
+    @Args('contributors') contributors?: string[],
   ) {
-    return this.exerciseCommentService.updateExerciseComment(id, comment);
+    return this.exerciseCommentService.updateExerciseComment(
+      id,
+      comment,
+      contributors,
+    );
   }
 
   @Mutation('deleteExerciseComment')

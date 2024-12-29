@@ -10,17 +10,17 @@
 - [X] Exercise search page implement sorting
 - [ ] Permission management for resources
 - [X] Feladathoz szükség van válaszopciók hozzáadására, jó megoldással együtt 4 db
+- [X] Add multiple possible contributors to exercise 
+- [ ] Add multiple possible contributors to copyExercise 
+- [ ] Add multiple possible contributors to exerciseCheck 
+- [ ] Add multiple possible contributors to comment
 
 ### Üzletre vár
 
-- [ ] Feladat excel import, how to group exercises
-  - ID első 5 karaktere ha egyezik az egy group? melyik group?
+- [X] Feladat excel import, how to group exercises
+   Kérdés: ID első 5 karaktere ha egyezik az egy group? melyik group?
+   Válasz: Balázs hoz majd egy olyan excelt, amiben használható jellegű adatok vannak
 
-
-### Statisztika oldal
-
-Szükség van egy olyan compose jellegű oldara, ahol lehet látni hogy egy feladatsoron egy feladat hány kategóriában van használva.
-Feladatonként hány segítő kérdés, illetve hány (rósszz) válaszopció van megadva.
 
 ### Kontribúciók
 

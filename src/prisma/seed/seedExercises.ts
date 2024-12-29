@@ -30,6 +30,7 @@ export const seedExercises = async (
         length: faker.helpers.rangeToNumber({ min: 20, max: 200 }),
       }).map((_, id) => {
         const shouldAddAlert = faker.number.int(100) > 50;
+        const createdByUser = faker.helpers.arrayElement(users);
         return exerciseService.createExercise(
           {
             description: faker.lorem.paragraph(),
@@ -57,6 +58,12 @@ export const seedExercises = async (
               ageGroup,
               difficulty: faker.number.int({ min: 1, max: 4 }),
             })),
+            contributors: faker.helpers
+              .arrayElements(users, {
+                min: 0,
+                max: 3,
+              })
+              .map((user) => user.id),
             tags: faker.helpers
               .arrayElements(tags, { min: 1, max: 5 })
               .map((tag) => tag.id),
@@ -66,7 +73,7 @@ export const seedExercises = async (
               length: faker.number.int({ min: 0, max: 4 }),
             }).map(() => faker.lorem.sentence()),
           },
-          faker.helpers.arrayElement(users),
+          createdByUser,
           `${year}-${String(id).padStart(3, '0')}-a`,
         );
       }),

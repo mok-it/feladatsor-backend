@@ -56,6 +56,7 @@ export interface ExerciseCheckInput {
     exerciseId: string;
     type: ExerciseCheckType;
     comment?: Nullable<string>;
+    contributors?: Nullable<string[]>;
 }
 
 export interface ExerciseSheetInput {
@@ -116,6 +117,7 @@ export interface ExerciseInput {
     solutionOptions: string[];
     source?: Nullable<string>;
     difficulty: ExerciseDifficultyInput[];
+    contributors?: Nullable<string[]>;
     sameLogicGroup?: Nullable<string>;
     isCompetitionFinal?: Nullable<boolean>;
 }
@@ -134,6 +136,7 @@ export interface ExerciseUpdateInput {
     solutionOptions?: Nullable<string[]>;
     source?: Nullable<string>;
     difficulty?: Nullable<ExerciseDifficultyInput[]>;
+    contributors?: Nullable<string[]>;
     sameLogicGroup?: Nullable<string>;
     isCompetitionFinal?: Nullable<boolean>;
     comment?: Nullable<string>;
@@ -169,8 +172,8 @@ export interface IMutation {
     loginWithGoogle(googleToken: string): Nullable<LoginResponse> | Promise<Nullable<LoginResponse>>;
     exportExcel(): Nullable<ExportResult> | Promise<Nullable<ExportResult>>;
     createExerciseCheck(data: ExerciseCheckInput): ExerciseCheck | Promise<ExerciseCheck>;
-    createExerciseComment(exerciseId: string, comment: string): ExerciseComment | Promise<ExerciseComment>;
-    updateExerciseComment(id: string, comment: string): ExerciseComment | Promise<ExerciseComment>;
+    createExerciseComment(exerciseId: string, comment: string, contributors?: Nullable<string[]>): ExerciseComment | Promise<ExerciseComment>;
+    updateExerciseComment(id: string, comment: string, contributors?: Nullable<string[]>): ExerciseComment | Promise<ExerciseComment>;
     deleteExerciseComment(id: string): ExerciseComment | Promise<ExerciseComment>;
     createExerciseSheet(sheetData: ExerciseSheetInput): ExerciseSheet | Promise<ExerciseSheet>;
     updateExerciseSheet(id: string, sheetData: UpdateExerciseSheetInput): ExerciseSheet | Promise<ExerciseSheet>;
@@ -196,6 +199,7 @@ export interface ExerciseCheck {
     role: ExerciseCheckRole;
     exercise: Exercise;
     user: User;
+    contributors: User[];
     type: ExerciseCheckType;
     createdAt: string;
     updatedAt: string;
@@ -223,6 +227,7 @@ export interface IQuery {
 export interface ExerciseComment {
     id: string;
     createdBy: User;
+    contributors: User[];
     comment: string;
     createdAt: string;
     updatedAt: string;
@@ -305,6 +310,7 @@ export interface Exercise {
     comments: ExerciseComment[];
     isCompetitionFinal?: Nullable<boolean>;
     createdBy: User;
+    contributors: User[];
     createdAt: string;
     updatedAt: string;
 }

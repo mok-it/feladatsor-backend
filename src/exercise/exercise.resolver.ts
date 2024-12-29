@@ -149,4 +149,9 @@ export class ExerciseResolver {
   async getExerciseCreatedBy(@Parent() exercise: PrismaExercise) {
     return this.userService.getUserById(exercise.createdById);
   }
+
+  @ResolveField('contributors')
+  async getContributors(@Parent() exercise: PrismaExercise) {
+    return this.exerciseService.getContributors(exercise.id);
+  }
 }

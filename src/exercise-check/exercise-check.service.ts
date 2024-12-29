@@ -1,8 +1,8 @@
-import {Injectable} from '@nestjs/common';
-import {ExerciseCheckInput} from '../graphql/graphqlTypes';
-import {User} from '@prisma/client';
-import {ExerciseCommentService} from '../exercise-comment/exercise-comment.service';
-import {PrismaService} from "../prisma/PrismaService";
+import { Injectable } from '@nestjs/common';
+import { ExerciseCheckInput } from '../graphql/graphqlTypes';
+import { User } from '@prisma/client';
+import { ExerciseCommentService } from '../exercise-comment/exercise-comment.service';
+import { PrismaService } from '../prisma/PrismaService';
 
 @Injectable()
 export class ExerciseCheckService {
@@ -16,6 +16,7 @@ export class ExerciseCheckService {
         input.exerciseId,
         input.comment,
         user,
+        input.contributors,
       );
     }
     return this.prismaService.exerciseCheck.create({
@@ -26,6 +27,13 @@ export class ExerciseCheckService {
             id: input.exerciseId,
           },
         },
+        contributors: input.contributors
+          ? {
+              connect: input.contributors.map((id) => ({
+                id,
+              })),
+            }
+          : undefined,
         user: {
           connect: {
             id: user.id,

@@ -5,7 +5,7 @@ import {
   ExerciseSheetItemInput,
   UpdateExerciseSheetInput,
 } from '../graphql/graphqlTypes';
-import { User } from '@prisma/client';
+import { Prisma, User } from '@prisma/client';
 
 @Injectable()
 export class ExerciseComposeService {
@@ -81,10 +81,7 @@ export class ExerciseComposeService {
   }
 
   private async createSheetItems(
-    tx: Omit<
-      PrismaService,
-      '$connect' | '$disconnect' | '$on' | '$transaction' | '$use'
-    >,
+    tx: Prisma.TransactionClient,
     sheetItems: ExerciseSheetItemInput[],
   ) {
     return Promise.all(

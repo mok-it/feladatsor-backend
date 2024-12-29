@@ -50,6 +50,7 @@ model Exercise {
   isCompetitionFinal       Boolean                       @default(false)
   createdBy                User                          @relation(fields: [createdById], references: [id])
   createdById              String
+  contributors             User[]                        @relation("ExerciseContribution")
   createdAt                DateTime                      @default(now())
   updatedAt                DateTime                      @default(now()) @updatedAt
   ExerciseSheetItems       ExerciseOnExerciseSheetItem[]
@@ -75,14 +76,15 @@ model ExerciseGroupSameLogic {
 }
 
 model ExerciseComment {
-  id         String   @id @default(uuid())
-  exerciseId String
-  exercise   Exercise @relation(fields: [exerciseId], references: [id])
-  userId     String
-  user       User     @relation(fields: [userId], references: [id])
-  comment    String
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @default(now()) @updatedAt
+  id           String   @id @default(uuid())
+  exerciseId   String
+  exercise     Exercise @relation(fields: [exerciseId], references: [id])
+  userId       String
+  user         User     @relation(fields: [userId], references: [id])
+  contributors User[]   @relation("CommentContribution")
+  comment      String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @default(now()) @updatedAt
 }
 
 model ExerciseDifficulty {
@@ -107,34 +109,38 @@ enum Role {
 }
 
 model User {
-  id                     String                   @id @default(uuid())
-  avatarUrl              String?
-  customAvatarId         String?
-  name                   String
-  userName               String                   @unique
-  email                  String
-  password               String?
-  firebaseId             String?
-  roles                  Role[]
-  createdAt              DateTime                 @default(now())
-  updatedAt              DateTime                 @default(now())
-  exercises              Exercise[]
-  ExerciseCheck          ExerciseCheck[]
-  ExerciseComment        ExerciseComment[]
-  ExerciseHistory        ExerciseHistory[]
-  ExerciseGroupSameLogic ExerciseGroupSameLogic[]
-  ExerciseSheet          ExerciseSheet[]
+  id                        String                   @id @default(uuid())
+  avatarUrl                 String?
+  customAvatarId            String?
+  name                      String
+  userName                  String                   @unique
+  email                     String
+  password                  String?
+  firebaseId                String?
+  roles                     Role[]
+  createdAt                 DateTime                 @default(now())
+  updatedAt                 DateTime                 @default(now())
+  exercises                 Exercise[]
+  ExerciseCheck             ExerciseCheck[]
+  ExerciseComment           ExerciseComment[]
+  ExerciseHistory           ExerciseHistory[]
+  ExerciseGroupSameLogic    ExerciseGroupSameLogic[]
+  ExerciseSheet             ExerciseSheet[]
+  contributedExercises      Exercise[]               @relation("ExerciseContribution")
+  contributedExerciseChecks ExerciseCheck[]          @relation("ExerciseCheckContribution")
+  contributedComment        ExerciseComment[]        @relation("CommentContribution")
 }
 
 model ExerciseCheck {
-  id         String            @id @default(uuid())
-  exercise   Exercise          @relation(fields: [exerciseId], references: [id])
-  exerciseId String
-  user       User              @relation(fields: [userId], references: [id])
-  userId     String
-  type       ExerciseCheckType
-  createdAt  DateTime          @default(now())
-  updatedAt  DateTime          @default(now()) @updatedAt
+  id           String            @id @default(uuid())
+  exercise     Exercise          @relation(fields: [exerciseId], references: [id])
+  exerciseId   String
+  user         User              @relation(fields: [userId], references: [id])
+  userId       String
+  contributors User[]            @relation("ExerciseCheckContribution")
+  type         ExerciseCheckType
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @default(now()) @updatedAt
 }
 
 model ExerciseHistory {
@@ -187,13 +193,12 @@ model ExerciseSheetItem {
 }
 
 model ExerciseOnExerciseSheetItem {
+  id                  String            @id @default(dbgenerated("gen_random_uuid()"))
   exerciseId          String
   exercise            Exercise          @relation(fields: [exerciseId], references: [id])
   exerciseSheetItemId String
   exerciseSheetItem   ExerciseSheetItem @relation(fields: [exerciseSheetItemId], references: [id])
   order               Int
-
-  @@id([exerciseId, exerciseSheetItemId])
 }
 
 model TalonItem {

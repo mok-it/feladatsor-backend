@@ -3,6 +3,8 @@ import { AgeGroup, Exercise, User } from '@prisma/client';
 import { ExerciseInput, ExerciseUpdateInput } from '../graphql/graphqlTypes';
 import { PrismaService } from '../prisma/PrismaService';
 import { ExerciseGroupService } from '../exercise-group/exercise-group.service';
+import { Prisma } from '@prisma/client/extension';
+import TransactionClient = Prisma.TransactionClient;
 
 @Injectable()
 export class ExerciseService {
@@ -98,6 +100,11 @@ export class ExerciseService {
             connect: {
               id: user.id,
             },
+          },
+          contributors: {
+            connect: data.contributors.map((id) => ({
+              id,
+            })),
           },
         },
       });
@@ -246,6 +253,11 @@ export class ExerciseService {
             : undefined,
           solveIdeaImageId: data.solveIdeaImage,
           solutionImageId: data.solutionImage,
+          contributors: {
+            connect: data.contributors.map((id) => ({
+              id,
+            })),
+          },
         },
       });
     });
@@ -273,12 +285,16 @@ export class ExerciseService {
     });
   }
 
-  async generateNextExerciseId(
-    tx: Omit<
-      PrismaService,
-      '$connect' | '$disconnect' | '$on' | '$transaction' | '$use'
-    >,
-  ) {
+  async getContributors(id: string) {
+    const ex = await this.prismaService.exercise.findUnique({
+      where: { id },
+      include: { contributors: true },
+    });
+
+    return ex.contributors;
+  }
+
+  async generateNextExerciseId(tx: TransactionClient) {
     //ID format: <2 digi of year>-<3 digit incremental id>-<group_location(a,b,c ...)>
 
     const currentYear = new Date().getFullYear();
@@ -311,10 +327,7 @@ export class ExerciseService {
 
   async generateNextIdInGroup(
     exerciseInGroupId: string,
-    tx: Omit<
-      PrismaService,
-      '$connect' | '$disconnect' | '$on' | '$transaction' | '$use'
-    >,
+    tx: TransactionClient,
   ) {
     const exercise = await tx.exercise.findUnique({
       where: {

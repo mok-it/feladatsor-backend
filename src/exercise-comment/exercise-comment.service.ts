@@ -1,6 +1,6 @@
-import {Injectable} from '@nestjs/common';
-import {User} from '@prisma/client';
-import {PrismaService} from "../prisma/PrismaService";
+import { Injectable } from '@nestjs/common';
+import { User } from '@prisma/client';
+import { PrismaService } from '../prisma/PrismaService';
 
 @Injectable()
 export class ExerciseCommentService {
@@ -22,7 +22,12 @@ export class ExerciseCommentService {
     });
   }
 
-  createExerciseComment(exerciseId: string, comment: string, user: User) {
+  createExerciseComment(
+    exerciseId: string,
+    comment: string,
+    user: User,
+    contributors: string[],
+  ) {
     return this.prismaService.exerciseComment.create({
       data: {
         comment,
@@ -36,17 +41,31 @@ export class ExerciseCommentService {
             id: user.id,
           },
         },
+        contributors: contributors
+          ? {
+              connect: contributors.map((id) => ({
+                id,
+              })),
+            }
+          : undefined,
       },
     });
   }
 
-  updateExerciseComment(id: string, comment: string) {
+  updateExerciseComment(id: string, comment: string, contributors: string[]) {
     return this.prismaService.exerciseComment.update({
       where: {
         id,
       },
       data: {
         comment,
+        contributors: contributors
+          ? {
+              connect: contributors.map((id) => ({
+                id,
+              })),
+            }
+          : undefined,
       },
     });
   }
