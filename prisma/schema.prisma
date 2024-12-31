@@ -28,6 +28,7 @@ model ExerciseTag {
 
 model Exercise {
   id                       String                        @id @default(uuid())
+  originalId               String?
   tags                     ExerciseTag[]
   status                   ExerciseStatus
   alertSeverty             ExerciseAlertSeverity?

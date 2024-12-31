@@ -11,7 +11,6 @@ import {
   ExerciseStatus,
 } from '../graphql/graphqlTypes';
 import { User } from '@prisma/client';
-import { faker } from '@faker-js/faker';
 import { ImageService } from '../image/image.service';
 import { ExerciseCommentService } from '../exercise-comment/exercise-comment.service';
 import { ExerciseGroupService } from '../exercise-group/exercise-group.service';
@@ -92,9 +91,21 @@ export class LoadOldExcelService {
 
     for (const record of records) {
       try {
-        const sameIdExercise = await this.exerciseService.getExerciseById(
-          record[CSVHeaders.ID],
-        );
+        const sameIdExercises = await this.prisma.exercise.findMany({
+          where: {
+            originalId: record[CSVHeaders.ID],
+          },
+          select: {
+            id: true,
+          },
+        });
+
+        const sorted = sameIdExercises.sort((a, b) => {
+          return a.id.split('-')[2].localeCompare(b.id.split('-')[2]);
+        });
+
+        const sameIdExercise =
+          sorted.length > 0 ? sorted[sorted.length - 1] : undefined;
 
         const sameLogicGroup = sameIdExercise
           ? await this.exerciseGroupService.upsertExerciseGroupSameLogic(
@@ -120,8 +131,10 @@ export class LoadOldExcelService {
             createdAt: new Date('20' + record[CSVHeaders.ID].slice(0, 2)),
           },
           technicalUser,
-          record[CSVHeaders.ID] +
-            (sameIdExercise ? `_${faker.string.alpha(4)}` : ''),
+          {
+            originalId: record[CSVHeaders.ID],
+            createdAtYear: Number('20' + record[CSVHeaders.ID].slice(0, 2)),
+          },
         );
         if (record[CSVHeaders.comment] && record[CSVHeaders.comment] !== '0') {
           await this.commentService.createExerciseComment(

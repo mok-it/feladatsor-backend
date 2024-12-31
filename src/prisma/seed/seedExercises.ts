@@ -74,7 +74,9 @@ export const seedExercises = async (
             }).map(() => faker.lorem.sentence()),
           },
           createdByUser,
-          `${year}-${String(id).padStart(3, '0')}-a`,
+          {
+            id: `${year}-${String(id).padStart(3, '0')}-a`,
+          },
         );
       }),
     ),

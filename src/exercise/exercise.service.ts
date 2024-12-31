@@ -43,7 +43,11 @@ export class ExerciseService {
   createExercise(
     data: ExerciseInput & { createdAt?: Date },
     user: User,
-    id?: string,
+    extraOverrides?: {
+      id?: string;
+      originalId?: string;
+      createdAtYear?: number;
+    },
   ) {
     const ageGroups: AgeGroup[] = [
       'KOALA',
@@ -54,10 +58,20 @@ export class ExerciseService {
     ];
 
     return this.prismaService.$transaction(async (tx) => {
-      const generatedId = await this.generateNextExerciseId(tx);
+      const generatedId = await this.generateNextExerciseId(
+        tx,
+        extraOverrides && extraOverrides.createdAtYear,
+      );
       return tx.exercise.create({
         data: {
-          id: id ? id : generatedId,
+          id:
+            extraOverrides && extraOverrides.id
+              ? extraOverrides.id
+              : generatedId,
+          originalId:
+            extraOverrides && extraOverrides.originalId
+              ? extraOverrides.originalId
+              : undefined,
           sameLogicExerciseGroup: data.sameLogicGroup
             ? {
                 connect: {
@@ -296,10 +310,12 @@ export class ExerciseService {
     return ex.contributors;
   }
 
-  async generateNextExerciseId(tx: TransactionClient) {
+  async generateNextExerciseId(
+    tx: TransactionClient,
+    currentYear: number = new Date().getFullYear(),
+  ) {
     //ID format: <2 digi of year>-<3 digit incremental id>-<group_location(a,b,c ...)>
 
-    const currentYear = new Date().getFullYear();
     const yearPrefix = currentYear.toString().slice(-2);
 
     const lastExerciseInThisYear = await tx.exercise.findFirst({
