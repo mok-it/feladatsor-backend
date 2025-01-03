@@ -242,8 +242,8 @@ export class ExerciseService {
               }
             : undefined,
           status: data.status,
-          alertDescription: data.alert.description,
-          alertSeverty: data.alert.severity,
+          alertDescription: data.alert ? data.alert.description : undefined,
+          alertSeverty: data.alert ? data.alert.severity : undefined,
           solveIdea: data.solveIdea,
           isCompetitionFinal: data.isCompetitionFinal,
           solutionOptions: data.solutionOptions,
@@ -269,11 +269,13 @@ export class ExerciseService {
             : undefined,
           solveIdeaImageId: data.solveIdeaImage,
           solutionImageId: data.solutionImage,
-          contributors: {
-            connect: data.contributors.map((id) => ({
-              id,
-            })),
-          },
+          contributors: data.contributors
+            ? {
+                connect: data.contributors.map((id) => ({
+                  id,
+                })),
+              }
+            : undefined,
         },
       });
     });
