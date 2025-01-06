@@ -269,13 +269,14 @@ export class ExerciseService {
             : undefined,
           solveIdeaImageId: data.solveIdeaImage,
           solutionImageId: data.solutionImage,
-          contributors: data.contributors
-            ? {
-                connect: data.contributors.map((id) => ({
-                  id,
-                })),
-              }
-            : undefined,
+          contributors:
+            data.contributors != null
+              ? {
+                  set: data.contributors.map((id) => ({
+                    id,
+                  })),
+                }
+              : undefined,
         },
       });
     });

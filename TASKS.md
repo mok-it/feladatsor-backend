@@ -15,6 +15,7 @@
 - [ ] Add multiple possible contributors to exerciseCheck 
 - [ ] Add multiple possible contributors to comment
 - [ ] Implement spell checking for exercise description (maybe use https://hector.hu/szoveg-ellenorzes)
+- [ ] Add logging to service methods
 
 ### Üzletre vár
 
