@@ -52,7 +52,7 @@ async function main() {
 
   // Seed exercise checks
   logger.log('🌱 Seeding exercise checks');
-  await seedExerciseChecks(prisma);
+  await seedExerciseChecks(prisma, app);
 
   // Seed exercise history
   logger.log('🌱 Seeding exercise history');

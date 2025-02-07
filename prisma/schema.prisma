@@ -26,6 +26,13 @@ model ExerciseTag {
   name                String        @unique
 }
 
+enum AggregatedCheckStatus {
+  NEEDS_TO_BE_CHECKED
+  GOOD
+  CHANGE_REQUIRED
+  TO_DELETE
+}
+
 model Exercise {
   id                       String                        @id @default(uuid())
   originalId               String?
@@ -47,6 +54,7 @@ model Exercise {
   sameLogicExerciseGroup   ExerciseGroupSameLogic?       @relation(fields: [exerciseGroupSameLogicId], references: [id])
   exerciseGroupSameLogicId String?
   checks                   ExerciseCheck[]
+  aggregatedCheckStatus    AggregatedCheckStatus         @default(NEEDS_TO_BE_CHECKED)
   comments                 ExerciseComment[]
   isCompetitionFinal       Boolean                       @default(false)
   createdBy                User                          @relation(fields: [createdById], references: [id])
@@ -142,6 +150,8 @@ model ExerciseCheck {
   type         ExerciseCheckType
   createdAt    DateTime          @default(now())
   updatedAt    DateTime          @default(now()) @updatedAt
+
+  @@unique([exerciseId, userId])
 }
 
 model ExerciseHistory {

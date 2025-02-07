@@ -55,6 +55,11 @@ export class ExerciseSearchService {
           },
         },
       },
+      aggregatedCheckStatus: query.exerciseCheck
+        ? {
+            equals: query.exerciseCheck,
+          }
+        : undefined,
     };
     const countPromise = this.prismaService.exercise.count({
       where,

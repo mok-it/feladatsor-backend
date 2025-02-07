@@ -22,10 +22,18 @@ input ExerciseSearchQuery {
   queryStr: String
   isCompetitionFinal: Boolean
   difficulty: [ExerciseDifficultyRange!]
+  exerciseCheck: ExerciseCheckFilter
   orderBy: String
   orderDirection: OrderDirection
   includeTags: [ID!]
   excludeTags: [ID!]
+}
+
+enum ExerciseCheckFilter {
+  NEEDS_TO_BE_CHECKED
+  GOOD
+  CHANGE_REQUIRED
+  TO_DELETE
 }
 
 enum OrderDirection {

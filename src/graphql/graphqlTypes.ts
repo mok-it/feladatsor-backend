@@ -20,6 +20,13 @@ export enum ExerciseCheckRole {
     LECTOR = "LECTOR"
 }
 
+export enum ExerciseCheckFilter {
+    NEEDS_TO_BE_CHECKED = "NEEDS_TO_BE_CHECKED",
+    GOOD = "GOOD",
+    CHANGE_REQUIRED = "CHANGE_REQUIRED",
+    TO_DELETE = "TO_DELETE"
+}
+
 export enum OrderDirection {
     ASC = "ASC",
     DESC = "DESC"
@@ -91,6 +98,7 @@ export interface ExerciseSearchQuery {
     queryStr?: Nullable<string>;
     isCompetitionFinal?: Nullable<boolean>;
     difficulty?: Nullable<ExerciseDifficultyRange[]>;
+    exerciseCheck?: Nullable<ExerciseCheckFilter>;
     orderBy?: Nullable<string>;
     orderDirection?: Nullable<OrderDirection>;
     includeTags?: Nullable<string[]>;
