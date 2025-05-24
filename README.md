@@ -1,9 +1,7 @@
-
 ## Description
 
 This is the backend repository for the <a href="https://medvematek.hu/">Medve Matek</a> voluntary organization.
 It is responsible for managing exercises.
-
 
 ## Architecture
 
@@ -13,9 +11,10 @@ The backend uses Nest JS, Prisma, and GraphQL
 
 First of all, duplicate the `.env.example` file to a `.env` file.
 
-For running the app you will need to have a Postgre database running. 
+For running the app you will need to have a Postgre database running.
 
 You can do this with docker
+
 ```bash
 docker compose -f docker-compose.db.yml up
 ```
