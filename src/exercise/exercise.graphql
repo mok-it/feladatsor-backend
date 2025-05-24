@@ -26,6 +26,15 @@ input ExerciseSearchQuery {
   orderDirection: OrderDirection
   includeTags: [ID!]
   excludeTags: [ID!]
+  status: ExerciseStatus
+  checkStatus: ExerciseCheckStatus
+}
+
+enum ExerciseCheckStatus {
+  TO_BE_CHECKED
+  GOOD 
+  CHANGE_REQUIRED
+  TO_DELETE
 }
 
 enum OrderDirection {

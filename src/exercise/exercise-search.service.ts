@@ -1,7 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
-import { ExerciseSearchQuery } from '../graphql/graphqlTypes';
+import {
+  ExerciseCheckStatus,
+  ExerciseCheckType,
+  ExerciseSearchQuery,
+} from '../graphql/graphqlTypes';
 import { PrismaService } from '../prisma/PrismaService';
+import { orderBy, uniqBy } from 'lodash';
 
 @Injectable()
 export class ExerciseSearchService {
@@ -55,6 +60,7 @@ export class ExerciseSearchService {
           },
         },
       },
+      status: query.status,
     };
     const countPromise = this.prismaService.exercise.count({
       where,
@@ -63,6 +69,9 @@ export class ExerciseSearchService {
       skip: query.skip,
       take: query.take,
       where,
+      include: {
+        checks: true,
+      },
       orderBy: query.orderBy
         ? {
             [query.orderBy]: query.orderDirection.toLowerCase() ?? 'desc',
@@ -72,8 +81,50 @@ export class ExerciseSearchService {
 
     const [data, count] = await Promise.all([dataPromise, countPromise]);
 
+    const mapped = data.map((exercise) => {
+      const checks = uniqBy(
+        orderBy(exercise.checks, 'createdAt', 'desc'),
+        (item) => item.userId,
+      );
+      const good_count = checks.filter(
+        (check) => check.type === ExerciseCheckType.GOOD,
+      ).length;
+      const change_count = checks.filter(
+        (check) => check.type === ExerciseCheckType.CHANGE_REQUIRED,
+      ).length;
+      const delete_count = checks.filter(
+        (check) => check.type === ExerciseCheckType.TO_DELETE,
+      ).length;
+      return { good_count, change_count, delete_count, ...exercise };
+    });
+
+    let filtered = [];
+
+    switch (query.checkStatus) {
+      case ExerciseCheckStatus.TO_BE_CHECKED:
+        filtered = mapped.filter(
+          (exercise) => exercise.good_count < 3 && exercise.delete_count === 0,
+        );
+        break;
+      case ExerciseCheckStatus.GOOD:
+        filtered = mapped.filter((exercise) => exercise.good_count >= 3);
+        break;
+      case ExerciseCheckStatus.CHANGE_REQUIRED:
+        filtered = mapped.filter(
+          (exercise) => exercise.good_count < 3 && exercise.change_count > 0,
+        );
+        break;
+      case ExerciseCheckStatus.TO_DELETE:
+        filtered = mapped.filter(
+          (exercise) => exercise.good_count < 3 && exercise.delete_count > 0,
+        );
+        break;
+      default:
+        filtered = mapped;
+    }
+
     return {
-      exercises: data,
+      exercises: filtered,
       totalCount: count,
     };
   }
