@@ -387,7 +387,7 @@ export class ExerciseService {
       })
       .reduce((max, current) => (current > max ? current : max));
 
-    let nextGroupChar = String.fromCharCode(largestLetter.charCodeAt(0) + 1);
+    const nextGroupChar = String.fromCharCode(largestLetter.charCodeAt(0) + 1);
 
     return `${groupPrefix}-${nextGroupChar}`;
   }
