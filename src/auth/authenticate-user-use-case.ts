@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { compare } from 'bcryptjs';
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from '../user/user.service';
@@ -13,25 +13,35 @@ export class AuthenticateUser {
     private jwtService: JwtService,
   ) {}
 
+  private logger = new Logger(AuthenticateUser.name);
+
   createToken(user: User) {
     const payload: Omit<Omit<JwtPayload, 'iat'>, 'exp'> = {
       subject: user.id,
       user_name: user.userName,
       roles: user.roles,
     };
+    this.logger.debug('JWT token created', payload);
+    this.logger.log(`User logged in: ${user.userName}`);
     return {
       token: this.jwtService.sign(payload),
       user,
     };
   }
 
-  async execute(name: string, password: string) {
+  async login(name: string, password: string) {
     const user = await this.userService.getUserByUserName(name);
     if (!user || !user.password) {
+      this.logger.log(
+        `Failed login for user: [${user.userName}] Id: ${user.id}`,
+      );
       return null;
     }
     const passwordHasMatch = await compare(password, user.password);
     if (!passwordHasMatch) {
+      this.logger.log(
+        `Failed login for user, pass mismatch: [${user.userName}] Id: ${user.id}`,
+      );
       return null;
     }
     return this.createToken(user);
@@ -41,6 +51,7 @@ export class AuthenticateUser {
     //Check if token is valid
     const isValid = await validateFirebaseToken(token);
     if (!isValid) {
+      this.logger.debug(`Firebase token is invalid for token: ${token}`);
       return null;
     }
 

@@ -6,7 +6,7 @@ export class AuthService {
   constructor(private readonly authUser: AuthenticateUser) {}
 
   login(name: string, password: string) {
-    return this.authUser.execute(name, password);
+    return this.authUser.login(name, password);
   }
 
   loginWithGoogle(token: string) {

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import * as ExcelJS from 'exceljs';
 import { PrismaClient } from '@prisma/client';
 import { Config } from '../config/config';
@@ -22,7 +22,10 @@ export class ExcelExportService {
     private readonly config: Config,
   ) {}
 
+  logger = new Logger(ExcelExportService.name);
+
   async exportExcel(): Promise<{ url: string }> {
+    this.logger.log('Exporting all tables to excel');
     const workbook = new ExcelJS.Workbook();
     let tableNames = (await this.prismaClient
       .$queryRaw`SELECT table_name FROM information_schema.tables WHERE table_schema = 'public'
@@ -88,6 +91,9 @@ export class ExcelExportService {
     await workbook.xlsx.writeFile(outPath);
 
     const fileURL = `${this.config.server.publicHost}/generated/${excelFileName}`;
+    this.logger.debug(
+      `Excel file saved locally: ${outPath}, download url: ${fileURL}`,
+    );
 
     return {
       url: fileURL,

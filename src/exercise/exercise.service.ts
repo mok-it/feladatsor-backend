@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { AgeGroup, Exercise, User } from '@prisma/client';
 import { ExerciseInput, ExerciseUpdateInput } from '../graphql/graphqlTypes';
 import { PrismaService } from '../prisma/PrismaService';
@@ -12,6 +12,8 @@ export class ExerciseService {
     private readonly prismaService: PrismaService,
     private readonly exerciseGroupService: ExerciseGroupService,
   ) {}
+
+  logger = new Logger(ExerciseService.name);
 
   getExerciseById(id: string) {
     return this.prismaService.exercise.findUnique({
@@ -49,6 +51,7 @@ export class ExerciseService {
       createdAtYear?: number;
     },
   ) {
+    this.logger.log(`Creating new exercise, by: ${user.userName}`, data);
     const ageGroups: AgeGroup[] = [
       'KOALA',
       'MEDVEBOCS',
@@ -128,6 +131,9 @@ export class ExerciseService {
   }
 
   async cloneExerciseToNew(id: string, user: User, createdAt?: Date) {
+    this.logger.log(
+      `Cloning exercise, by: ${user.userName}, originalId: ${id}`,
+    );
     //Create a new group if the exercise does not already have one
     await this.exerciseGroupService.upsertExerciseGroupSameLogic(id, user);
 
@@ -173,6 +179,7 @@ export class ExerciseService {
   }
 
   async updateExercise(id: string, data: ExerciseUpdateInput, user: User) {
+    this.logger.log(`Updating exercise Id: ${id}, by: ${user.userName}`, data);
     return await this.prismaService.$transaction(async (tx) => {
       //Undefined means we should keep the data
       //Null means an explicit delete
