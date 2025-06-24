@@ -1,11 +1,11 @@
-import {Injectable, Logger} from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import * as sharp from 'sharp';
 import * as fs from 'fs';
-import {Image as GraphQLImage} from '../graphql/graphqlTypes';
+import { Image as GraphQLImage } from '../graphql/graphqlTypes';
 
 import * as path from 'node:path';
-import {PrismaService} from "../prisma/PrismaService";
-import {Config} from "../config/config";
+import { PrismaService } from '../prisma/PrismaService';
+import { Config } from '../config/config';
 
 @Injectable()
 export class ImageService {
@@ -93,6 +93,7 @@ export class ImageService {
 
   resolveGQLImage(imageId?: string): GraphQLImage | null {
     if (!imageId) return null;
+    if (imageId === 'null') return null;
 
     const imgFileName = imageId + '.webp';
     const imgURL = `${this.config.server.publicHost}/images/${imgFileName}`;

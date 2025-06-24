@@ -20,6 +20,15 @@ export enum ExerciseCheckRole {
     LECTOR = "LECTOR"
 }
 
+export enum ExerciseHistoryFieldType {
+    TEXT = "TEXT",
+    ARRAY = "ARRAY",
+    BOOLEAN = "BOOLEAN",
+    JSON = "JSON",
+    IMAGE = "IMAGE",
+    ENUM = "ENUM"
+}
+
 export enum ExerciseCheckFilter {
     NEEDS_TO_BE_CHECKED = "NEEDS_TO_BE_CHECKED",
     GOOD = "GOOD",
@@ -221,6 +230,7 @@ export interface IQuery {
     exerciseSheet(id: string): Nullable<ExerciseSheet> | Promise<Nullable<ExerciseSheet>>;
     sameLogicExerciseGroups(): SameLogicExerciseGroup[] | Promise<SameLogicExerciseGroup[]>;
     exerciseHistoryByExercise(id: string): ExerciseHistory[] | Promise<ExerciseHistory[]>;
+    exerciseHistoryByField(exerciseId: string, field: string): ExerciseHistory[] | Promise<ExerciseHistory[]>;
     exerciseTags(): ExerciseTag[] | Promise<ExerciseTag[]>;
     exerciseTag(id: string): Nullable<ExerciseTag> | Promise<Nullable<ExerciseTag>>;
     flatExerciseTags(): ExerciseTag[] | Promise<ExerciseTag[]>;
@@ -275,15 +285,20 @@ export interface SameLogicExerciseGroup {
     updatedAt: string;
 }
 
+export interface HistoryStringValue {
+    value: string;
+}
+
 export interface ExerciseHistory {
     id: string;
     exercise: Exercise;
     field: string;
-    oldValue: string;
-    newValue: string;
+    oldValue?: Nullable<HistoryValue>;
+    newValue?: Nullable<HistoryValue>;
     createdBy: User;
     createdAt: string;
     updatedAt: string;
+    fieldType: ExerciseHistoryFieldType;
 }
 
 export interface ExerciseTag {
@@ -410,4 +425,5 @@ export interface UserStats {
     contributionCalendar: ContributionCalendar;
 }
 
+export type HistoryValue = Image | HistoryStringValue;
 type Nullable<T> = T | null;

@@ -1,14 +1,39 @@
 type Query {
   exerciseHistoryByExercise(id: ID!): [ExerciseHistory!]!
+  exerciseHistoryByField(exerciseId: ID!, field: String!): [ExerciseHistory!]!
 }
+
+type HistoryStringValue {
+  value: String!
+}
+
+type HistoryTagArray {
+  tags: [ExerciseTag!]!
+}
+
+type HistoryUserArray {
+  users: [User!]!
+}
+
+union HistoryValue = Image | HistoryStringValue | HistoryTagArray | HistoryUserArray
 
 type ExerciseHistory {
   id: ID!
   exercise: Exercise!
   field: String!
-  oldValue: String!
-  newValue: String!
+  oldValue: HistoryValue
+  newValue: HistoryValue
   createdBy: User!
   createdAt: String!
   updatedAt: String!
+  fieldType: ExerciseHistoryFieldType!
+}
+
+enum ExerciseHistoryFieldType {
+  TEXT
+  ARRAY
+  BOOLEAN
+  JSON
+  IMAGE
+  ENUM
 }

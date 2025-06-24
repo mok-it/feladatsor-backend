@@ -189,7 +189,7 @@ export class ExerciseService {
           id,
         },
       });
-      const differences = this.getDifferences(oldExercise, data);
+      const differences = await this.getDifferences(oldExercise, data, tx);
       //Save differences into history
       await Promise.all(
         differences.map((difference) =>
@@ -387,15 +387,19 @@ export class ExerciseService {
       })
       .reduce((max, current) => (current > max ? current : max));
 
-    let nextGroupChar = String.fromCharCode(largestLetter.charCodeAt(0) + 1);
+    const nextGroupChar = String.fromCharCode(largestLetter.charCodeAt(0) + 1);
 
     return `${groupPrefix}-${nextGroupChar}`;
   }
 
-  private getDifferences(
+  private async getDifferences(
     oldExercise: Exercise,
     newExercise: ExerciseUpdateInput,
+    tx: TransactionClient,
   ) {
+    const differences = [];
+
+    // Basic field differences
     const fieldsToCheck: (keyof Exercise)[] = [
       'description',
       'helpingQuestions',
@@ -407,23 +411,140 @@ export class ExerciseService {
       'exerciseImageId',
       'solutionImageId',
       'solveIdeaImageId',
+      'alertDescription',
+      'alertSeverty',
+      'isCompetitionFinal',
     ];
 
-    return fieldsToCheck
-      .map((fieldName) => {
-        //Undefined means we kept the field as original => No difference
-        if (newExercise[fieldName] === undefined) return null;
+    // Check basic fields
+    fieldsToCheck.forEach((fieldName) => {
+      let newValue = newExercise[fieldName];
 
-        const oldValue = oldExercise[fieldName];
-        const newValue = newExercise[fieldName];
+      // Handle alert fields mapping
+      if (fieldName === 'alertDescription' && newExercise.alert) {
+        newValue = newExercise.alert.description;
+      } else if (fieldName === 'alertSeverty' && newExercise.alert) {
+        newValue = newExercise.alert.severity;
+      } else if (
+        fieldName === 'exerciseGroupSameLogicId' &&
+        newExercise.sameLogicGroup !== undefined
+      ) {
+        newValue = newExercise.sameLogicGroup;
+      }
 
-        const hasChanged = Array.isArray(oldValue)
-          ? this.arraysDiffer(oldValue, newValue)
-          : oldValue != newValue;
+      // Skip if field is not being updated
+      if (
+        newValue === undefined &&
+        !newExercise.alert &&
+        fieldName !== 'alertDescription' &&
+        fieldName !== 'alertSeverty'
+      )
+        return;
 
-        return hasChanged ? { field: fieldName, oldValue, newValue } : null;
-      })
-      .filter(Boolean);
+      const oldValue = oldExercise[fieldName];
+
+      const hasChanged = Array.isArray(oldValue)
+        ? this.arraysDiffer(oldValue, newValue)
+        : oldValue != newValue;
+
+      if (hasChanged) {
+        differences.push({ field: fieldName, oldValue, newValue });
+      }
+    });
+
+    // Check image field changes (enhanced tracking)
+    const imageFields = [
+      { field: 'exerciseImageId', inputField: 'exerciseImage' },
+      { field: 'solutionImageId', inputField: 'solutionImage' },
+      { field: 'solveIdeaImageId', inputField: 'solveIdeaImage' },
+    ];
+
+    imageFields.forEach(({ field, inputField }) => {
+      if (newExercise[inputField] !== undefined) {
+        const oldValue = oldExercise[field];
+        const newValue = newExercise[inputField];
+
+        if (oldValue !== newValue) {
+          differences.push({
+            field: inputField,
+            oldValue: oldValue,
+            newValue: newValue,
+          });
+        }
+      }
+    });
+
+    // Check tags changes
+    if (newExercise.tags !== undefined) {
+      const oldExerciseWithTags = await tx.exercise.findUnique({
+        where: { id: oldExercise.id },
+        include: { tags: true },
+      });
+
+      const oldTags = oldExerciseWithTags.tags.map((tag) => tag.id).sort();
+      const newTags = newExercise.tags ? [...newExercise.tags].sort() : [];
+
+      if (this.arraysDiffer(oldTags, newTags)) {
+        differences.push({
+          field: 'tags',
+          oldValue: JSON.stringify(oldTags),
+          newValue: JSON.stringify(newTags),
+        });
+      }
+    }
+
+    // Check contributors changes
+    if (newExercise.contributors !== undefined) {
+      const oldExerciseWithContributors = await tx.exercise.findUnique({
+        where: { id: oldExercise.id },
+        include: { contributors: true },
+      });
+
+      const oldContributors = oldExerciseWithContributors.contributors
+        .map((contrib) => contrib.id)
+        .sort();
+      const newContributors = newExercise.contributors
+        ? [...newExercise.contributors].sort()
+        : [];
+
+      if (this.arraysDiffer(oldContributors, newContributors)) {
+        differences.push({
+          field: 'contributors',
+          oldValue: JSON.stringify(oldContributors),
+          newValue: JSON.stringify(newContributors),
+        });
+      }
+    }
+
+    // Check difficulty changes
+    if (newExercise.difficulty !== undefined) {
+      const oldDifficulties = await tx.exerciseDifficulty.findMany({
+        where: { exerciseId: oldExercise.id },
+        orderBy: { ageGroup: 'asc' },
+      });
+
+      const oldDifficultyMap = oldDifficulties.reduce((acc, diff) => {
+        acc[diff.ageGroup] = diff.difficulty;
+        return acc;
+      }, {});
+
+      const newDifficultyMap = newExercise.difficulty.reduce((acc, diff) => {
+        acc[diff.ageGroup] = diff.difficulty;
+        return acc;
+      }, {});
+
+      if (
+        JSON.stringify(oldDifficultyMap) !== JSON.stringify(newDifficultyMap)
+      ) {
+        differences.push({
+          field: 'difficulty',
+          oldValue: JSON.stringify(oldDifficultyMap),
+          newValue: JSON.stringify(newDifficultyMap),
+        });
+      }
+    }
+
+    return differences;
   }
 
   private arraysDiffer(arr1: string[], arr2: string[]): boolean {
