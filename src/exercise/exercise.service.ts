@@ -32,11 +32,18 @@ export class ExerciseService {
     return this.prismaService.exercise.count();
   }
 
-  getExercisesByUserId(id: string) {
+  getExercisesByUserId(id: string, skip: number, take: number) {
     return this.prismaService.exercise.findMany({
       where: {
         createdById: id,
+        contributors: {
+          some: {
+            id: id,
+          },
+        },
       },
+      skip,
+      take,
     });
   }
 

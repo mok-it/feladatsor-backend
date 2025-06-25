@@ -1,5 +1,6 @@
 import {
   Args,
+  Int,
   Mutation,
   Parent,
   Query,
@@ -44,6 +45,11 @@ export class UserResolver {
     return this.userService.getUserById(id);
   }
 
+  @Query('me')
+  async getMe(@CurrentUser() currentUser: PrismaUser) {
+    return currentUser;
+  }
+
   @Public()
   @Mutation('register')
   async register(@Args('data') data: UserRegisterInput) {
@@ -77,8 +83,12 @@ export class UserResolver {
   }
 
   @ResolveField('exercises')
-  async getExercises(@Parent() user: User) {
-    return this.exerciseService.getExercisesByUserId(user.id);
+  async getExercises(
+    @Parent() user: User,
+    @Args('skip', { type: () => Int, defaultValue: 0 }) skip: number,
+    @Args('take', { type: () => Int, defaultValue: 20 }) take: number,
+  ) {
+    return this.exerciseService.getExercisesByUserId(user.id, skip, take);
   }
 
   @ResolveField('avatarUrl')

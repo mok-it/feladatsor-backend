@@ -139,14 +139,6 @@ enum AlertSeverity {
   ERROR
 }
 
-type ExerciseComment {
-  id: ID!
-  user: User!
-  comment: String!
-  createdAt: String!
-  updatedAt: String!
-}
-
 type Tag {
   id: ID!
   parent: Tag

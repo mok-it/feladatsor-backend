@@ -13,11 +13,13 @@ import { UserService } from '../user/user.service';
 import { UseGuards } from '@nestjs/common';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
+import { ExerciseService } from '../exercise/exercise.service';
 
 @Resolver('ExerciseComment')
 export class ExerciseCommentResolver {
   constructor(
     private readonly exerciseCommentService: ExerciseCommentService,
+    private readonly exerciseService: ExerciseService,
     private readonly userService: UserService,
   ) {}
 
@@ -73,5 +75,15 @@ export class ExerciseCommentResolver {
   @ResolveField('createdBy')
   async commentCreatedBy(@Parent() comment: ExerciseComment) {
     return this.userService.getUserById(comment.userId);
+  }
+
+  @ResolveField('contributors')
+  async commentContributors(@Parent() comment: ExerciseComment) {
+    return this.exerciseCommentService.getContributors(comment.id);
+  }
+
+  @ResolveField('exercise')
+  async commentExercises(@Parent() comment: ExerciseComment) {
+    return this.exerciseService.getExerciseById(comment.exerciseId);
   }
 }
