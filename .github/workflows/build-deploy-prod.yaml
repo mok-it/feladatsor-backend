@@ -38,19 +38,19 @@ jobs:
         run: |
           gcloud beta run jobs deploy db-migrate-job \
             --image gcr.io/${{ vars.GCP_PROJECT_ID }}/be-feladatsor:${{ steps.version.outputs.VERSION }} \
-            --region europe-north1 \
+            --region ${{ vars.GCP_REGION }} \
             --set-env-vars DATABASE_URL=${{ secrets.DATABASE_URL_PROD }},JWT_SECRET=${{ secrets.JWT_SECRET_PROD }},PUBLIC_HOST=${{ vars.PUBLIC_HOST_PROD }},FIREBASE_VALIDATE_URL=${{ vars.FIREBASE_VALIDATE_URL }},FILE_STORAGE_FOLDER=/code/data \
             --command sh \
             --args -c,"npm run db:migrate:prod"
           
-          gcloud run jobs execute db-migrate-job --region europe-north1 --wait
+          gcloud run jobs execute db-migrate-job --region ${{ vars.GCP_REGION }} --wait
 
       - name: Deploy to Cloud Run (Production)
         run: |
           gcloud run deploy feladatsor-backend \
             --image gcr.io/${{ vars.GCP_PROJECT_ID }}/be-feladatsor:${{ steps.version.outputs.VERSION }} \
             --platform managed \
-            --region europe-north1 \
+            --region ${{ vars.GCP_REGION }} \
             --allow-unauthenticated \
             --add-volume name=imageData,type=cloud-storage,bucket=${{ vars.GCS_BUCKET_PROD }} \
             --add-volume-mount volume=imageData,mount-path=/code/data \
