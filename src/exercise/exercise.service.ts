@@ -57,74 +57,80 @@ export class ExerciseService {
       'JEGESMEDVE',
     ];
 
-    return this.prismaService.$transaction(async (tx) => {
-      const generatedId = await this.generateNextExerciseId(
-        tx,
-        extraOverrides && extraOverrides.createdAtYear,
-      );
-      return tx.exercise.create({
-        data: {
-          id:
-            extraOverrides && extraOverrides.id
-              ? extraOverrides.id
-              : generatedId,
-          originalId:
-            extraOverrides && extraOverrides.originalId
-              ? extraOverrides.originalId
+    return this.prismaService.$transaction(
+      async (tx) => {
+        const generatedId = await this.generateNextExerciseId(
+          tx,
+          extraOverrides && extraOverrides.createdAtYear,
+        );
+        return tx.exercise.create({
+          data: {
+            id:
+              extraOverrides && extraOverrides.id
+                ? extraOverrides.id
+                : generatedId,
+            originalId:
+              extraOverrides && extraOverrides.originalId
+                ? extraOverrides.originalId
+                : undefined,
+            sameLogicExerciseGroup: data.sameLogicGroup
+              ? {
+                  connect: {
+                    id: data.sameLogicGroup,
+                  },
+                }
               : undefined,
-          sameLogicExerciseGroup: data.sameLogicGroup
-            ? {
-                connect: {
-                  id: data.sameLogicGroup,
-                },
-              }
-            : undefined,
-          tags: {
-            connect: data.tags.map((tagID) => ({
-              id: tagID,
-            })),
-          },
-          status: data.status,
-          alertDescription: data.alert && data.alert.description,
-          alertSeverty: data.alert && data.alert.severity,
-          isCompetitionFinal: data.isCompetitionFinal,
-          solutionOptions: data.solutionOptions,
-          difficulty: {
-            //This mapping is done to fill all ageGroup difficulties, even if the frontend does not send every one of them
-            create: ageGroups.map((ageGroup) => {
-              const difficulty = data.difficulty.find(
-                (d) => d.ageGroup == ageGroup,
-              )?.difficulty;
-              return {
-                ageGroup,
-                difficulty: difficulty ?? 0,
-              };
-            }),
-          },
-          description: data.description,
-          exerciseImageId: data.exerciseImage,
-          solution: data.solution,
-          solutionImageId: data.solutionImage,
-          solveIdea: data.solveIdea,
-          solveIdeaImageId: data.solveIdeaImage,
-          helpingQuestions: data.helpingQuestions,
-          source: data.source,
-          createdAt: data.createdAt,
-          createdBy: {
-            connect: {
-              id: user.id,
+            tags: {
+              connect: data.tags.map((tagID) => ({
+                id: tagID,
+              })),
             },
+            status: data.status,
+            alertDescription: data.alert && data.alert.description,
+            alertSeverty: data.alert && data.alert.severity,
+            isCompetitionFinal: data.isCompetitionFinal,
+            solutionOptions: data.solutionOptions,
+            difficulty: {
+              //This mapping is done to fill all ageGroup difficulties, even if the frontend does not send every one of them
+              create: ageGroups.map((ageGroup) => {
+                const difficulty = data.difficulty.find(
+                  (d) => d.ageGroup == ageGroup,
+                )?.difficulty;
+                return {
+                  ageGroup,
+                  difficulty: difficulty ?? 0,
+                };
+              }),
+            },
+            description: data.description,
+            exerciseImageId: data.exerciseImage,
+            solution: data.solution,
+            solutionImageId: data.solutionImage,
+            solveIdea: data.solveIdea,
+            solveIdeaImageId: data.solveIdeaImage,
+            helpingQuestions: data.helpingQuestions,
+            source: data.source,
+            createdAt: data.createdAt,
+            createdBy: {
+              connect: {
+                id: user.id,
+              },
+            },
+            contributors: data.contributors
+              ? {
+                  connect: data.contributors.map((id) => ({
+                    id,
+                  })),
+                }
+              : undefined,
           },
-          contributors: data.contributors
-            ? {
-                connect: data.contributors.map((id) => ({
-                  id,
-                })),
-              }
-            : undefined,
-        },
-      });
-    });
+        });
+      },
+      {
+        maxWait: 20_000, // default: 2000
+        timeout: 60_000, // default: 5000
+      },
+    );
   }
 
   async cloneExerciseToNew(id: string, user: User, createdAt?: Date) {

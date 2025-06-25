@@ -25,9 +25,9 @@ export const seedExercises = async (
   ];
 
   const exercises = await Promise.all(
-    ['22', '23', '24'].flatMap((year) =>
+    ['23', '24'].flatMap((year) =>
       Array.from({
-        length: faker.helpers.rangeToNumber({ min: 20, max: 200 }),
+        length: faker.helpers.rangeToNumber({ min: 20, max: 100 }),
       }).map((_, id) => {
         const shouldAddAlert = faker.number.int(100) > 50;
         const createdByUser = faker.helpers.arrayElement(users);
@@ -82,7 +82,7 @@ export const seedExercises = async (
     ),
   );
 
-  for (const a in Array.from({ length: 200 })) {
+  for (const a in Array.from({ length: 100 })) {
     const exercise = faker.helpers.arrayElement(exercises);
     for (const b in Array.from({
       length: faker.number.int({ min: 1, max: 3 }),
