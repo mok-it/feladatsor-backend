@@ -64,7 +64,7 @@ jobs:
 
       - name: Run Database Migration
         run: |
-          gcloud run jobs create db-migration-job \
+          gcloud beta run jobs deploy db-migration-job \
             --image gcr.io/${{ vars.GCP_PROJECT_ID }}/be-feladatsor:latest \
             --region ${{ vars.GCP_REGION }} \
             --set-env-vars DATABASE_URL=${{ secrets.DATABASE_URL_DEV }},JWT_SECRET=${{ secrets.JWT_SECRET_DEV }},PUBLIC_HOST=${{ vars.PUBLIC_HOST_DEV }},FIREBASE_VALIDATE_URL=${{ vars.FIREBASE_VALIDATE_URL }},FILE_STORAGE_FOLDER=/code/data \
@@ -75,7 +75,7 @@ jobs:
 
       - name: Run Database Seed ( should run manually from Google console )
         run: |
-          gcloud run jobs create db-seed-job \
+          gcloud beta run jobs deploy db-seed-job \
             --image gcr.io/${{ vars.GCP_PROJECT_ID }}/be-feladatsor:latest \
             --region ${{ vars.GCP_REGION }} \
             --set-env-vars DATABASE_URL=${{ secrets.DATABASE_URL_DEV }},JWT_SECRET=${{ secrets.JWT_SECRET_DEV }},PUBLIC_HOST=${{ vars.PUBLIC_HOST_DEV }},FIREBASE_VALIDATE_URL=${{ vars.FIREBASE_VALIDATE_URL }},FILE_STORAGE_FOLDER=/code/data \
