@@ -1,5 +1,5 @@
 # ⚒ Build the builder image
-FROM node:18 as builder
+FROM node:18 AS builder
 
 # 🤫 Silence npm
 ENV NPM_CONFIG_LOGLEVEL=error
@@ -18,12 +18,12 @@ RUN npm ci
 RUN npm run db:generate
 RUN npm run build
 
-FROM builder as prodbuild
+FROM builder AS prodbuild
 # 👇 Delete dev deps as they are no longer needed
 RUN npm prune --production
 
 # 🚀 Build the runner image
-FROM node:18-slim as runner
+FROM node:18-slim AS runner
 
 # Add openssl and tini
 RUN apt -qy update && apt -qy install openssl tini

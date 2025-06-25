@@ -113,8 +113,15 @@ enum AgeGroup {
 }
 
 enum Role {
-  ADMIN
-  USER
+  USER // -> Is able to submit new Exercises, and list his own
+  LIST_EXERCISES //-> Able to list all exercises
+  CHECK_EXERCISE //-> Able to check an exercise
+  CLONE_EXERCISE //-> Able to clone an exercise
+  FINALIZE_EXERCISE //-> Able to change the exercise's state to Deleted or Done
+  EXERCISE_SHEET //-> Ability to view and manipulate exercise sheets
+  PROOFREAD_EXERCISE_SHEET //-> Can add comments to exercise sheets
+
+  ADMIN //-> Should bypass any other role check, can do anything
 }
 
 model User {

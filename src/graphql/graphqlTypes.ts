@@ -1,4 +1,3 @@
-
 /*
  * -------------------------------------------------------
  * THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
@@ -64,8 +63,14 @@ export enum ExerciseAgeGroup {
 }
 
 export enum Role {
-    ADMIN = "ADMIN",
-    USER = "USER"
+    USER = "USER",
+    LIST_EXERCISES = "LIST_EXERCISES",
+    CHECK_EXERCISE = "CHECK_EXERCISE",
+    CLONE_EXERCISE = "CLONE_EXERCISE",
+    FINALIZE_EXERCISE = "FINALIZE_EXERCISE",
+    EXERCISE_SHEET = "EXERCISE_SHEET",
+    PROOFREAD_EXERCISE_SHEET = "PROOFREAD_EXERCISE_SHEET",
+    ADMIN = "ADMIN"
 }
 
 export interface ExerciseCheckInput {
@@ -289,6 +294,14 @@ export interface HistoryStringValue {
     value: string;
 }
 
+export interface HistoryTagArray {
+    tags: ExerciseTag[];
+}
+
+export interface HistoryUserArray {
+    users: User[];
+}
+
 export interface ExerciseHistory {
     id: string;
     exercise: Exercise;
@@ -425,5 +438,5 @@ export interface UserStats {
     contributionCalendar: ContributionCalendar;
 }
 
-export type HistoryValue = Image | HistoryStringValue;
+export type HistoryValue = Image | HistoryStringValue | HistoryTagArray | HistoryUserArray;
 type Nullable<T> = T | null;

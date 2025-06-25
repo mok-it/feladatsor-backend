@@ -31,8 +31,22 @@ input UserUpdateInput {
 }
 
 enum Role {
-  ADMIN
+  "Is able to submit new Exercises, and list his own"
   USER
+  "Able to list all exercises"
+  LIST_EXERCISES
+  "Able to check an exercise"
+  CHECK_EXERCISE
+  "Able to clone an exercise"
+  CLONE_EXERCISE
+  "Able to change the exercise's state to Deleted or Done"
+  FINALIZE_EXERCISE
+  "Ability to view and manipulate exercise sheets"
+  EXERCISE_SHEET
+  "Can add comments to exercise sheets"
+  PROOFREAD_EXERCISE_SHEET
+  "Should bypass any other role check, can do anything"
+  ADMIN
 }
 
 type User {

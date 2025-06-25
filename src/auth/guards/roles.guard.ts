@@ -4,6 +4,7 @@ import { GqlExecutionContext } from '@nestjs/graphql';
 import { ROLES_KEY } from '../decorators/roles.decorator';
 import { Role } from '@prisma/client';
 import { Config } from '../../config/config';
+import { hasRolesOrAdmin } from '../hasRolesOrAdmin';
 
 @Injectable()
 export class RolesGuard implements CanActivate {
@@ -27,11 +28,11 @@ export class RolesGuard implements CanActivate {
     const user = ctx.getContext().req.user;
     if (!user) return false;
 
-    const hasPermission = requiredRoles.some((role) =>
-      user.roles?.includes(role),
-    );
+    if (user.roles.includes('ADMIN')) {
+      //If the user is an admin, we allow to do everything
+      return true;
+    }
 
-    if (hasPermission) return true;
-    return false;
+    return hasRolesOrAdmin(user, ...requiredRoles);
   }
 }

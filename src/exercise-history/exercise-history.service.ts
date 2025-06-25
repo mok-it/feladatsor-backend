@@ -31,10 +31,7 @@ export class ExerciseHistoryService {
 
   determineFieldType(field: string, _value: string): ExerciseHistoryFieldType {
     // Image fields
-    if (
-      field.includes('Image') ||
-      field.includes('image')
-    ) {
+    if (field.includes('Image') || field.includes('image')) {
       return ExerciseHistoryFieldType.IMAGE;
     }
 
