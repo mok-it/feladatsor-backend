@@ -69,9 +69,7 @@ jobs:
             --region ${{ vars.GCP_REGION }} \
             --set-env-vars DATABASE_URL=${{ secrets.DATABASE_URL_DEV }},JWT_SECRET=${{ secrets.JWT_SECRET_DEV }},PUBLIC_HOST=${{ vars.PUBLIC_HOST_DEV }},FIREBASE_VALIDATE_URL=${{ vars.FIREBASE_VALIDATE_URL }},FILE_STORAGE_FOLDER=/code/data \
             --command sh \
-            --args -c,"npm run db:migrate:prod" \
-            --task-count 1 \
-            --parallelism 1 || true
+            --args -c,"npm run db:migrate:prod"
           
           gcloud run jobs execute db-migration-job --region ${{ vars.GCP_REGION }} --wait
 
