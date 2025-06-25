@@ -39,9 +39,9 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
-  deploy-to-cloud-run:
+  deploy-to-cloud-run-dev:
     runs-on: ubuntu-latest
-    name: Deploy to Google Cloud Run
+    name: Deploy to Google Cloud Run (Dev)
     if: github.ref == 'refs/heads/main'
     steps:
       - uses: actions/checkout@v3
@@ -62,27 +62,27 @@ jobs:
         run: |
           docker push gcr.io/${{ vars.GCP_PROJECT_ID }}/be-feladatsor:latest
 
-      - name: Run Database Migration
+      - name: Run Database Migration (Dev)
         run: |
-          gcloud beta run jobs deploy db-migration-job \
+          gcloud beta run jobs deploy db-migrate-job-dev \
             --image gcr.io/${{ vars.GCP_PROJECT_ID }}/be-feladatsor:latest \
             --region ${{ vars.GCP_REGION }} \
             --set-env-vars DATABASE_URL=${{ secrets.DATABASE_URL_DEV }},JWT_SECRET=${{ secrets.JWT_SECRET_DEV }},PUBLIC_HOST=${{ vars.PUBLIC_HOST_DEV }},FIREBASE_VALIDATE_URL=${{ vars.FIREBASE_VALIDATE_URL }},FILE_STORAGE_FOLDER=/code/data \
             --command sh \
             --args -c,"npm run db:migrate:prod"
           
-          gcloud run jobs execute db-migration-job --region ${{ vars.GCP_REGION }} --wait
+          gcloud run jobs execute db-migrate-job-dev --region ${{ vars.GCP_REGION }} --wait
 
-      - name: Run Database Seed ( should run manually from Google console )
+      - name: Run Database Seed (Dev) - should run manually from Google console
         run: |
-          gcloud beta run jobs deploy db-seed-job \
+          gcloud beta run jobs deploy db-seed-job-dev \
             --image gcr.io/${{ vars.GCP_PROJECT_ID }}/be-feladatsor:latest \
             --region ${{ vars.GCP_REGION }} \
             --set-env-vars DATABASE_URL=${{ secrets.DATABASE_URL_DEV }},JWT_SECRET=${{ secrets.JWT_SECRET_DEV }},PUBLIC_HOST=${{ vars.PUBLIC_HOST_DEV }},FIREBASE_VALIDATE_URL=${{ vars.FIREBASE_VALIDATE_URL }},FILE_STORAGE_FOLDER=/code/data \
             --command sh \
             --args -c,"npm ci && npm run db:seed"
 
-      - name: Deploy to Cloud Run
+      - name: Deploy to Cloud Run (Dev)
         run: |
           gcloud run deploy be-feladatsor-dev \
             --image gcr.io/${{ vars.GCP_PROJECT_ID }}/be-feladatsor:latest \
@@ -92,3 +92,52 @@ jobs:
             --add-volume name=file-storage,type=cloud-storage,bucket=${{ vars.GCS_BUCKET }} \
             --add-volume-mount volume=file-storage,mount-path=/code/data \
             --set-env-vars DATABASE_URL=${{ secrets.DATABASE_URL_DEV }},JWT_SECRET=${{ secrets.JWT_SECRET_DEV }},PUBLIC_HOST=${{ vars.PUBLIC_HOST_DEV }},FIREBASE_VALIDATE_URL=${{ vars.FIREBASE_VALIDATE_URL }},FILE_STORAGE_FOLDER=/code/data
+
+  deploy-to-cloud-run:
+    runs-on: ubuntu-latest
+    name: Deploy to Google Cloud Run (Production)
+    if: startsWith(github.ref, 'refs/tags/v')
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: ${{ secrets.GCR_JSON_KEY }}
+
+      - name: Configure Docker to use gcloud as a credential helper
+        run: gcloud auth configure-docker
+
+      - name: Extract version tag
+        id: version
+        run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+
+      - name: Build Docker image for GCP with version tag
+        run: |
+          docker build -t gcr.io/${{ vars.GCP_PROJECT_ID }}/be-feladatsor:${{ steps.version.outputs.VERSION }} .
+
+      - name: Push Docker image to GCR
+        run: |
+          docker push gcr.io/${{ vars.GCP_PROJECT_ID }}/be-feladatsor:${{ steps.version.outputs.VERSION }}
+
+      - name: Run Database Migration (Production)
+        run: |
+          gcloud beta run jobs deploy db-migrate-job \
+            --image gcr.io/${{ vars.GCP_PROJECT_ID }}/be-feladatsor:${{ steps.version.outputs.VERSION }} \
+            --region europe-north1 \
+            --set-env-vars DATABASE_URL=${{ secrets.DATABASE_URL_PROD }},JWT_SECRET=${{ secrets.JWT_SECRET_PROD }},PUBLIC_HOST=${{ vars.PUBLIC_HOST_PROD }},FIREBASE_VALIDATE_URL=${{ vars.FIREBASE_VALIDATE_URL }},FILE_STORAGE_FOLDER=/code/data \
+            --command sh \
+            --args -c,"npm run db:migrate:prod"
+          
+          gcloud run jobs execute db-migrate-job --region europe-north1 --wait
+
+      - name: Deploy to Cloud Run (Production)
+        run: |
+          gcloud run deploy feladatsor-backend \
+            --image gcr.io/${{ vars.GCP_PROJECT_ID }}/be-feladatsor:${{ steps.version.outputs.VERSION }} \
+            --platform managed \
+            --region europe-north1 \
+            --allow-unauthenticated \
+            --add-volume name=image-data-dev,type=cloud-storage,bucket=${{ vars.GCS_BUCKET_PROD }} \
+            --add-volume-mount volume=image-data-dev,mount-path=/code/data \
+            --set-env-vars DATABASE_URL=${{ secrets.DATABASE_URL_PROD }},JWT_SECRET=${{ secrets.JWT_SECRET_PROD }},PUBLIC_HOST=${{ vars.PUBLIC_HOST_PROD }},FIREBASE_VALIDATE_URL=${{ vars.FIREBASE_VALIDATE_URL }},FILE_STORAGE_FOLDER=/code/data
