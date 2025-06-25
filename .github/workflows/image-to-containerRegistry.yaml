@@ -62,7 +62,7 @@ jobs:
         run: |
           docker push gcr.io/${{ vars.GCP_PROJECT_ID }}/be-feladatsor:latest
 
-      - name: Run Database Migration and Seed
+      - name: Run Database Migration
         run: |
           gcloud run jobs create db-migration-job \
             --image gcr.io/${{ vars.GCP_PROJECT_ID }}/be-feladatsor:latest \
@@ -72,6 +72,15 @@ jobs:
             --args -c,"npm run db:migrate:prod"
           
           gcloud run jobs execute db-migration-job --region ${{ vars.GCP_REGION }} --wait
+
+      - name: Run Database Seed ( should run manually from Google console )
+        run: |
+          gcloud run jobs create db-seed-job \
+            --image gcr.io/${{ vars.GCP_PROJECT_ID }}/be-feladatsor:latest \
+            --region ${{ vars.GCP_REGION }} \
+            --set-env-vars DATABASE_URL=${{ secrets.DATABASE_URL_DEV }},JWT_SECRET=${{ secrets.JWT_SECRET_DEV }},PUBLIC_HOST=${{ vars.PUBLIC_HOST_DEV }},FIREBASE_VALIDATE_URL=${{ vars.FIREBASE_VALIDATE_URL }},FILE_STORAGE_FOLDER=/code/data \
+            --command sh \
+            --args -c,"npm ci && npm run db:seed"
 
       - name: Deploy to Cloud Run
         run: |
