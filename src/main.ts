@@ -26,6 +26,7 @@ async function bootstrap() {
   const { port, host } = config.server;
   logger.log(`Graphql running on ${config.server.publicHost}/graphql`);
   logger.log(`Serving images from ${config.server.publicHost}/images`);
+  logger.log(`Listening on: ${host}:${port}`);
   await app.listen(port, host);
 }
 bootstrap();
