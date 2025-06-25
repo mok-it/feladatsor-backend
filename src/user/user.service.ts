@@ -172,6 +172,11 @@ export class UserService {
     return this.prismaService.exerciseComment.findMany({
       where: {
         userId: id,
+        contributors: {
+          some: {
+            id: id,
+          },
+        },
       },
     });
   }

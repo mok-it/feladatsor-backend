@@ -1,3 +1,4 @@
+
 /*
  * -------------------------------------------------------
  * THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
@@ -247,16 +248,17 @@ export interface IQuery {
     globalStats(): Nullable<GlobalStats> | Promise<Nullable<GlobalStats>>;
     users(): User[] | Promise<User[]>;
     user(id: string): Nullable<User> | Promise<Nullable<User>>;
+    me(): Nullable<User> | Promise<Nullable<User>>;
 }
 
 export interface ExerciseComment {
     id: string;
+    exercise: Exercise;
     createdBy: User;
     contributors: User[];
     comment: string;
     createdAt: string;
     updatedAt: string;
-    user: User;
 }
 
 export interface ExerciseSheet {
@@ -425,7 +427,7 @@ export interface User {
     userName: string;
     createdAt: string;
     updatedAt: string;
-    exercises: Exercise[];
+    exercises?: Exercise[];
     roles: Role[];
     stats: UserStats;
     comments: ExerciseComment[];

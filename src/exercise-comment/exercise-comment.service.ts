@@ -77,4 +77,13 @@ export class ExerciseCommentService {
       },
     });
   }
+
+  async getContributors(id: string) {
+    const comment = await this.prismaService.exerciseComment.findUnique({
+      where: { id },
+      include: { contributors: true },
+    });
+
+    return comment.contributors;
+  }
 }
