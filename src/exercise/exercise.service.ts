@@ -144,155 +144,167 @@ export class ExerciseService {
     //Create a new group if the exercise does not already have one
     await this.exerciseGroupService.upsertExerciseGroupSameLogic(id, user);
 
-    return await this.prismaService.$transaction(async (tx) => {
-      const newId = await this.generateNextIdInGroup(id, tx);
-      const oldExercise = await tx.exercise.findUnique({
-        where: { id },
-        include: {
-          difficulty: true,
-          tags: true,
-        },
-      });
-      const propsToDelete: (keyof Exercise)[] = [
-        'id',
-        'createdAt',
-        'updatedAt',
-        'createdById',
-      ];
-      propsToDelete.forEach((key) => {
-        delete oldExercise[key];
-      });
+    return await this.prismaService.$transaction(
+      async (tx) => {
+        const newId = await this.generateNextIdInGroup(id, tx);
+        const oldExercise = await tx.exercise.findUnique({
+          where: { id },
+          include: {
+            difficulty: true,
+            tags: true,
+          },
+        });
+        const propsToDelete: (keyof Exercise)[] = [
+          'id',
+          'createdAt',
+          'updatedAt',
+          'createdById',
+        ];
+        propsToDelete.forEach((key) => {
+          delete oldExercise[key];
+        });
 
-      return tx.exercise.create({
-        data: {
-          ...oldExercise,
-          difficulty: {
-            create: oldExercise.difficulty.map((diff) => ({
-              difficulty: diff.difficulty,
-              ageGroup: diff.ageGroup,
-            })),
+        return tx.exercise.create({
+          data: {
+            ...oldExercise,
+            difficulty: {
+              create: oldExercise.difficulty.map((diff) => ({
+                difficulty: diff.difficulty,
+                ageGroup: diff.ageGroup,
+              })),
+            },
+            tags: {
+              connect: oldExercise.tags.map((tag) => ({
+                id: tag.id,
+              })),
+            },
+            id: newId,
+            createdAt: createdAt,
+            createdById: user.id,
           },
-          tags: {
-            connect: oldExercise.tags.map((tag) => ({
-              id: tag.id,
-            })),
-          },
-          id: newId,
-          createdAt: createdAt,
-          createdById: user.id,
-        },
-      });
-    });
+        });
+      },
+      {
+        maxWait: 20_000, // default: 2000
+        timeout: 60_000, // default: 5000
+      },
+    );
   }
 
   async updateExercise(id: string, data: ExerciseUpdateInput, user: User) {
-    return await this.prismaService.$transaction(async (tx) => {
-      //Undefined means we should keep the data
-      //Null means an explicit delete
-      //Data is present means modify the data
-      if (data.difficulty !== undefined) {
-        tx.exerciseDifficulty.deleteMany({
+    return await this.prismaService.$transaction(
+      async (tx) => {
+        //Undefined means we should keep the data
+        //Null means an explicit delete
+        //Data is present means modify the data
+        if (data.difficulty !== undefined) {
+          tx.exerciseDifficulty.deleteMany({
+            where: {
+              exerciseId: id,
+            },
+          });
+        }
+        const oldExercise = await tx.exercise.findUnique({
           where: {
-            exerciseId: id,
+            id,
           },
         });
-      }
-      const oldExercise = await tx.exercise.findUnique({
-        where: {
-          id,
-        },
-      });
-      const differences = await this.getDifferences(oldExercise, data, tx);
-      //Save differences into history
-      await Promise.all(
-        differences.map((difference) =>
-          tx.exerciseHistory.create({
+        const differences = await this.getDifferences(oldExercise, data, tx);
+        //Save differences into history
+        await Promise.all(
+          differences.map((difference) =>
+            tx.exerciseHistory.create({
+              data: {
+                exercise: {
+                  connect: {
+                    id: oldExercise.id,
+                  },
+                },
+                field: difference.field,
+                oldValue: String(difference.oldValue),
+                newValue: String(difference.newValue),
+                user: {
+                  connect: {
+                    id: user.id,
+                  },
+                },
+              },
+            }),
+          ),
+        );
+        if (data.comment) {
+          await tx.exerciseComment.create({
             data: {
               exercise: {
                 connect: {
-                  id: oldExercise.id,
+                  id: id,
                 },
               },
-              field: difference.field,
-              oldValue: String(difference.oldValue),
-              newValue: String(difference.newValue),
               user: {
                 connect: {
                   id: user.id,
                 },
               },
+              comment: data.comment,
             },
-          }),
-        ),
-      );
-      if (data.comment) {
-        await tx.exerciseComment.create({
-          data: {
-            exercise: {
-              connect: {
-                id: id,
-              },
-            },
-            user: {
-              connect: {
-                id: user.id,
-              },
-            },
-            comment: data.comment,
+          });
+        }
+        return tx.exercise.update({
+          where: {
+            id,
           },
-        });
-      }
-      return tx.exercise.update({
-        where: {
-          id,
-        },
-        data: {
-          tags: data.tags
-            ? {
-                set: data.tags.map((id) => ({
-                  id,
-                })),
-              }
-            : undefined,
-          status: data.status,
-          alertDescription: data.alert ? data.alert.description : undefined,
-          alertSeverty: data.alert ? data.alert.severity : undefined,
-          solveIdea: data.solveIdea,
-          isCompetitionFinal: data.isCompetitionFinal,
-          solutionOptions: data.solutionOptions,
-          difficulty: data.difficulty
-            ? {
-                create: data.difficulty.map((d) => ({
-                  ageGroup: d.ageGroup,
-                  difficulty: d.difficulty,
-                })),
-              }
-            : undefined,
-          description: data.description,
-          exerciseImageId: data.exerciseImage,
-          solution: data.solution,
-          helpingQuestions: data.helpingQuestions,
-          source: data.source,
-          sameLogicExerciseGroup: data.sameLogicGroup
-            ? {
-                connect: {
-                  id: data.sameLogicGroup,
-                },
-              }
-            : undefined,
-          solveIdeaImageId: data.solveIdeaImage,
-          solutionImageId: data.solutionImage,
-          contributors:
-            data.contributors != null
+          data: {
+            tags: data.tags
               ? {
-                  set: data.contributors.map((id) => ({
+                  set: data.tags.map((id) => ({
                     id,
                   })),
                 }
               : undefined,
-        },
-      });
-    });
+            status: data.status,
+            alertDescription: data.alert ? data.alert.description : undefined,
+            alertSeverty: data.alert ? data.alert.severity : undefined,
+            solveIdea: data.solveIdea,
+            isCompetitionFinal: data.isCompetitionFinal,
+            solutionOptions: data.solutionOptions,
+            difficulty: data.difficulty
+              ? {
+                  create: data.difficulty.map((d) => ({
+                    ageGroup: d.ageGroup,
+                    difficulty: d.difficulty,
+                  })),
+                }
+              : undefined,
+            description: data.description,
+            exerciseImageId: data.exerciseImage,
+            solution: data.solution,
+            helpingQuestions: data.helpingQuestions,
+            source: data.source,
+            sameLogicExerciseGroup: data.sameLogicGroup
+              ? {
+                  connect: {
+                    id: data.sameLogicGroup,
+                  },
+                }
+              : undefined,
+            solveIdeaImageId: data.solveIdeaImage,
+            solutionImageId: data.solutionImage,
+            contributors:
+              data.contributors != null
+                ? {
+                    set: data.contributors.map((id) => ({
+                      id,
+                    })),
+                  }
+                : undefined,
+          },
+        });
+      },
+      {
+        maxWait: 20_000, // default: 2000
+        timeout: 60_000, // default: 5000
+      },
+    );
   }
 
   async getSameLogicExercises(exerciseId: string) {

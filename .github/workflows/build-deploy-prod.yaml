@@ -54,5 +54,5 @@ jobs:
             --allow-unauthenticated \
             --add-volume name=imageData,type=cloud-storage,bucket=${{ vars.GCS_BUCKET_PROD }} \
             --add-volume-mount volume=imageData,mount-path=/code/data \
-            --set-env-vars DATABASE_URL=${{ secrets.DATABASE_URL_PROD }},JWT_SECRET=${{ secrets.JWT_SECRET_PROD }},PUBLIC_HOST=${{ vars.PUBLIC_HOST_PROD }},FIREBASE_VALIDATE_URL=${{ vars.FIREBASE_VALIDATE_URL }},FILE_STORAGE_FOLDER=/code/data \
+            --set-env-vars DATABASE_URL=${{ secrets.DATABASE_URL_PROD }},JWT_SECRET=${{ secrets.JWT_SECRET_PROD }},JWT_EXPIRATION=${{ vars.JWT_EXPIRATION }},PUBLIC_HOST=${{ vars.PUBLIC_HOST_PROD }},FIREBASE_VALIDATE_URL=${{ vars.FIREBASE_VALIDATE_URL }},FILE_STORAGE_FOLDER=/code/data \
             --startup-probe httpGet.path=/health/readiness,httpGet.port=$PORT,initialDelaySeconds=20,failureThreshold=5
