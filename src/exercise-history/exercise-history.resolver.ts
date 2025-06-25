@@ -50,15 +50,18 @@ export class ExerciseHistoryResolver {
       exerciseHistory.field,
       exerciseHistory.oldValue,
     );
-    
+
     if (fieldType === ExerciseHistoryFieldType.IMAGE) {
       return this.imageService.resolveGQLImage(exerciseHistory.oldValue);
     }
-    
+
     if (fieldType === ExerciseHistoryFieldType.JSON) {
-      return this.resolveJsonField(exerciseHistory.field, exerciseHistory.oldValue);
+      return this.resolveJsonField(
+        exerciseHistory.field,
+        exerciseHistory.oldValue,
+      );
     }
-    
+
     return { value: exerciseHistory.oldValue };
   }
 
@@ -68,15 +71,18 @@ export class ExerciseHistoryResolver {
       exerciseHistory.field,
       exerciseHistory.newValue,
     );
-    
+
     if (fieldType === ExerciseHistoryFieldType.IMAGE) {
       return this.imageService.resolveGQLImage(exerciseHistory.newValue);
     }
-    
+
     if (fieldType === ExerciseHistoryFieldType.JSON) {
-      return this.resolveJsonField(exerciseHistory.field, exerciseHistory.newValue);
+      return this.resolveJsonField(
+        exerciseHistory.field,
+        exerciseHistory.newValue,
+      );
     }
-    
+
     return { value: exerciseHistory.newValue };
   }
 
@@ -87,24 +93,26 @@ export class ExerciseHistoryResolver {
 
     try {
       const parsedValue = JSON.parse(value);
-      
+
       if (field === 'tags' && Array.isArray(parsedValue)) {
         const tags = await Promise.all(
-          parsedValue.map(tagId => this.exerciseTagService.getExerciseTagById(tagId))
+          parsedValue.map((tagId) =>
+            this.exerciseTagService.getExerciseTagById(tagId),
+          ),
         );
         return { tags: tags.filter(Boolean) };
       }
-      
+
       if (field === 'contributors' && Array.isArray(parsedValue)) {
         const users = await Promise.all(
-          parsedValue.map(userId => this.userService.getUserById(userId))
+          parsedValue.map((userId) => this.userService.getUserById(userId)),
         );
         return { users: users.filter(Boolean) };
       }
     } catch (error) {
       // If JSON parsing fails, return as string
     }
-    
+
     return { value };
   }
 }
