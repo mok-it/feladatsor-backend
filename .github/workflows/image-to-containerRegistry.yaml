@@ -138,6 +138,6 @@ jobs:
             --platform managed \
             --region europe-north1 \
             --allow-unauthenticated \
-            --add-volume name=image-data-dev,type=cloud-storage,bucket=${{ vars.GCS_BUCKET_PROD }} \
-            --add-volume-mount volume=image-data-dev,mount-path=/code/data \
+            --add-volume name=imageData,type=cloud-storage,bucket=${{ vars.GCS_BUCKET_PROD }} \
+            --add-volume-mount volume=imageData,mount-path=/code/data \
             --set-env-vars DATABASE_URL=${{ secrets.DATABASE_URL_PROD }},JWT_SECRET=${{ secrets.JWT_SECRET_PROD }},PUBLIC_HOST=${{ vars.PUBLIC_HOST_PROD }},FIREBASE_VALIDATE_URL=${{ vars.FIREBASE_VALIDATE_URL }},FILE_STORAGE_FOLDER=/code/data
