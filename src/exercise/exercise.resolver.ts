@@ -7,7 +7,7 @@ import {
   Resolver,
 } from '@nestjs/graphql';
 import { ExerciseService } from './exercise.service';
-import { UseGuards } from '@nestjs/common';
+import { UnauthorizedException, UseGuards } from '@nestjs/common';
 import {
   AlertSeverity,
   ExerciseAlert,
@@ -27,6 +27,7 @@ import { UserService } from '../user/user.service';
 import { ExerciseHistoryService } from '../exercise-history/exercise-history.service';
 import { ExerciseCommentService } from '../exercise-comment/exercise-comment.service';
 import { ExerciseGroupService } from '../exercise-group/exercise-group.service';
+import { hasRolesOrAdmin } from '../auth/hasRolesOrAdmin';
 
 @Resolver('Exercise')
 export class ExerciseResolver {
@@ -43,28 +44,47 @@ export class ExerciseResolver {
   ) {}
 
   @Query('exercise')
-  async getExercise(@Args('id') id: string) {
-    return this.exerciseService.getExerciseById(id);
+  @UseGuards(RolesGuard)
+  async getExercise(@Args('id') id: string, @CurrentUser() user: User) {
+    const isUser = hasRolesOrAdmin(user, 'USER');
+    const exercise = await this.exerciseService.getExerciseById(id);
+    if (user.id !== exercise.createdById && !isUser) {
+      return new UnauthorizedException("Can't access this resource");
+    }
+    return exercise;
   }
 
   @Query('exercises')
   @UseGuards(RolesGuard)
-  @Roles('ADMIN')
+  @Roles('LIST_EXERCISES')
   async getExercises(@Args('take') take: number, @Args('skip') skip: number) {
     return this.exerciseService.getExercises(take, skip);
   }
 
   @Query('exercisesCount')
+  @UseGuards(RolesGuard)
+  @Roles('LIST_EXERCISES')
   async getExercisesCount() {
     return this.exerciseService.getExercisesCount();
   }
 
   @Query('searchExercises')
-  async searchExercises(@Args('query') query: ExerciseSearchQuery) {
-    return this.exerciseSearchService.searchExercises(query);
+  @UseGuards(RolesGuard)
+  async searchExercises(
+    @Args('query') query: ExerciseSearchQuery,
+    @CurrentUser() currentUser: User,
+  ) {
+    //If the user doesn't have the user role -> Only able to search for exercises created by him.
+    const notUser = !hasRolesOrAdmin(currentUser, 'USER', 'LIST_EXERCISES');
+    return this.exerciseSearchService.searchExercises(
+      query,
+      notUser ? currentUser : undefined,
+    );
   }
 
   @Mutation('createExercise')
+  @UseGuards(RolesGuard)
+  @Roles('USER')
   async createExercise(
     @Args('input') data: ExerciseInput,
     @CurrentUser() user: User,
@@ -73,15 +93,29 @@ export class ExerciseResolver {
   }
 
   @Mutation('updateExercise')
+  @UseGuards(RolesGuard)
+  @Roles('USER')
   async updateExercise(
     @Args('id') id: string,
     @Args('input') data: ExerciseUpdateInput,
     @CurrentUser() user: User,
   ) {
+    const ableToFinalize = hasRolesOrAdmin(user, 'FINALIZE_EXERCISE');
+    if (
+      !ableToFinalize &&
+      (data.status == 'APPROVED' || data.status == 'DELETED')
+    ) {
+      throw new UnauthorizedException(
+        "You don't have permission to perform this action",
+      );
+    }
+
     return this.exerciseService.updateExercise(id, data, user);
   }
 
   @Mutation('cloneExerciseToNew')
+  @UseGuards(RolesGuard)
+  @Roles('CLONE_EXERCISE')
   async cloneExerciseToNew(@Args('id') id: string, @CurrentUser() user: User) {
     return this.exerciseService.cloneExerciseToNew(id, user);
   }

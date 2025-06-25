@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
+import { Prisma, User } from '@prisma/client';
 import { ExerciseSearchQuery } from '../graphql/graphqlTypes';
 import { PrismaService } from '../prisma/PrismaService';
 
@@ -7,7 +7,7 @@ import { PrismaService } from '../prisma/PrismaService';
 export class ExerciseSearchService {
   constructor(private readonly prismaService: PrismaService) {}
 
-  async searchExercises(query: ExerciseSearchQuery) {
+  async searchExercises(query: ExerciseSearchQuery, workedOnThisUser?: User) {
     const where: Prisma.ExerciseWhereInput = {
       OR: [
         {
@@ -23,17 +23,37 @@ export class ExerciseSearchService {
           },
         },
       ],
-      AND: (query.difficulty ?? []).map((d) => ({
-        difficulty: {
-          some: {
+      AND: [
+        {
+          AND: (query.difficulty ?? []).map((d) => ({
             difficulty: {
-              lte: d.max,
-              gte: d.min,
+              some: {
+                difficulty: {
+                  lte: d.max,
+                  gte: d.min,
+                },
+                ageGroup: d.ageGroup,
+              },
             },
-            ageGroup: d.ageGroup,
-          },
+          })),
         },
-      })),
+        workedOnThisUser
+          ? {
+              OR: [
+                {
+                  createdBy: {
+                    id: workedOnThisUser.id,
+                  },
+                  contributors: {
+                    some: {
+                      id: workedOnThisUser.id,
+                    },
+                  },
+                },
+              ],
+            }
+          : undefined,
+      ],
       isCompetitionFinal:
         typeof query.isCompetitionFinal === 'boolean'
           ? {

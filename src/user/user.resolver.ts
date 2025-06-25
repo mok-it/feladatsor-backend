@@ -14,7 +14,7 @@ import {
   UserStats,
   UserUpdateInput,
 } from '../graphql/graphqlTypes';
-import { UseGuards } from '@nestjs/common';
+import { ForbiddenException, UseGuards } from '@nestjs/common';
 import { ExerciseService } from '../exercise/exercise.service';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
@@ -22,6 +22,7 @@ import { Public } from '../auth/decorators/public.decorator';
 import { CurrentUser } from '../auth/decorators/user.auth.decorator';
 import { User as PrismaUser } from '@prisma/client';
 import { StatService } from '../stat/stat.service';
+import { hasRolesOrAdmin } from '../auth/hasRolesOrAdmin';
 
 @Resolver('User')
 export class UserResolver {
@@ -32,7 +33,7 @@ export class UserResolver {
   ) {}
 
   @UseGuards(RolesGuard)
-  @Roles('ADMIN')
+  @Roles('USER')
   @Query('users')
   async getUsers() {
     return this.userService.users();
@@ -55,6 +56,12 @@ export class UserResolver {
     @Args('data') data: UserUpdateInput,
     @Args('id') id?: string,
   ) {
+    const isAdmin = hasRolesOrAdmin(user, 'ADMIN');
+    if (!isAdmin && id !== user.id) {
+      throw new ForbiddenException(
+        "You don't have permission to perform this action.",
+      );
+    }
     const userId = id ?? user.id;
     return this.userService.updateUser(userId, data);
   }

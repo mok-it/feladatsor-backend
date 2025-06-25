@@ -19,6 +19,9 @@ import {
   TalonItem,
 } from '@prisma/client';
 import { UserService } from '../user/user.service';
+import { UseGuards } from '@nestjs/common';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { Roles } from '../auth/decorators/roles.decorator';
 
 @Resolver('ExerciseSheet')
 export class ExerciseComposeResolver {
@@ -28,11 +31,15 @@ export class ExerciseComposeResolver {
   ) {}
 
   @Query('exerciseSheets')
+  @UseGuards(RolesGuard)
+  @Roles('EXERCISE_SHEET')
   exerciseSheets() {
     return this.exerciseComposeService.getExerciseSheets();
   }
 
   @Query('exerciseSheet')
+  @UseGuards(RolesGuard)
+  @Roles('EXERCISE_SHEET')
   getExerciseSheet(@Args('id') id: string) {
     return this.exerciseComposeService.getExerciseSheetById(id);
   }
@@ -54,6 +61,8 @@ export class ExerciseComposeResolver {
   }
 
   @Mutation('createExerciseSheet')
+  @UseGuards(RolesGuard)
+  @Roles('EXERCISE_SHEET')
   createExerciseSheet(
     @Args('sheetData') sheetData: ExerciseSheetInput,
     @CurrentUser() user: User,
@@ -62,6 +71,8 @@ export class ExerciseComposeResolver {
   }
 
   @Mutation('updateExerciseSheet')
+  @UseGuards(RolesGuard)
+  @Roles('EXERCISE_SHEET')
   updateExerciseSheet(
     @Args('sheetData') sheetData: UpdateExerciseSheetInput,
     @Args('id') id: string,
@@ -70,6 +81,8 @@ export class ExerciseComposeResolver {
   }
 
   @Mutation('deleteExerciseSheet')
+  @UseGuards(RolesGuard)
+  @Roles('PROOFREAD_EXERCISE_SHEET')
   deleteExerciseSheet(@Args('id') id: string) {
     return this.exerciseComposeService.deleteExerciseSheet(id);
   }
