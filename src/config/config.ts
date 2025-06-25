@@ -1,7 +1,7 @@
 import { get } from 'env-var';
 
 export class Config {
-  port = get('PORT').default('3000').asString();
+  port = get('PORT').default('8080').asString();
   host = get('HOST').default('0.0.0.0').asString();
 
   server = {
