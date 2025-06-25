@@ -61,7 +61,8 @@ jobs:
             --allow-unauthenticated \
             --add-volume name=file-storage,type=cloud-storage,bucket=${{ vars.GCS_BUCKET }} \
             --add-volume-mount volume=file-storage,mount-path=/code/data \
-            --set-env-vars DATABASE_URL=${{ secrets.DATABASE_URL_DEV }},JWT_SECRET=${{ secrets.JWT_SECRET_DEV }},PUBLIC_HOST=${{ vars.PUBLIC_HOST_DEV }},FIREBASE_VALIDATE_URL=${{ vars.FIREBASE_VALIDATE_URL }},FILE_STORAGE_FOLDER=/code/data
+            --set-env-vars DATABASE_URL=${{ secrets.DATABASE_URL_DEV }},JWT_SECRET=${{ secrets.JWT_SECRET_DEV }},PUBLIC_HOST=${{ vars.PUBLIC_HOST_DEV }},FIREBASE_VALIDATE_URL=${{ vars.FIREBASE_VALIDATE_URL }},FILE_STORAGE_FOLDER=/code/data \
+            --http-healthcheck-path /health/readiness
 
   deploy-to-cloud-run:
     runs-on: ubuntu-latest
@@ -110,4 +111,5 @@ jobs:
             --allow-unauthenticated \
             --add-volume name=imageData,type=cloud-storage,bucket=${{ vars.GCS_BUCKET_PROD }} \
             --add-volume-mount volume=imageData,mount-path=/code/data \
-            --set-env-vars DATABASE_URL=${{ secrets.DATABASE_URL_PROD }},JWT_SECRET=${{ secrets.JWT_SECRET_PROD }},PUBLIC_HOST=${{ vars.PUBLIC_HOST_PROD }},FIREBASE_VALIDATE_URL=${{ vars.FIREBASE_VALIDATE_URL }},FILE_STORAGE_FOLDER=/code/data
+            --set-env-vars DATABASE_URL=${{ secrets.DATABASE_URL_PROD }},JWT_SECRET=${{ secrets.JWT_SECRET_PROD }},PUBLIC_HOST=${{ vars.PUBLIC_HOST_PROD }},FIREBASE_VALIDATE_URL=${{ vars.FIREBASE_VALIDATE_URL }},FILE_STORAGE_FOLDER=/code/data \
+            --http-healthcheck-path /health/readiness
