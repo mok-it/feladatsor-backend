@@ -47,7 +47,7 @@ jobs:
 
       - name: Deploy to Cloud Run (Production)
         run: |
-          gcloud run deploy feladatsor-backend \
+          gcloud run deploy be-feladatsor-prod \
             --image gcr.io/${{ vars.GCP_PROJECT_ID }}/be-feladatsor:${{ steps.version.outputs.VERSION }} \
             --platform managed \
             --region ${{ vars.GCP_REGION }} \
