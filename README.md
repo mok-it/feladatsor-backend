@@ -10,19 +10,19 @@ It is responsible for managing exercises.
 
 A development version is automatically built and deployed from the main and is available at the following url: 
 
-https://be-feladatsor-dev-1029503388169.europe-north1.run.app
+https://be-feladatsor-dev-1029503388169.europe-west3.run.app
 
-### Staging
+### Production
 
 When a new version tag is created a corresponding image is built and publised to Dockerhub. From there it's manually deployed to Google Cloud Run. 
 This version is available at the following url:
 
-https://feladatsor-backend-1029503388169.europe-north1.run.app
+https://be-feladatsor-prod-1029503388169.europe-west3.run.app
 
 ## Backend paths
 
 For the majority of the functionality the backend uses Graphql as a commincation layer, and that is awailable at `/graphql` url for any deployment.
-For example: https://be-feladatsor-dev-1029503388169.europe-north1.run.app/graphql for the **DEV** environment.
+For example: https://be-feladatsor-dev-1029503388169.europe-west3.run.app/graphql for the **DEV** environment.
 
 However the image upload functionality, and loading the old Excel file the backend provides two regular REST routes.
 
