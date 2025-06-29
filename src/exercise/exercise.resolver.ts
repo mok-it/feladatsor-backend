@@ -116,8 +116,17 @@ export class ExerciseResolver {
   @Mutation('cloneExerciseToNew')
   @UseGuards(RolesGuard)
   @Roles('CLONE_EXERCISE')
-  async cloneExerciseToNew(@Args('id') id: string, @CurrentUser() user: User) {
-    return this.exerciseService.cloneExerciseToNew(id, user);
+  async cloneExerciseToNew(
+    @Args('id') id: string,
+    @Args('contributors') contributors: string[],
+    @CurrentUser() user: User,
+  ) {
+    return this.exerciseService.cloneExerciseToNew(
+      id,
+      user,
+      undefined,
+      contributors,
+    );
   }
 
   @ResolveField('sameLogicExerciseGroup')

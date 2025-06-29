@@ -7,7 +7,7 @@ type Query {
 
 type Mutation {
   createExercise(input: ExerciseInput!): Exercise!
-  cloneExerciseToNew(id: ID!): Exercise!
+  cloneExerciseToNew(id: ID!, contributors: [ID!]): Exercise!
   updateExercise(id: ID!, input: ExerciseUpdateInput!): Exercise!
 }
 

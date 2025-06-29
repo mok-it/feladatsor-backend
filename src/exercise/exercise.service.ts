@@ -140,7 +140,12 @@ export class ExerciseService {
     );
   }
 
-  async cloneExerciseToNew(id: string, user: User, createdAt?: Date) {
+  async cloneExerciseToNew(
+    id: string,
+    user: User,
+    createdAt?: Date,
+    contributorIDs?: string[],
+  ) {
     //Create a new group if the exercise does not already have one
     await this.exerciseGroupService.upsertExerciseGroupSameLogic(id, user);
 
@@ -178,6 +183,14 @@ export class ExerciseService {
                 id: tag.id,
               })),
             },
+            contributors:
+              contributorIDs && contributorIDs.length > 0
+                ? {
+                    connect: contributorIDs.map((id) => ({
+                      id,
+                    })),
+                  }
+                : undefined,
             id: newId,
             createdAt: createdAt,
             createdById: user.id,
