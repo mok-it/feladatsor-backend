@@ -110,7 +110,11 @@ export class UserResolver {
   }
 
   @ResolveField('comments')
-  async getCommentsByUser(@Parent() user: PrismaUser) {
-    return this.userService.getUserComments(user.id);
+  async getCommentsByUser(
+    @Parent() user: PrismaUser,
+    @Args('skip', { type: () => Int, defaultValue: 0 }) skip: number,
+    @Args('take', { type: () => Int, defaultValue: 20 }) take: number,
+  ) {
+    return this.userService.getUserComments(user.id, skip, take);
   }
 }

@@ -48,7 +48,11 @@ export class ExerciseResolver {
   async getExercise(@Args('id') id: string, @CurrentUser() user: User) {
     const isUser = hasRolesOrAdmin(user, 'USER');
     const exercise = await this.exerciseService.getExerciseById(id);
-    if (user.id !== exercise.createdById && !isUser) {
+    if (
+      !isUser &&
+      user.id !== exercise.createdById &&
+      !exercise.contributors.some((c) => c.id == user.id)
+    ) {
       return new UnauthorizedException("Can't access this resource");
     }
     return exercise;

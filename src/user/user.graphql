@@ -60,7 +60,7 @@ type User {
   exercises(skip: Int = 0, take: Int = 20): [Exercise!]!
   roles: [Role!]!
   stats: UserStats!
-  comments: [ExerciseComment!]!
+  comments(skip: Int = 0, take: Int = 20): [ExerciseComment!]!
   avatarUrl: String
 }
 

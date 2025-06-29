@@ -50,7 +50,14 @@ export class StatService {
       userId
         ? {
             where: {
-              createdById: userId,
+              OR: [
+                { createdById: userId },
+                {
+                  contributors: {
+                    some: { id: userId },
+                  },
+                },
+              ],
             },
           }
         : undefined,

@@ -18,6 +18,9 @@ export class ExerciseService {
       where: {
         id,
       },
+      include: {
+        contributors: true,
+      },
     });
   }
 
@@ -35,15 +38,24 @@ export class ExerciseService {
   getExercisesByUserId(id: string, skip: number, take: number) {
     return this.prismaService.exercise.findMany({
       where: {
-        createdById: id,
-        contributors: {
-          some: {
-            id: id,
+        OR: [
+          {
+            createdById: id,
           },
-        },
+          {
+            contributors: {
+              some: {
+                id,
+              },
+            },
+          },
+        ],
       },
       skip,
       take,
+      orderBy: {
+        createdAt: 'desc',
+      },
     });
   }
 

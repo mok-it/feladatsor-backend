@@ -168,16 +168,27 @@ export class UserService {
     });
   }
 
-  getUserComments(id: string) {
+  getUserComments(id: string, skip = 0, take = 20) {
     return this.prismaService.exerciseComment.findMany({
       where: {
-        userId: id,
-        contributors: {
-          some: {
-            id: id,
+        OR: [
+          {
+            userId: id,
           },
-        },
+          {
+            contributors: {
+              some: {
+                id: id,
+              },
+            },
+          },
+        ],
       },
+      orderBy: {
+        createdAt: 'desc',
+      },
+      skip,
+      take,
     });
   }
 }
