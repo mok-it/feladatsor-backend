@@ -1,3 +1,4 @@
+
 /*
  * -------------------------------------------------------
  * THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
@@ -205,7 +206,7 @@ export interface IMutation {
     updateExerciseTag(id: string, name: string): ExerciseTag | Promise<ExerciseTag>;
     deleteExerciseTag(id: string): boolean | Promise<boolean>;
     createExercise(input: ExerciseInput): Exercise | Promise<Exercise>;
-    cloneExerciseToNew(id: string): Exercise | Promise<Exercise>;
+    cloneExerciseToNew(id: string, contributors?: Nullable<string[]>): Exercise | Promise<Exercise>;
     updateExercise(id: string, input: ExerciseUpdateInput): Exercise | Promise<Exercise>;
     voteOnDeveloper(id: string): Nullable<Developer> | Promise<Nullable<Developer>>;
     register(data: UserRegisterInput): User | Promise<User>;
