@@ -35,4 +35,9 @@ export class ExerciseCheckResolver {
   async resolveUserForExerciseCheck(@Parent() exerciseCheck: ExerciseCheck) {
     return this.userService.getUserById(exerciseCheck.userId);
   }
+
+  @ResolveField('contributors')
+  async getContributors(@Parent() exerciseCheck: ExerciseCheck) {
+    return this.exerciseCheckService.getContributors(exerciseCheck.id);
+  }
 }

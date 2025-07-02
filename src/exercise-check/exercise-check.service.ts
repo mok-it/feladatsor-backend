@@ -103,6 +103,14 @@ export class ExerciseCheckService {
     });
   }
 
+  async getContributors(exerciseCheckId: string) {
+    const exerciseCheck = await this.prismaService.exerciseCheck.findUnique({
+      where: { id: exerciseCheckId },
+      include: { contributors: true },
+    });
+    return exerciseCheck?.contributors || [];
+  }
+
   private aggregateExerciseChecks(
     checks: ExerciseCheck[],
   ): AggregatedCheckStatus {
