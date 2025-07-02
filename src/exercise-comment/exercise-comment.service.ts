@@ -61,7 +61,7 @@ export class ExerciseCommentService {
         comment,
         contributors: contributors
           ? {
-              connect: contributors.map((id) => ({
+              set: contributors.map((id) => ({
                 id,
               })),
             }
