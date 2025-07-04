@@ -145,6 +145,7 @@ model User {
   contributedExercises      Exercise[]               @relation("ExerciseContribution")
   contributedExerciseChecks ExerciseCheck[]          @relation("ExerciseCheckContribution")
   contributedComment        ExerciseComment[]        @relation("CommentContribution")
+  ExcelExport               ExcelExport[]
 }
 
 model ExerciseCheck {
@@ -233,4 +234,14 @@ model Developer {
   id    String @id @default(uuid())
   name  String
   count Int
+}
+
+model ExcelExport {
+  id          String   @id @default(uuid())
+  fileName    String
+  fileSize    BigInt
+  filePath    String
+  exportedBy  User     @relation(fields: [exportedById], references: [id])
+  exportedById String
+  createdAt   DateTime @default(now())
 }

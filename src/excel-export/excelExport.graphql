@@ -1,7 +1,21 @@
+type Query {
+  listExcelExports: [ExportResult!]!
+}
+
 type Mutation {
-    exportExcel : ExportResult
+  exportExcel: ExportResult
+  deleteExcelExport(exportId: String!): ExcelExportDeleteResult!
+}
+
+type ExcelExportDeleteResult {
+  success: Boolean!
 }
 
 type ExportResult {
-    url: String!
+  id: String!
+  fileName: String!
+  fileSize: String!
+  url: String!
+  exportedBy: User!
+  createdAt: String!
 }

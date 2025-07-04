@@ -1,3 +1,4 @@
+
 /*
  * -------------------------------------------------------
  * THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
@@ -193,6 +194,7 @@ export interface IMutation {
     login(name: string, password: string): Nullable<LoginResponse> | Promise<Nullable<LoginResponse>>;
     loginWithGoogle(googleToken: string): Nullable<LoginResponse> | Promise<Nullable<LoginResponse>>;
     exportExcel(): Nullable<ExportResult> | Promise<Nullable<ExportResult>>;
+    deleteExcelExport(exportId: string): ExcelExportDeleteResult | Promise<ExcelExportDeleteResult>;
     createExerciseCheck(data: ExerciseCheckInput): ExerciseCheck | Promise<ExerciseCheck>;
     createExerciseComment(exerciseId: string, comment: string, contributors?: Nullable<string[]>): ExerciseComment | Promise<ExerciseComment>;
     updateExerciseComment(id: string, comment: string, contributors?: Nullable<string[]>): ExerciseComment | Promise<ExerciseComment>;
@@ -213,22 +215,8 @@ export interface IMutation {
     updateUser(data: UserUpdateInput, id?: Nullable<string>): User | Promise<User>;
 }
 
-export interface ExportResult {
-    url: string;
-}
-
-export interface ExerciseCheck {
-    id: string;
-    role: ExerciseCheckRole;
-    exercise: Exercise;
-    user: User;
-    contributors: User[];
-    type: ExerciseCheckType;
-    createdAt: string;
-    updatedAt: string;
-}
-
 export interface IQuery {
+    listExcelExports(): ExportResult[] | Promise<ExportResult[]>;
     exerciseComment(id: string): Nullable<ExerciseComment> | Promise<Nullable<ExerciseComment>>;
     commentsByExercise(id: string): ExerciseComment[] | Promise<ExerciseComment[]>;
     exerciseSheets(): ExerciseSheet[] | Promise<ExerciseSheet[]>;
@@ -248,6 +236,30 @@ export interface IQuery {
     users(): User[] | Promise<User[]>;
     user(id: string): Nullable<User> | Promise<Nullable<User>>;
     me(): Nullable<User> | Promise<Nullable<User>>;
+}
+
+export interface ExcelExportDeleteResult {
+    success: boolean;
+}
+
+export interface ExportResult {
+    id: string;
+    fileName: string;
+    fileSize: string;
+    url: string;
+    exportedBy: User;
+    createdAt: string;
+}
+
+export interface ExerciseCheck {
+    id: string;
+    role: ExerciseCheckRole;
+    exercise: Exercise;
+    user: User;
+    contributors: User[];
+    type: ExerciseCheckType;
+    createdAt: string;
+    updatedAt: string;
 }
 
 export interface ExerciseComment {
@@ -429,7 +441,7 @@ export interface User {
     exercises?: Exercise[];
     roles: Role[];
     stats: UserStats;
-    comments: ExerciseComment[];
+    comments?: ExerciseComment[];
     avatarUrl?: Nullable<string>;
 }
 
