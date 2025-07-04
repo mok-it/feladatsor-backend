@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import * as ExcelJS from 'exceljs';
-import { PrismaClient } from '@prisma/client';
+import { ExcelExport, PrismaClient } from '@prisma/client';
 import { Config } from '../config/config';
 import * as fs from 'fs';
 import * as path from 'node:path';
@@ -22,7 +22,7 @@ export class ExcelExportService {
     private readonly config: Config,
   ) {}
 
-  async exportExcel(): Promise<{ url: string }> {
+  async exportExcel(userId: string) {
     const workbook = new ExcelJS.Workbook();
     let tableNames = (await this.prismaClient
       .$queryRaw`SELECT table_name FROM information_schema.tables WHERE table_schema = 'public'
@@ -87,10 +87,61 @@ export class ExcelExportService {
 
     await workbook.xlsx.writeFile(outPath);
 
-    const fileURL = `${this.config.server.publicHost}/generated/${excelFileName}`;
+    // Get file stats for database record
+    const stats = fs.statSync(outPath);
 
-    return {
-      url: fileURL,
-    };
+    // Save export record to database
+    return this.prismaClient.excelExport.create({
+      data: {
+        fileName: excelFileName,
+        fileSize: BigInt(stats.size),
+        filePath: outPath,
+        exportedById: userId,
+      },
+    });
+  }
+
+  async listExports() {
+    const exports = await this.prismaClient.excelExport.findMany({
+      include: {
+        exportedBy: true,
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+
+    return exports.map((exp) => ({
+      ...exp,
+      fileSize: exp.fileSize.toString(),
+    }));
+  }
+
+  async deleteExport(exportId: string) {
+    return await this.prismaClient.$transaction(async (prisma) => {
+      const exportRecord = await prisma.excelExport.findUnique({
+        where: { id: exportId },
+      });
+
+      if (!exportRecord) {
+        throw new Error('Export not found');
+      }
+
+      // Delete the record from database first
+      await prisma.excelExport.delete({
+        where: { id: exportId },
+      });
+
+      // Delete the file from filesystem
+      if (fs.existsSync(exportRecord.filePath)) {
+        fs.unlinkSync(exportRecord.filePath);
+      }
+
+      return { success: true };
+    });
+  }
+
+  getExportUrl(file: ExcelExport) {
+    return `${this.config.server.publicHost}/${file.filePath}`;
   }
 }
