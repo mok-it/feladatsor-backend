@@ -79,7 +79,7 @@ export class ExerciseResolver {
     @CurrentUser() currentUser: User,
   ) {
     //If the user doesn't have the user role -> Only able to search for exercises created by him.
-    const notUser = !hasRolesOrAdmin(currentUser, 'USER', 'LIST_EXERCISES');
+    const notUser = !hasRolesOrAdmin(currentUser, 'LIST_EXERCISES');
     return this.exerciseSearchService.searchExercises(
       query,
       notUser ? currentUser : undefined,

@@ -44,6 +44,8 @@ export class ExerciseSearchService {
                   createdBy: {
                     id: workedOnThisUser.id,
                   },
+                },
+                {
                   contributors: {
                     some: {
                       id: workedOnThisUser.id,
