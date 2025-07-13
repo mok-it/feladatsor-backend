@@ -42,7 +42,7 @@ export class ExerciseComposeService {
               }
             : undefined,
           createdBy: { connect: { id: user.id } },
-          status: ExerciseSheetStatus.CREATED,
+          status: ExerciseSheetStatus.DRAFT,
         },
         include: { sheetItems: true, talonExercises: true },
       });
