@@ -19,9 +19,10 @@ import {
   TalonItem,
 } from '@prisma/client';
 import { UserService } from '../user/user.service';
-import { UseGuards } from '@nestjs/common';
+import { UnauthorizedException, UseGuards } from '@nestjs/common';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
+import { hasRolesOrAdmin } from 'src/auth/hasRolesOrAdmin';
 
 @Resolver('ExerciseSheet')
 export class ExerciseComposeResolver {
@@ -76,7 +77,17 @@ export class ExerciseComposeResolver {
   updateExerciseSheet(
     @Args('sheetData') sheetData: UpdateExerciseSheetInput,
     @Args('id') id: string,
+    @CurrentUser() user: User,
   ) {
+    const ableToFinalize = hasRolesOrAdmin(user, 'PROOFREAD_EXERCISE_SHEET');
+    if (
+      !ableToFinalize &&
+      (sheetData.status == 'APPROVED' || sheetData.status == 'DELETED')
+    ) {
+      throw new UnauthorizedException(
+        "You don't have permission to perform this action",
+      );
+    }
     return this.exerciseComposeService.updateExerciseSheet(id, sheetData);
   }
 
