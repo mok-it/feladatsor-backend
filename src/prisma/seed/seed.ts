@@ -32,6 +32,7 @@ async function main() {
   await prisma.exercise.deleteMany();
   await prisma.exerciseSheetItem.deleteMany();
   await prisma.exerciseSheet.deleteMany();
+  await prisma.excelExport.deleteMany();
   await prisma.user.deleteMany();
 
   // Seed users

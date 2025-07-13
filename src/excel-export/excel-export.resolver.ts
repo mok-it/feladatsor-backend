@@ -9,7 +9,7 @@ import {
 import { ExcelExportService } from './excel-export.service';
 import { UseGuards } from '@nestjs/common';
 import { RolesGuard } from '../auth/guards/roles.guard';
-import { Roles } from 'src/auth/decorators/roles.decorator';
+import { Roles } from '../auth/decorators/roles.decorator';
 import { CurrentUser } from '../auth/decorators/user.auth.decorator';
 import { ExcelExport } from '@prisma/client';
 
