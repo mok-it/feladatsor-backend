@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { compare } from 'bcryptjs';
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from '../user/user.service';
@@ -28,11 +28,11 @@ export class AuthenticateUser {
   async execute(name: string, password: string) {
     const user = await this.userService.getUserByUserName(name);
     if (!user || !user.password) {
-      return null;
+      throw new UnauthorizedException('Hibás felhasználónév vagy jelszó');
     }
     const passwordHasMatch = await compare(password, user.password);
     if (!passwordHasMatch) {
-      return null;
+      throw new UnauthorizedException('Hibás felhasználónév vagy jelszó');
     }
     return this.createToken(user);
   }
