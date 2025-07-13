@@ -1,3 +1,4 @@
+
 /*
  * -------------------------------------------------------
  * THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
@@ -17,6 +18,13 @@ export enum ExerciseCheckRole {
     EXAMINER = "EXAMINER",
     PROFESSIONAL = "PROFESSIONAL",
     LECTOR = "LECTOR"
+}
+
+export enum ExerciseSheetStatus {
+    DRAFT = "DRAFT",
+    CREATED = "CREATED",
+    APPROVED = "APPROVED",
+    DELETED = "DELETED"
 }
 
 export enum ExerciseHistoryFieldType {
@@ -87,6 +95,7 @@ export interface ExerciseSheetInput {
 
 export interface UpdateExerciseSheetInput {
     name?: Nullable<string>;
+    status?: Nullable<ExerciseSheetStatus>;
     sheetItems?: Nullable<ExerciseSheetItemInput[]>;
     talonItems?: Nullable<OrderedExerciseInput[]>;
 }
@@ -274,6 +283,7 @@ export interface ExerciseComment {
 export interface ExerciseSheet {
     id: string;
     name: string;
+    status: ExerciseSheetStatus;
     sheetItems: ExerciseSheetItem[];
     talonItems: OrderedExercise[];
     createdBy: User;

@@ -189,9 +189,17 @@ model Image {
   transformedSize  BigInt
 }
 
+enum ExerciseSheetStatus {
+  DRAFT
+  CREATED
+  APPROVED
+  DELETED
+}
+
 model ExerciseSheet {
   id             String              @id @default(uuid())
   name           String
+  status         ExerciseSheetStatus @default(CREATED)
   sheetItems     ExerciseSheetItem[]
   talonExercises TalonItem[]
   createdById    String
