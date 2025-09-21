@@ -5,7 +5,7 @@ import {
   ExerciseSheetItemInput,
   UpdateExerciseSheetInput,
 } from '../graphql/graphqlTypes';
-import { Prisma, User } from '@prisma/client';
+import { ExerciseSheetStatus, Prisma, User } from '@prisma/client';
 
 @Injectable()
 export class ExerciseComposeService {
@@ -42,6 +42,7 @@ export class ExerciseComposeService {
               }
             : undefined,
           createdBy: { connect: { id: user.id } },
+          status: ExerciseSheetStatus.DRAFT,
         },
         include: { sheetItems: true, talonExercises: true },
       });
@@ -74,6 +75,7 @@ export class ExerciseComposeService {
               }
             : undefined,
           name: sheetData.name ? sheetData.name : undefined,
+          status: sheetData.status ? sheetData.status : undefined,
         },
         include: { sheetItems: true, talonExercises: true },
       });

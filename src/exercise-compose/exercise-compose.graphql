@@ -19,6 +19,7 @@ input ExerciseSheetInput {
 
 input UpdateExerciseSheetInput {
   name: String
+  status: ExerciseSheetStatus
   sheetItems: [ExerciseSheetItemInput!]
   talonItems: [OrderedExerciseInput!]
 }
@@ -34,9 +35,17 @@ input OrderedExerciseInput {
   order: Int!
 }
 
+enum ExerciseSheetStatus {
+  DRAFT # Mentve, in progress
+  CREATED
+  APPROVED # Ellenőrzött
+  DELETED # Purgált
+}
+
 type ExerciseSheet {
   id: ID!
   name: String!
+  status: ExerciseSheetStatus! 
   sheetItems: [ExerciseSheetItem!]!
   talonItems: [OrderedExercise!]!
   createdBy: User!
