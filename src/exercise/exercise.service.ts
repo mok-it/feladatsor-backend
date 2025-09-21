@@ -60,7 +60,11 @@ export class ExerciseService {
   }
 
   createExercise(
-    data: ExerciseInput & { createdAt?: Date },
+    data: ExerciseInput & {
+      createdAt?: Date;
+      isImported?: boolean;
+      importedAt?: Date;
+    },
     user: User,
     extraOverrides?: {
       id?: string;
@@ -130,6 +134,8 @@ export class ExerciseService {
             helpingQuestions: data.helpingQuestions,
             source: data.source,
             createdAt: data.createdAt,
+            isImported: data.isImported ?? false,
+            importedAt: data.importedAt,
             createdBy: {
               connect: {
                 id: user.id,

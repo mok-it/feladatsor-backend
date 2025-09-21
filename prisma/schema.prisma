@@ -62,6 +62,8 @@ model Exercise {
   contributors             User[]                        @relation("ExerciseContribution")
   createdAt                DateTime                      @default(now())
   updatedAt                DateTime                      @default(now()) @updatedAt
+  isImported               Boolean                       @default(false)
+  importedAt               DateTime?
   ExerciseSheetItems       ExerciseOnExerciseSheetItem[]
   ExerciseSheet            ExerciseSheet[]
   Talon                    TalonItem[]
@@ -212,7 +214,7 @@ model ExerciseSheetItem {
 }
 
 model ExerciseOnExerciseSheetItem {
-  id                  String            @id @default(dbgenerated("gen_random_uuid()"))
+  id                  String            @id @default(uuid())
   exerciseId          String
   exercise            Exercise          @relation(fields: [exerciseId], references: [id])
   exerciseSheetItemId String
@@ -237,11 +239,11 @@ model Developer {
 }
 
 model ExcelExport {
-  id          String   @id @default(uuid())
-  fileName    String
-  fileSize    BigInt
-  filePath    String
-  exportedBy  User     @relation(fields: [exportedById], references: [id])
+  id           String   @id @default(uuid())
+  fileName     String
+  fileSize     BigInt
+  filePath     String
+  exportedBy   User     @relation(fields: [exportedById], references: [id])
   exportedById String
-  createdAt   DateTime @default(now())
+  createdAt    DateTime @default(now())
 }

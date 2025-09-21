@@ -129,6 +129,8 @@ export class LoadOldExcelService {
             source: 'Imported from old excel file',
             //The id's first two chars indicate the date
             createdAt: new Date('20' + record[CSVHeaders.ID].slice(0, 2)),
+            isImported: true,
+            importedAt: new Date(),
           },
           technicalUser,
           {
