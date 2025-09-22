@@ -98,6 +98,7 @@ enum ExerciseStatus {
 
 type Exercise {
   id: ID!
+  originalId: String
   tags: [Tag!]!
   status: ExerciseStatus! #Authorization based, who can create what
   alert: ExerciseAlert

@@ -1,3 +1,4 @@
+
 /*
  * -------------------------------------------------------
  * THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
@@ -350,6 +351,7 @@ export interface ExerciseSearchResult {
 
 export interface Exercise {
     id: string;
+    originalId?: Nullable<string>;
     tags: Tag[];
     status: ExerciseStatus;
     alert?: Nullable<ExerciseAlert>;
