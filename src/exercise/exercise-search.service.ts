@@ -17,6 +17,12 @@ export class ExerciseSearchService {
           },
         },
         {
+          originalId: {
+            mode: 'insensitive',
+            contains: query.queryStr,
+          },
+        },
+        {
           id: {
             mode: 'insensitive',
             contains: query.queryStr,
