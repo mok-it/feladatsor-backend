@@ -9,6 +9,8 @@ import { ExerciseModule } from '../exercise/exercise.module';
 import { ImageModule } from '../image/image.module';
 import { ExerciseCommentModule } from '../exercise-comment/exercise-comment.module';
 import { ExerciseGroupModule } from '../exercise-group/exercise-group.module';
+import { ExerciseCheckService } from '../exercise-check/exercise-check.service';
+import { ExerciseCheckModule } from '../exercise-check/exercise-check.module';
 
 @Module({
   imports: [
@@ -19,6 +21,7 @@ import { ExerciseGroupModule } from '../exercise-group/exercise-group.module';
     ImageModule,
     ExerciseCommentModule,
     ExerciseGroupModule,
+    ExerciseCheckModule,
   ],
   controllers: [LoadOldExcelController],
   providers: [LoadOldExcelService, PrismaService],

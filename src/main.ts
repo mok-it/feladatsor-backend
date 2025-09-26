@@ -3,6 +3,7 @@ import { AppModule } from './app.module';
 import { Config } from './config/config';
 import { Logger } from '@nestjs/common';
 import * as express from 'express';
+import { UserService } from './user/user.service';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -22,6 +23,8 @@ async function bootstrap() {
     '/generated',
     express.static(config.fileStorage.generatedArtifactFolder, {}),
   );
+
+  await app.get(UserService).upsertTechnicalUser();
 
   const { port, host } = config.server;
   logger.log(`Graphql running on ${config.server.publicHost}/graphql`);
