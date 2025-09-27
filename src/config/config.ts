@@ -39,5 +39,29 @@ export class Config {
       .default('technical@localhost')
       .asString(),
   };
+  technicalUser2 = {
+    name: get('TECHNICAL_USER2_NAME').default('Technical User 2').asString(),
+    username: get('TECHNICAL_USER2_USERNAME')
+      .default('technical_user_2')
+      .asString(),
+    defaultPassword: get('TECHNICAL_USER2_DEFAULT_PASSWORD')
+      .default('technical_user_2_password')
+      .asString(),
+    email: get('TECHNICAL_USER2_EMAIL')
+      .default('technical2@localhost')
+      .asString(),
+  };
+  technicalUser3 = {
+    name: get('TECHNICAL_USER3_NAME').default('Technical User 3').asString(),
+    username: get('TECHNICAL_USER3_USERNAME')
+      .default('technical_user_3')
+      .asString(),
+    defaultPassword: get('TECHNICAL_USER3_DEFAULT_PASSWORD')
+      .default('technical_user_3_password')
+      .asString(),
+    email: get('TECHNICAL_USER3_EMAIL')
+      .default('technical3@localhost')
+      .asString(),
+  };
   sharepointCookie = get('SHAREPOINT_COOKIE').default('').asString();
 }

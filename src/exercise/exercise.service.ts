@@ -396,7 +396,7 @@ export class ExerciseService {
         );
       return `${idParts[0]}-${(Number(idParts[1]) + 1)
         .toString()
-        .padStart(3, '0')}-${idParts[2]}`;
+        .padStart(3, '0')}-a`;
     }
 
     return `${yearPrefix}-001-a`;
@@ -404,7 +404,7 @@ export class ExerciseService {
 
   async generateNextIdInGroup(
     exerciseInGroupId: string,
-    tx: TransactionClient,
+    tx: TransactionClient = this.prismaService,
   ) {
     const exercise = await tx.exercise.findUnique({
       where: {

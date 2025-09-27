@@ -55,6 +55,40 @@ export class UserService {
     });
   }
 
+  async upsertTechnicalUsers(): Promise<[User, User, User]> {
+    const technicalUser = this.upsertTechnicalUser();
+
+    let technicalUser2 = await this.prismaService.user.findFirst({
+      where: {
+        userName: this.config.technicalUser2.username,
+      },
+    });
+    if (!technicalUser2) {
+      technicalUser2 = await this.register({
+        email: this.config.technicalUser2.email,
+        password: this.config.technicalUser2.defaultPassword,
+        name: this.config.technicalUser2.name,
+        userName: this.config.technicalUser2.username,
+      });
+    }
+
+    let technicalUser3 = await this.prismaService.user.findFirst({
+      where: {
+        userName: this.config.technicalUser3.username,
+      },
+    });
+    if (!technicalUser3) {
+      technicalUser3 = await this.register({
+        email: this.config.technicalUser3.email,
+        password: this.config.technicalUser3.defaultPassword,
+        name: this.config.technicalUser3.name,
+        userName: this.config.technicalUser3.username,
+      });
+    }
+
+    return Promise.all([technicalUser, technicalUser2, technicalUser3]);
+  }
+
   async register(data: UserRegisterInput) {
     const hashedPassword = await hash(data.password, 10);
     try {

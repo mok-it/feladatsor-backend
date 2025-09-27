@@ -31,13 +31,14 @@ enum XLSXHeaders {
   elaboration = 11,
   source = 12,
   comment = 13,
-  isUsed = 13,
-  isChecked = 14,
+  isUsed = 14,
+  isChecked = 15,
 }
 
 @Injectable()
 export class LoadOldExcelService {
   private readonly logger = new Logger(LoadOldExcelService.name);
+  private technicalUsers: [User, User, User];
 
   constructor(
     private readonly config: Config,
@@ -53,7 +54,8 @@ export class LoadOldExcelService {
   async processExcelFile(file: Express.Multer.File) {
     this.logger.log(`Start to process old Excel file: [${file.originalname}]`);
 
-    const technicalUser = await this.userService.upsertTechnicalUser();
+    this.technicalUsers = await this.userService.upsertTechnicalUsers();
+    const technicalUser = this.technicalUsers[0];
     const records: any[][] = [];
 
     const workbook = new ExcelJS.Workbook();
@@ -71,7 +73,7 @@ export class LoadOldExcelService {
       }
 
       const rowValues = [];
-      for (let colNumber = 1; colNumber <= 14; colNumber++) {
+      for (let colNumber = 1; colNumber <= 16; colNumber++) {
         const cell = row.getCell(colNumber);
         rowValues.push(cell.value ? String(cell.value) : '');
       }
@@ -87,34 +89,47 @@ export class LoadOldExcelService {
     let error = 0;
     let success = 0;
 
-    for (const record of records) {
+    const exerciseIds = records.map((record) => record[XLSXHeaders.ID]);
+    const exerciseGroups = this.matchExerciseGroups(exerciseIds);
+
+    // Create a map to store created exercises and their group IDs
+    const createdExercises = new Map<
+      string,
+      { exercise: Exercise; groupId?: string }
+    >();
+
+    for (let i = 0; i < records.length; i++) {
+      const record = records[i];
       try {
-        const sameIdExercises = await this.getAlreadySavedDuplicatedExercises(
-          record,
+        const currentId = record[XLSXHeaders.ID];
+
+        // Find which group this exercise belongs to
+        const currentGroup = exerciseGroups.find((group) =>
+          group.includes(currentId),
         );
-        if (sameIdExercises.length > 0) {
-          this.logger.warn(
-            `Found ${
-              sameIdExercises.length
-            } already saved exercises with same original ID: ${
-              record[XLSXHeaders.ID]
-            }. They will be linked in the same logic group.`,
+
+        // Determine if we need to create or use a group
+        let sameLogicGroup = null;
+        let someGroupMemberId = null;
+
+        if (currentGroup && currentGroup.length > 1) {
+          // Find if any exercise in this group has already been created
+          const existingGroupMember = currentGroup.find((id) =>
+            createdExercises.has(id),
           );
+
+          if (existingGroupMember) {
+            // Use the existing group ID
+            const existingData = createdExercises.get(existingGroupMember);
+            sameLogicGroup = existingData?.groupId;
+            someGroupMemberId = (
+              await this.prisma.exercise.findFirst({
+                where: { originalId: existingGroupMember },
+                select: { id: true },
+              })
+            ).id;
+          }
         }
-
-        const sorted = sameIdExercises.sort((a, b) => {
-          return a.id.split('-')[2].localeCompare(b.id.split('-')[2]);
-        });
-
-        const sameIdExercise =
-          sorted.length > 0 ? sorted[sorted.length - 1] : undefined;
-
-        const sameLogicGroup = sameIdExercise
-          ? await this.exerciseGroupService.upsertExerciseGroupSameLogic(
-              sameIdExercise.id,
-              technicalUser,
-            )
-          : null;
 
         const { imgRes, failedToDownloadImage } = await this.tryToDownloadImage(
           record,
@@ -126,12 +141,16 @@ export class LoadOldExcelService {
         const exercise = await this.exerciseService.createExercise(
           {
             ...this.mapRecordToCreateExerciseInput(record),
-            sameLogicGroup: sameLogicGroup?.id,
+            status:
+              record[XLSXHeaders.isChecked] === 'Igen'
+                ? ExerciseStatus.APPROVED
+                : ExerciseStatus.CREATED,
+            sameLogicGroup: sameLogicGroup,
             exerciseImage: imgRes?.id,
             tags: await this.generateTagIds(
               this.getTags(record[XLSXHeaders.tags]),
             ),
-            source: 'Imported from old excel file',
+            source: record[XLSXHeaders.source],
             //The id's first two chars indicate the date
             createdAt: new Date('20' + record[XLSXHeaders.ID].slice(0, 2)),
             isImported: true,
@@ -142,23 +161,44 @@ export class LoadOldExcelService {
           {
             originalId: record[XLSXHeaders.ID],
             createdAtYear: Number('20' + record[XLSXHeaders.ID].slice(0, 2)),
+            id: someGroupMemberId
+              ? await this.exerciseService.generateNextIdInGroup(
+                  someGroupMemberId,
+                )
+              : undefined,
           },
         );
+
+        // If this is the first exercise in a group, create the group
+        if (currentGroup && currentGroup.length > 1 && !sameLogicGroup) {
+          const group =
+            await this.exerciseGroupService.upsertExerciseGroupSameLogic(
+              exercise.id,
+              technicalUser,
+            );
+          sameLogicGroup = group.id;
+        }
+
+        // Store the created exercise with its group ID
+        createdExercises.set(currentId, { exercise, groupId: sameLogicGroup });
 
         if (notFoundUserNames.length > 0) {
           await this.commentService.createExerciseComment(
             exercise.id,
-            `They also contributed to this exercise: ${notFoundUserNames.join(
-              ', ',
-            )}`,
+            `Ők is dolgozatak a feladaton:\n ${notFoundUserNames.join('\n')}`,
             technicalUser,
           );
         }
 
-        if (record[XLSXHeaders.isUsed].trim() != '-') {
+        if (
+          record[XLSXHeaders.isUsed].trim() &&
+          record[XLSXHeaders.isUsed].trim() != '-'
+        ) {
           await this.commentService.createExerciseComment(
             exercise.id,
-            `This exercise was used at: ${record[XLSXHeaders.isUsed]}`,
+            `Ez a feladat már volt használva itt: ${
+              record[XLSXHeaders.isUsed]
+            }`,
             technicalUser,
           );
         }
@@ -177,15 +217,19 @@ export class LoadOldExcelService {
         if (record[XLSXHeaders.isChecked] === 'Igen') {
           //Create 3 GOOD checks, as that means that the exercise was accepted
           await Promise.all(
-            Array.from({ length: 3 }).map(() =>
+            this.technicalUsers.map((tUser) =>
               this.exerciseCheckService.createExerciseCheck(
                 {
                   exerciseId: exercise.id,
                   type: ExerciseCheckType.GOOD,
                 },
-                technicalUser,
+                tUser,
               ),
             ),
+          );
+          //Force do the aggregation, the above promise might have race conditions
+          await this.exerciseCheckService.doExerciseCheckAggregation(
+            exercise.id,
           );
         }
 
@@ -193,7 +237,7 @@ export class LoadOldExcelService {
         if (failedToDownloadImage) {
           await this.commentService.createExerciseComment(
             exercise.id,
-            `Could not download img while importing Excel, URL: ${
+            `Nem sikerült letölteni a feladat képét, URL: ${
               record[XLSXHeaders.image]
             }`,
             technicalUser,
@@ -220,9 +264,8 @@ export class LoadOldExcelService {
   ): Omit<ExerciseInput, 'tags'> {
     return {
       description: record[XLSXHeaders.description].trim(),
-      helpingQuestions: record[XLSXHeaders.elaboration]
-        ? [record[XLSXHeaders.elaboration]]
-        : [],
+      solveIdea: record[XLSXHeaders.elaboration].trim(),
+      helpingQuestions: [],
       solution: record[XLSXHeaders.solution],
       solutionOptions: [],
       isCompetitionFinal: `${record[XLSXHeaders.koala]}${
@@ -307,8 +350,8 @@ export class LoadOldExcelService {
     };
   }
 
-  private isValidHttpUrl(string) {
-    let url;
+  private isValidHttpUrl(string: string) {
+    let url: URL;
 
     try {
       url = new URL(string);
@@ -390,137 +433,77 @@ export class LoadOldExcelService {
     return { createdByUser, collaborators, notFoundUserNames };
   }
 
-  private async getAlreadySavedDuplicatedExercises(
-    record: string[],
-  ): Promise<Exercise[]> {
-    const originalId = record[XLSXHeaders.ID];
-
+  private matchExerciseGroups(exerciseIds: string[]) {
     /*
-    //Original is in the followint format: <2digit year><exercise-id><incremental_id-in group>
-    //The exercise id is the same under a group
+    Original is in the followint format: <2digit year><exercise-id><incremental_id-in group>
+    The exercise id is the same under a group
 
-    //Cloned exercises between 2020 and 2021 are 6 digit long, and are in a format of 10*<exercise-id>+<incremental_id-in group>
-    //The same is true for the ones submitted after 2022, only there they are 7 digit long
-    //In some cases the cloned exercises have IDs like this 2000711 instead of 200072  (an extra 1 is added at the end)
+    Cloned exercises between 2020 and 2021 are 6 digit long, and are in a format of 10*<exercise-id>+<incremental_id-in group>
+    The same is true for the ones submitted after 2022, only there they are 7 digit long
+    In some cases the cloned exercises have IDs like this 2000711 instead of 200072  (an extra 1 is added at the end)
 
-    //If there is a K at the end, that also indicated a cloned exercise
-    //One unique case where 19008521K got cloned into 1900852K
+    If there is a K at the end, that also indicated a cloned exercise
+    One unique case where 19008521K got cloned into 1900852K
      */
 
-    const relatedIds: string[] = [];
+    const compareIds = (a: string, b: string) => {
+      if (a === '19008521K' && b === '1900852K') return true;
+      if (a === '1900852K' && b === '19008521K') return true;
 
-    // Remove K suffix if present for comparison
-    const baseId = originalId.replace(/K$/, '');
+      const yearA = a.slice(0, 2); //20, 21, 22, 23, etc
+      const yearB = b.slice(0, 2);
+      if (yearA !== yearB) return false;
 
-    // Extract year and exercise parts
-    const year = baseId.substring(0, 2);
-    const yearNum = parseInt('20' + year);
+      const aCore = a.endsWith('K') ? a.slice(2, -1) : a.slice(2);
+      const bCore = b.endsWith('K') ? b.slice(2, -1) : b.slice(2);
 
-    // Add the original ID itself
-    relatedIds.push(originalId);
-
-    // Handle K-suffixed variants
-    if (!originalId.endsWith('K')) {
-      relatedIds.push(originalId + 'K');
-    } else {
-      relatedIds.push(baseId);
-    }
-
-    // Special case: 19008521K -> 1900852K pattern
-    if (originalId === '19008521K') {
-      relatedIds.push('1900852K');
-    } else if (originalId === '1900852K') {
-      relatedIds.push('19008521K');
-    }
-
-    // For 2020-2021 exercises (6 digit format)
-    if (yearNum >= 2020 && yearNum <= 2021 && baseId.length === 6) {
-      // Format: 10*<exercise-id>+<incremental_id>
-      const exerciseNum = parseInt(baseId.substring(2));
-      if (!isNaN(exerciseNum)) {
-        // Find the base exercise ID by dividing by 10
-        const baseExerciseId = Math.floor(exerciseNum / 10);
-        const incrementalId = exerciseNum % 10;
-
-        // Generate possible related IDs
-        for (let i = 0; i <= 9; i++) {
-          const clonedId = year + (baseExerciseId * 10 + i);
-          relatedIds.push(clonedId);
-          relatedIds.push(clonedId + 'K');
+      if (
+        ['19', '20', '20', '21'].includes(yearA) ||
+        ['19', '20', '20', '21'].includes(yearB)
+      ) {
+        if (aCore.slice(0, 3) === bCore.slice(0, 3)) {
+          return true;
         }
-
-        // Also check for original format
-        const originalFormat = year + baseExerciseId + incrementalId;
-        relatedIds.push(originalFormat);
-        relatedIds.push(originalFormat + 'K');
+      } else {
+        if (aCore.slice(0, 4) === bCore.slice(0, 4)) {
+          return true;
+        }
       }
-    }
 
-    // For 2022+ exercises (7 digit format)
-    if (yearNum >= 2022 && baseId.length === 7) {
-      // Format: 10*<exercise-id>+<incremental_id>
-      const exerciseNum = parseInt(baseId.substring(2));
-      if (!isNaN(exerciseNum)) {
-        // Find the base exercise ID by dividing by 10
-        const baseExerciseId = Math.floor(exerciseNum / 10);
-        const incrementalId = exerciseNum % 10;
+      return false;
+    };
 
-        // Generate possible related IDs
-        for (let i = 0; i <= 9; i++) {
-          const clonedId = year + (baseExerciseId * 10 + i);
-          relatedIds.push(clonedId);
-          relatedIds.push(clonedId + 'K');
+    // Create groups using Union-Find algorithm
+    const groups: string[][] = [];
+    const idToGroupIndex = new Map<string, number>();
 
-          // Handle the extra 1 pattern (e.g., 2000711 instead of 200072)
-          if (clonedId.endsWith(i.toString())) {
-            const withExtra1 = clonedId.slice(0, -1) + '1' + i;
-            relatedIds.push(withExtra1);
-            relatedIds.push(withExtra1 + 'K');
-          }
-        }
+    for (let i = 0; i < exerciseIds.length; i++) {
+      const currentId = exerciseIds[i];
+      let foundGroup = false;
 
-        // Also check for original format
-        const originalFormat = year + baseExerciseId + incrementalId;
-        relatedIds.push(originalFormat);
-        relatedIds.push(originalFormat + 'K');
-      }
-    }
+      // Check if this ID matches any ID in existing groups
+      for (let j = 0; j < i; j++) {
+        const previousId = exerciseIds[j];
 
-    // For standard format exercises (not 6 or 7 digits)
-    if (baseId.length !== 6 && baseId.length !== 7) {
-      // Extract exercise ID and incremental ID
-      const exerciseIdPart = baseId.substring(2, baseId.length - 1);
-
-      if (exerciseIdPart) {
-        // Generate related IDs with same exercise ID but different incremental IDs
-        for (let i = 0; i <= 9; i++) {
-          const relatedId = year + exerciseIdPart + i;
-          relatedIds.push(relatedId);
-          relatedIds.push(relatedId + 'K');
-        }
-
-        // Check for cloned format (2020-2021: 6 digits, 2022+: 7 digits)
-        const exerciseIdNum = parseInt(exerciseIdPart);
-        if (!isNaN(exerciseIdNum)) {
-          for (let i = 0; i <= 9; i++) {
-            const clonedId = year + (exerciseIdNum * 10 + i);
-            relatedIds.push(clonedId);
-            relatedIds.push(clonedId + 'K');
+        if (compareIds(currentId, previousId)) {
+          const groupIndex = idToGroupIndex.get(previousId);
+          if (groupIndex !== undefined) {
+            groups[groupIndex].push(currentId);
+            idToGroupIndex.set(currentId, groupIndex);
+            foundGroup = true;
+            break;
           }
         }
       }
+
+      // If no matching group found, create a new group
+      if (!foundGroup) {
+        const newGroupIndex = groups.length;
+        groups.push([currentId]);
+        idToGroupIndex.set(currentId, newGroupIndex);
+      }
     }
 
-    // Remove duplicates
-    const uniqueIds = [...new Set(relatedIds)];
-
-    // Query database for exercises with any of these original IDs
-    return this.prisma.exercise.findMany({
-      where: {
-        originalId: {
-          in: uniqueIds,
-        },
-      },
-    });
+    return groups;
   }
 }
