@@ -122,12 +122,8 @@ export class LoadOldExcelService {
             // Use the existing group ID
             const existingData = createdExercises.get(existingGroupMember);
             sameLogicGroup = existingData?.groupId;
-            someGroupMemberId = (
-              await this.prisma.exercise.findFirst({
-                where: { originalId: existingGroupMember },
-                select: { id: true },
-              })
-            ).id;
+            someGroupMemberId =
+              createdExercises.get(existingGroupMember).exercise.id;
           }
         }
 
