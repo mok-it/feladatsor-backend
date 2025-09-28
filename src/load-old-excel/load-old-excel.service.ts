@@ -131,7 +131,7 @@ export class LoadOldExcelService {
           record,
         );
 
-        const { createdByUser, collaborators, notFoundUserNames } =
+        const { createdByUser, contributors, notFoundUserNames } =
           await this.getExerciseUsersByExcelRecord(record);
 
         const exercise = await this.exerciseService.createExercise(
@@ -151,7 +151,7 @@ export class LoadOldExcelService {
             createdAt: new Date('20' + record[XLSXHeaders.ID].slice(0, 2)),
             isImported: true,
             importedAt: new Date(),
-            contributors: collaborators.map((c) => c.id),
+            contributors: contributors.map((c) => c.id),
           },
           createdByUser || technicalUser,
           {
@@ -393,11 +393,11 @@ export class LoadOldExcelService {
 
   private async getExerciseUsersByExcelRecord(record: string[]): Promise<{
     createdByUser?: User;
-    collaborators: User[];
+    contributors: User[];
     notFoundUserNames: string[];
   }> {
     let createdByUser: User = null;
-    const collaborators: User[] = [];
+    const contributors: User[] = [];
     const notFoundUserNames: string[] = [];
 
     if (record[XLSXHeaders.submitter]) {
@@ -416,17 +416,18 @@ export class LoadOldExcelService {
           const user = await this.userService.getUserByEmail(name);
           if (!user) {
             notFoundUserNames.push(name);
-          }
-          if (!createdByUser) {
-            createdByUser = user;
           } else {
-            collaborators.push(user);
+            if (!createdByUser) {
+              createdByUser = user;
+            } else {
+              contributors.push(user);
+            }
           }
         }
       }
     }
 
-    return { createdByUser, collaborators, notFoundUserNames };
+    return { createdByUser, contributors, notFoundUserNames };
   }
 
   private matchExerciseGroups(exerciseIds: string[]) {
