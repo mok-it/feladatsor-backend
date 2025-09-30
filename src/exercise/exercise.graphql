@@ -1,6 +1,11 @@
 type Query {
   searchExercises(query: ExerciseSearchQuery): ExerciseSearchResult!
-  exercises(take: Int!, skip: Int!): [Exercise!]!
+  exercises(
+    take: Int!
+    skip: Int!
+    createdAtFrom: String
+    createdAtTo: String
+  ): [Exercise!]!
   exercisesCount: Int!
   exercise(id: ID!): Exercise
 }

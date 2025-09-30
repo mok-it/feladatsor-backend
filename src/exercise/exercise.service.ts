@@ -24,10 +24,33 @@ export class ExerciseService {
     });
   }
 
-  async getExercises(take: number, skip: number) {
+  async getExercises(
+    take: number,
+    skip: number,
+    createdAtFrom: string,
+    createdAtTo: string,
+  ) {
     return this.prismaService.exercise.findMany({
       take,
       skip,
+      where: {
+        AND: [
+          createdAtFrom
+            ? {
+                createdAt: {
+                  gte: new Date(createdAtFrom),
+                },
+              }
+            : {},
+          createdAtTo
+            ? {
+                createdAt: {
+                  lte: new Date(createdAtTo),
+                },
+              }
+            : {},
+        ],
+      },
     });
   }
 

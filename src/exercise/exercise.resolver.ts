@@ -61,8 +61,24 @@ export class ExerciseResolver {
   @Query('exercises')
   @UseGuards(RolesGuard)
   @Roles('LIST_EXERCISES')
-  async getExercises(@Args('take') take: number, @Args('skip') skip: number) {
-    return this.exerciseService.getExercises(take, skip);
+  async getExercises(
+    @Args('take') take: number,
+    @Args('skip') skip: number,
+    @Args('createdAtFrom') createdAtFrom?: string,
+    @Args('createdAtTo') createdAtTo?: string,
+  ) {
+    console.log('take, skip, createdAtFrom, createdAtTo', {
+      take,
+      skip,
+      createdAtFrom,
+      createdAtTo,
+    });
+    return this.exerciseService.getExercises(
+      take,
+      skip,
+      createdAtFrom,
+      createdAtTo,
+    );
   }
 
   @Query('exercisesCount')
