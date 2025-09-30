@@ -22,7 +22,7 @@ import { UserService } from '../user/user.service';
 import { UnauthorizedException, UseGuards } from '@nestjs/common';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
-import { hasRolesOrAdmin } from 'src/auth/hasRolesOrAdmin';
+import { hasRolesOrAdmin } from '../auth/hasRolesOrAdmin';
 
 @Resolver('ExerciseSheet')
 export class ExerciseComposeResolver {

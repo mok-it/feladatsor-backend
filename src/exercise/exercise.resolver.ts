@@ -67,12 +67,6 @@ export class ExerciseResolver {
     @Args('createdAtFrom') createdAtFrom?: string,
     @Args('createdAtTo') createdAtTo?: string,
   ) {
-    console.log('take, skip, createdAtFrom, createdAtTo', {
-      take,
-      skip,
-      createdAtFrom,
-      createdAtTo,
-    });
     return this.exerciseService.getExercises(
       take,
       skip,

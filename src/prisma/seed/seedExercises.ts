@@ -25,7 +25,7 @@ export const seedExercises = async (
   ];
 
   const exercises = await Promise.all(
-    ['23', '24'].flatMap((year) =>
+    ['23', '24', '25'].flatMap((year) =>
       Array.from({
         length: faker.helpers.rangeToNumber({ min: 20, max: 100 }),
       }).map((_, id) => {
@@ -58,12 +58,15 @@ export const seedExercises = async (
               ageGroup,
               difficulty: faker.number.int({ min: 1, max: 4 }),
             })),
-            contributors: faker.helpers
-              .arrayElements(users, {
-                min: 0,
-                max: 3,
-              })
-              .map((user) => user.id),
+            contributors:
+              faker.number.int(100) < 50
+                ? [] // 50% have no contributors
+                : faker.helpers
+                    .arrayElements(users, {
+                      min: 1,
+                      max: 2,
+                    })
+                    .map((user) => user.id), // 50% have 1-2 contributors
             tags: faker.helpers
               .arrayElements(tags, { min: 1, max: 5 })
               .map((tag) => tag.id),
