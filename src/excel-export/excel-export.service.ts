@@ -142,6 +142,6 @@ export class ExcelExportService {
   }
 
   getExportUrl(file: ExcelExport) {
-    return `${this.config.server.publicHost}/${file.filePath}`;
+    return `${this.config.server.publicHost}/generated/${file.fileName}`;
   }
 }
