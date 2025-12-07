@@ -88,9 +88,19 @@ export class LoadOldExcelService {
   private async saveExercises(records: string[][], technicalUser: User) {
     let error = 0;
     let success = 0;
+    let skipped = 0;
+
+    // Fetch existing exercises from the database
+    const existingExercises = await this.getExistingExercisesWithOriginalId();
+    const existingOriginalIds = new Set(
+      existingExercises.map((e) => e.originalId),
+    );
 
     const exerciseIds = records.map((record) => record[XLSXHeaders.ID]);
-    const exerciseGroups = this.matchExerciseGroups(exerciseIds);
+    const exerciseGroups = this.matchExerciseGroups(
+      exerciseIds,
+      existingExercises,
+    );
 
     // Create a map to store created exercises and their group IDs
     const createdExercises = new Map<
@@ -103,6 +113,13 @@ export class LoadOldExcelService {
       try {
         const currentId = record[XLSXHeaders.ID];
 
+        // Skip if this exercise already exists in the database
+        if (existingOriginalIds.has(currentId)) {
+          this.logger.warn(`Skipping already imported exercise: ${currentId}`);
+          skipped++;
+          continue;
+        }
+
         // Find which group this exercise belongs to
         const currentGroup = exerciseGroups.find((group) =>
           group.includes(currentId),
@@ -113,17 +130,29 @@ export class LoadOldExcelService {
         let someGroupMemberId = null;
 
         if (currentGroup && currentGroup.length > 1) {
-          // Find if any exercise in this group has already been created
-          const existingGroupMember = currentGroup.find((id) =>
-            createdExercises.has(id),
+          // First, check if any exercise in this group already exists in the database
+          const existingDbGroupMember = existingExercises.find(
+            (e) =>
+              currentGroup.includes(e.originalId) && e.exerciseGroupSameLogicId,
           );
 
-          if (existingGroupMember) {
-            // Use the existing group ID
-            const existingData = createdExercises.get(existingGroupMember);
-            sameLogicGroup = existingData?.groupId;
-            someGroupMemberId =
-              createdExercises.get(existingGroupMember).exercise.id;
+          if (existingDbGroupMember) {
+            // Use the existing group ID from database
+            sameLogicGroup = existingDbGroupMember.exerciseGroupSameLogicId;
+            someGroupMemberId = existingDbGroupMember.id;
+          } else {
+            // Check if any exercise in this group has been created in current batch
+            const existingBatchMember = currentGroup.find((id) =>
+              createdExercises.has(id),
+            );
+
+            if (existingBatchMember) {
+              // Use the existing group ID from current batch
+              const existingData = createdExercises.get(existingBatchMember);
+              sameLogicGroup = existingData?.groupId;
+              someGroupMemberId =
+                createdExercises.get(existingBatchMember).exercise.id;
+            }
           }
         }
 
@@ -247,10 +276,11 @@ export class LoadOldExcelService {
       }
     }
 
-    this.logger.log(`Saved: ${success}, Failed: ${error}`);
+    this.logger.log(`Saved: ${success}, Skipped: ${skipped}, Failed: ${error}`);
 
     return {
       importedCount: success,
+      skippedCount: skipped,
       failedCount: error,
     };
   }
@@ -430,7 +460,35 @@ export class LoadOldExcelService {
     return { createdByUser, contributors, notFoundUserNames };
   }
 
-  private matchExerciseGroups(exerciseIds: string[]) {
+  private async getExistingExercisesWithOriginalId(): Promise<
+    {
+      id: string;
+      originalId: string;
+      exerciseGroupSameLogicId: string | null;
+    }[]
+  > {
+    return this.prisma.exercise.findMany({
+      where: {
+        originalId: {
+          not: null,
+        },
+      },
+      select: {
+        id: true,
+        originalId: true,
+        exerciseGroupSameLogicId: true,
+      },
+    });
+  }
+
+  private matchExerciseGroups(
+    exerciseIds: string[],
+    existingExercises: {
+      id: string;
+      originalId: string;
+      exerciseGroupSameLogicId: string | null;
+    }[],
+  ) {
     /*
     Original is in the followint format: <2digit year><exercise-id><incremental_id-in group>
     The exercise id is the same under a group
@@ -470,17 +528,21 @@ export class LoadOldExcelService {
       return false;
     };
 
+    // Combine new exerciseIds with existing ones from the database
+    const existingOriginalIds = existingExercises.map((e) => e.originalId);
+    const allIds = [...existingOriginalIds, ...exerciseIds];
+
     // Create groups using Union-Find algorithm
     const groups: string[][] = [];
     const idToGroupIndex = new Map<string, number>();
 
-    for (let i = 0; i < exerciseIds.length; i++) {
-      const currentId = exerciseIds[i];
+    for (let i = 0; i < allIds.length; i++) {
+      const currentId = allIds[i];
       let foundGroup = false;
 
       // Check if this ID matches any ID in existing groups
       for (let j = 0; j < i; j++) {
-        const previousId = exerciseIds[j];
+        const previousId = allIds[j];
 
         if (compareIds(currentId, previousId)) {
           const groupIndex = idToGroupIndex.get(previousId);
