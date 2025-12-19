@@ -1,4 +1,11 @@
-import { Resolver, Query, Mutation, Args, ResolveField, Parent } from '@nestjs/graphql';
+import {
+  Resolver,
+  Query,
+  Mutation,
+  Args,
+  ResolveField,
+  Parent,
+} from '@nestjs/graphql';
 import { ExerciseSheetCommentService } from './exercise-sheet-comment.service';
 import { CreateExerciseSheetCommentInput } from '../graphql/graphqlTypes';
 import { UseGuards } from '@nestjs/common';
@@ -64,7 +71,9 @@ export class ExerciseSheetCommentResolver {
 
 @Resolver('ExerciseSheet')
 export class ExerciseSheetExtensionResolver {
-  constructor(private readonly exerciseSheetCommentService: ExerciseSheetCommentService) {}
+  constructor(
+    private readonly exerciseSheetCommentService: ExerciseSheetCommentService,
+  ) {}
 
   @ResolveField('comments')
   comments(@Parent() sheet: any) {
@@ -74,7 +83,9 @@ export class ExerciseSheetExtensionResolver {
 
 @Resolver('ExerciseSheetItem')
 export class ExerciseSheetItemExtensionResolver {
-  constructor(private readonly exerciseSheetCommentService: ExerciseSheetCommentService) {}
+  constructor(
+    private readonly exerciseSheetCommentService: ExerciseSheetCommentService,
+  ) {}
 
   @ResolveField('comments')
   comments(@Parent() item: any) {
@@ -84,11 +95,15 @@ export class ExerciseSheetItemExtensionResolver {
 
 @Resolver('OrderedExercise')
 export class OrderedExerciseExtensionResolver {
-  constructor(private readonly exerciseSheetCommentService: ExerciseSheetCommentService) {}
+  constructor(
+    private readonly exerciseSheetCommentService: ExerciseSheetCommentService,
+  ) {}
 
   @ResolveField('comments')
   comments(@Parent() orderedExercise: any) {
     if (!orderedExercise.id) return [];
-    return this.exerciseSheetCommentService.getCommentsForExerciseOnSheet(orderedExercise.id);
+    return this.exerciseSheetCommentService.getCommentsForExerciseOnSheet(
+      orderedExercise.id,
+    );
   }
 }

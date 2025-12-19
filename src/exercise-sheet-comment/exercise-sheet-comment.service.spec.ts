@@ -38,7 +38,9 @@ describe('ExerciseSheetCommentService', () => {
       ],
     }).compile();
 
-    service = module.get<ExerciseSheetCommentService>(ExerciseSheetCommentService);
+    service = module.get<ExerciseSheetCommentService>(
+      ExerciseSheetCommentService,
+    );
     prisma = module.get<PrismaService>(PrismaService);
   });
 
@@ -56,7 +58,9 @@ describe('ExerciseSheetCommentService', () => {
       };
 
       const expectedResult = { id: 'comment-1', ...input, userId: mockUser.id };
-      mockPrismaService.exerciseSheetComment.create.mockResolvedValue(expectedResult);
+      mockPrismaService.exerciseSheetComment.create.mockResolvedValue(
+        expectedResult,
+      );
 
       const result = await service.create(input, mockUser);
 
@@ -77,7 +81,7 @@ describe('ExerciseSheetCommentService', () => {
     it('should resolve a comment', async () => {
       const commentId = 'comment-1';
       const notes = 'Fixed it';
-      
+
       const expectedResult = {
         id: commentId,
         isResolved: true,
@@ -85,7 +89,9 @@ describe('ExerciseSheetCommentService', () => {
         resolutionNotes: notes,
       };
 
-      mockPrismaService.exerciseSheetComment.update.mockResolvedValue(expectedResult);
+      mockPrismaService.exerciseSheetComment.update.mockResolvedValue(
+        expectedResult,
+      );
 
       const result = await service.resolve(commentId, notes, mockUser);
 
@@ -106,8 +112,10 @@ describe('ExerciseSheetCommentService', () => {
     it('should fetch comments for a sheet', async () => {
       const sheetId = 'sheet-1';
       const expectedComments = [{ id: 'c1', exerciseSheetId: sheetId }];
-      
-      mockPrismaService.exerciseSheetComment.findMany.mockResolvedValue(expectedComments);
+
+      mockPrismaService.exerciseSheetComment.findMany.mockResolvedValue(
+        expectedComments,
+      );
 
       const result = await service.getCommentsForSheet(sheetId);
 

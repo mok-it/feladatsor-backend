@@ -14,7 +14,8 @@ export class ExerciseSheetCommentService {
         userId: user.id,
         exerciseSheetId: input.exerciseSheetId || undefined,
         exerciseSheetItemId: input.exerciseSheetItemId || undefined,
-        exerciseOnExerciseSheetItemId: input.exerciseOnExerciseSheetItemId || undefined,
+        exerciseOnExerciseSheetItemId:
+          input.exerciseOnExerciseSheetItemId || undefined,
       },
     });
   }
@@ -44,8 +45,12 @@ export class ExerciseSheetCommentService {
         OR: [
           { exerciseSheetId: sheetId },
           { exerciseSheetItem: { exerciseSheetId: sheetId } },
-          { exerciseOnExerciseSheetItem: { exerciseSheetItem: { exerciseSheetId: sheetId } } }
-        ]
+          {
+            exerciseOnExerciseSheetItem: {
+              exerciseSheetItem: { exerciseSheetId: sheetId },
+            },
+          },
+        ],
       },
       orderBy: { createdAt: 'desc' },
     });
