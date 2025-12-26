@@ -1,13 +1,25 @@
 import { Injectable } from '@nestjs/common';
 import { LeaderBoardUser, User } from '../graphql/graphqlTypes';
 import { PrismaService } from '../prisma/PrismaService';
+import { UserService } from '../user/user.service';
 
 @Injectable()
 export class StatService {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(
+    private readonly prismaService: PrismaService,
+    private readonly userService: UserService,
+  ) {}
 
   async getUserLeaderboard(): Promise<LeaderBoardUser[]> {
+    const technicalUsers = await this.userService.upsertTechnicalUsers();
+    const technicalUserIds = technicalUsers.map((user) => user.id);
+
     const users = await this.prismaService.user.findMany({
+      where: {
+        id: {
+          notIn: technicalUserIds,
+        },
+      },
       include: {
         _count: {
           select: { exercises: true },
@@ -29,14 +41,16 @@ export class StatService {
 
   async aggregateExerciseHourly() {
     // Query the data and group by the hour
-    const hourlyCounts = await this.prismaService.$queryRaw`SELECT 
-          TO_CHAR("createdAt", 'HH24') AS hour, 
+    const hourlyCounts = await this.prismaService.$queryRaw`SELECT
+          TO_CHAR("createdAt", 'HH24') AS hour,
           COUNT(*) AS count
-      FROM 
+      FROM
           "Exercise"
-      GROUP BY 
+      WHERE
+          "isImported" = false
+      GROUP BY
           hour
-      ORDER BY 
+      ORDER BY
           hour;`;
 
     return (hourlyCounts as { hour: string; count: number }[]).map((a) => ({
@@ -80,31 +94,33 @@ export class StatService {
   async getContributionCalendar(userId?: string) {
     // Query the data and group by the hour
     const dailyCounts = userId
-      ? await this.prismaService.$queryRaw`SELECT 
+      ? await this.prismaService.$queryRaw`SELECT
         TO_CHAR(DATE_TRUNC('day', "createdAt"), 'YYYY-MM-DD') AS day,
         COUNT(*) AS count
-    FROM 
+    FROM
         "Exercise"
-    WHERE 
+    WHERE
         "createdById" = ${userId}
+        AND "isImported" = false
         AND "createdAt" >= DATE_TRUNC('year', CURRENT_DATE)
         AND "createdAt" < DATE_TRUNC('year', CURRENT_DATE) + INTERVAL '1 year'
-    GROUP BY 
+    GROUP BY
         day
-    ORDER BY 
+    ORDER BY
         day;`
       : //If we want to query everything (no userId provided)
-        await this.prismaService.$queryRaw`SELECT 
+        await this.prismaService.$queryRaw`SELECT
         TO_CHAR(DATE_TRUNC('day', "createdAt"), 'YYYY-MM-DD') AS day,
         COUNT(*) AS count
-    FROM 
+    FROM
         "Exercise"
-    WHERE 
-        "createdAt" >= DATE_TRUNC('year', CURRENT_DATE)
+    WHERE
+        "isImported" = false
+        AND "createdAt" >= DATE_TRUNC('year', CURRENT_DATE)
         AND "createdAt" < DATE_TRUNC('year', CURRENT_DATE) + INTERVAL '1 year'
-    GROUP BY 
+    GROUP BY
         day
-    ORDER BY 
+    ORDER BY
         day;`;
 
     const data = (dailyCounts as { day: string; count: number }[]).map((a) => ({

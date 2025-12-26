@@ -6,6 +6,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 This is the backend for the Medve Matek (Bear Math) voluntary organization, built with NestJS, Prisma, PostgreSQL, and GraphQL. It manages mathematical exercises, users, and educational content.
 
+### Deployments
+- **Development**: https://be-feladatsor-dev-1029503388169.europe-west3.run.app (auto-deployed from main branch)
+- **Production**: https://be-feladatsor-prod-1029503388169.europe-west3.run.app (manually deployed from version tags)
+
 ## Development Commands
 
 ### Environment Setup
@@ -16,7 +20,10 @@ cp .env.example .env
 # Install dependencies
 npm install
 
-# Start PostgreSQL database in a local k8s cluster
+# Start PostgreSQL database with Docker Compose
+docker compose -f docker-compose.db.yml up
+
+# OR start PostgreSQL in a local k8s cluster
 skaffold deploy -m=postgresql --port-forward
 
 # Generate Prisma client
@@ -84,6 +91,9 @@ npm run graphql:generate
 ```bash
 # Deploy PostgreSQL with Skaffold
 npm run skaffold
+
+# Start PostgreSQL with Docker Compose
+docker compose -f docker-compose.db.yml up
 ```
 
 ## Architecture
@@ -139,10 +149,19 @@ The application follows NestJS modular architecture:
 - Image processing with Sharp (resize to 1920px width, 80% quality)
 
 ### GraphQL API
-- Schema-first approach with `.graphql` files
-- Type generation from GraphQL schemas
+- Schema-first approach with `.graphql` files in each module
+- Type generation from GraphQL schemas to `src/graphql/graphqlTypes.ts`
 - Apollo Server with landing page disabled in production
 - Modular resolvers organized by domain
+- Main GraphQL endpoint: `/graphql`
+
+### REST Endpoints
+Besides GraphQL, the app exposes a few REST endpoints:
+- `GET /images/{:id}`: Retrieve uploaded images
+- `POST /image/upload`: Upload new images
+- `GET /health`: Health check endpoint
+- `POST /load-old-excel/load`: Load legacy Excel data
+- `/images` and `/generated`: Static file serving for images and generated artifacts
 
 ### Configuration
 Environment variables managed through `env-var` library:
