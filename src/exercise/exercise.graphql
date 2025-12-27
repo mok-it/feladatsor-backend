@@ -32,6 +32,7 @@ input ExerciseSearchQuery {
   orderDirection: OrderDirection
   includeTags: [ID!]
   excludeTags: [ID!]
+  statuses: [ExerciseStatus!]
 }
 
 enum ExerciseCheckFilter {

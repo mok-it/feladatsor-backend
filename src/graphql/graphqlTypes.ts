@@ -125,6 +125,7 @@ export interface ExerciseSearchQuery {
     orderDirection?: Nullable<OrderDirection>;
     includeTags?: Nullable<string[]>;
     excludeTags?: Nullable<string[]>;
+    statuses?: Nullable<ExerciseStatus[]>;
 }
 
 export interface ExerciseDifficultyRange {
@@ -235,7 +236,7 @@ export interface IQuery {
     exerciseTag(id: string): Nullable<ExerciseTag> | Promise<Nullable<ExerciseTag>>;
     flatExerciseTags(): ExerciseTag[] | Promise<ExerciseTag[]>;
     searchExercises(query?: Nullable<ExerciseSearchQuery>): ExerciseSearchResult | Promise<ExerciseSearchResult>;
-    exercises(take: number, skip: number): Exercise[] | Promise<Exercise[]>;
+    exercises(take: number, skip: number, createdAtFrom?: Nullable<string>, createdAtTo?: Nullable<string>): Exercise[] | Promise<Exercise[]>;
     exercisesCount(): number | Promise<number>;
     exercise(id: string): Nullable<Exercise> | Promise<Nullable<Exercise>>;
     funkyPool(): Developer[] | Promise<Developer[]>;
