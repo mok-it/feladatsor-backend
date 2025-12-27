@@ -62,6 +62,12 @@ export class ExerciseSearchService {
             }
           : undefined,
       ],
+      status:
+        query.statuses && query.statuses.length > 0
+          ? {
+              in: query.statuses,
+            }
+          : undefined,
       isCompetitionFinal:
         typeof query.isCompetitionFinal === 'boolean'
           ? {
