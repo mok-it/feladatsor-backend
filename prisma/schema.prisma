@@ -98,6 +98,30 @@ model ExerciseComment {
   updatedAt    DateTime @default(now()) @updatedAt
 }
 
+model ExerciseSheetComment {
+  id                            String                     @id @default(uuid())
+  comment                       String
+  // Comment can be on the sheet itself, a specific slot, or a specific exercise in a slot
+  exerciseSheetId               String?
+  exerciseSheet                 ExerciseSheet?             @relation(fields: [exerciseSheetId], references: [id])
+  exerciseSheetItemId           String?
+  exerciseSheetItem             ExerciseSheetItem?         @relation(fields: [exerciseSheetItemId], references: [id])
+  exerciseOnExerciseSheetItemId String?
+  exerciseOnExerciseSheetItem   ExerciseOnExerciseSheetItem? @relation(fields: [exerciseOnExerciseSheetItemId], references: [id])
+  // Creator
+  userId                        String
+  user                          User                       @relation(fields: [userId], references: [id])
+  contributors                  User[]                     @relation("SheetCommentContribution")
+  // Resolution tracking
+  isResolved                    Boolean                    @default(false)
+  resolvedAt                    DateTime?
+  resolvedById                  String?
+  resolvedBy                    User?                      @relation("SheetCommentResolver", fields: [resolvedById], references: [id])
+  resolutionNotes               String?
+  createdAt                     DateTime                   @default(now())
+  updatedAt                     DateTime                   @default(now()) @updatedAt
+}
+
 model ExerciseDifficulty {
   id         String   @id @default(uuid())
   exerciseId String
@@ -127,27 +151,30 @@ enum Role {
 }
 
 model User {
-  id                        String                   @id @default(uuid())
-  avatarUrl                 String?
-  customAvatarId            String?
-  name                      String
-  userName                  String                   @unique
-  email                     String
-  password                  String?
-  firebaseId                String?
-  roles                     Role[]
-  createdAt                 DateTime                 @default(now())
-  updatedAt                 DateTime                 @default(now())
-  exercises                 Exercise[]
-  ExerciseCheck             ExerciseCheck[]
-  ExerciseComment           ExerciseComment[]
-  ExerciseHistory           ExerciseHistory[]
-  ExerciseGroupSameLogic    ExerciseGroupSameLogic[]
-  ExerciseSheet             ExerciseSheet[]
-  contributedExercises      Exercise[]               @relation("ExerciseContribution")
-  contributedExerciseChecks ExerciseCheck[]          @relation("ExerciseCheckContribution")
-  contributedComment        ExerciseComment[]        @relation("CommentContribution")
-  ExcelExport               ExcelExport[]
+  id                            String                   @id @default(uuid())
+  avatarUrl                     String?
+  customAvatarId                String?
+  name                          String
+  userName                      String                   @unique
+  email                         String
+  password                      String?
+  firebaseId                    String?
+  roles                         Role[]
+  createdAt                     DateTime                 @default(now())
+  updatedAt                     DateTime                 @default(now())
+  exercises                     Exercise[]
+  ExerciseCheck                 ExerciseCheck[]
+  ExerciseComment               ExerciseComment[]
+  ExerciseHistory               ExerciseHistory[]
+  ExerciseGroupSameLogic        ExerciseGroupSameLogic[]
+  ExerciseSheet                 ExerciseSheet[]
+  contributedExercises          Exercise[]               @relation("ExerciseContribution")
+  contributedExerciseChecks     ExerciseCheck[]          @relation("ExerciseCheckContribution")
+  contributedComment            ExerciseComment[]        @relation("CommentContribution")
+  ExcelExport                   ExcelExport[]
+  ExerciseSheetComment          ExerciseSheetComment[]
+  contributedSheetComment       ExerciseSheetComment[]   @relation("SheetCommentContribution")
+  resolvedSheetComments         ExerciseSheetComment[]   @relation("SheetCommentResolver")
 }
 
 model ExerciseCheck {
@@ -199,17 +226,18 @@ enum ExerciseSheetStatus {
 }
 
 model ExerciseSheet {
-  id             String              @id @default(uuid())
+  id             String                 @id @default(uuid())
   name           String
-  status         ExerciseSheetStatus @default(DRAFT)
+  status         ExerciseSheetStatus    @default(DRAFT)
   sheetItems     ExerciseSheetItem[]
   talonExercises TalonItem[]
   createdById    String
-  createdBy      User                @relation(fields: [createdById], references: [id])
-  createdAt      DateTime            @default(now())
-  updatedAt      DateTime            @default(now()) @updatedAt
-  Exercise       Exercise?           @relation(fields: [exerciseId], references: [id])
+  createdBy      User                   @relation(fields: [createdById], references: [id])
+  createdAt      DateTime               @default(now())
+  updatedAt      DateTime               @default(now()) @updatedAt
+  Exercise       Exercise?              @relation(fields: [exerciseId], references: [id])
   exerciseId     String?
+  comments       ExerciseSheetComment[]
 }
 
 model ExerciseSheetItem {
@@ -219,15 +247,17 @@ model ExerciseSheetItem {
   exercises       ExerciseOnExerciseSheetItem[]
   ExerciseSheet   ExerciseSheet?                @relation(fields: [exerciseSheetId], references: [id])
   exerciseSheetId String?
+  comments        ExerciseSheetComment[]
 }
 
 model ExerciseOnExerciseSheetItem {
-  id                  String            @id @default(uuid())
+  id                  String                 @id @default(uuid())
   exerciseId          String
-  exercise            Exercise          @relation(fields: [exerciseId], references: [id])
+  exercise            Exercise               @relation(fields: [exerciseId], references: [id])
   exerciseSheetItemId String
-  exerciseSheetItem   ExerciseSheetItem @relation(fields: [exerciseSheetItemId], references: [id])
+  exerciseSheetItem   ExerciseSheetItem      @relation(fields: [exerciseSheetItemId], references: [id])
   order               Int
+  comments            ExerciseSheetComment[]
 }
 
 model TalonItem {
