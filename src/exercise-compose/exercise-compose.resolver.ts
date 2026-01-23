@@ -34,8 +34,16 @@ export class ExerciseComposeResolver {
   @Query('exerciseSheets')
   @UseGuards(RolesGuard)
   @Roles('EXERCISE_SHEET')
-  exerciseSheets() {
-    return this.exerciseComposeService.getExerciseSheets();
+  exerciseSheets(
+    @Args('searchQuery') searchQuery: string,
+    @Args('skip') skip: number,
+    @Args('take') take: number,
+  ) {
+    return this.exerciseComposeService.getExerciseSheets(
+      searchQuery,
+      skip,
+      take,
+    );
   }
 
   @Query('exerciseSheet')

@@ -1,3 +1,4 @@
+
 /*
  * -------------------------------------------------------
  * THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
@@ -227,7 +228,7 @@ export interface IQuery {
     listExcelExports(): ExportResult[] | Promise<ExportResult[]>;
     exerciseComment(id: string): Nullable<ExerciseComment> | Promise<Nullable<ExerciseComment>>;
     commentsByExercise(id: string): ExerciseComment[] | Promise<ExerciseComment[]>;
-    exerciseSheets(): ExerciseSheet[] | Promise<ExerciseSheet[]>;
+    exerciseSheets(searchQuery?: Nullable<string>, skip?: Nullable<number>, take?: Nullable<number>): ExerciseSheet[] | Promise<ExerciseSheet[]>;
     exerciseSheet(id: string): Nullable<ExerciseSheet> | Promise<Nullable<ExerciseSheet>>;
     sameLogicExerciseGroups(): SameLogicExerciseGroup[] | Promise<SameLogicExerciseGroup[]>;
     exerciseHistoryByExercise(id: string): ExerciseHistory[] | Promise<ExerciseHistory[]>;

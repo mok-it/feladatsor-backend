@@ -11,9 +11,19 @@ import { ExerciseSheetStatus, Prisma, User } from '@prisma/client';
 export class ExerciseComposeService {
   constructor(private readonly prismaService: PrismaService) {}
 
-  getExerciseSheets() {
+  getExerciseSheets(searchQuery?: string, skip?: number, take?: number) {
     return this.prismaService.exerciseSheet.findMany({
       include: { sheetItems: true, talonExercises: true },
+      where: searchQuery
+        ? {
+            name: {
+              contains: searchQuery,
+              mode: 'insensitive',
+            },
+          }
+        : {},
+      skip: skip,
+      take: take,
       orderBy: {
         createdAt: 'desc',
       },

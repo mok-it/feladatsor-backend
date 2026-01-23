@@ -1,5 +1,5 @@
 type Query {
-  exerciseSheets: [ExerciseSheet!]!
+  exerciseSheets(searchQuery: String, skip: Int, take: Int): [ExerciseSheet!]!
   exerciseSheet(id: ID!): ExerciseSheet
 }
 
@@ -45,7 +45,7 @@ enum ExerciseSheetStatus {
 type ExerciseSheet {
   id: ID!
   name: String!
-  status: ExerciseSheetStatus! 
+  status: ExerciseSheetStatus!
   sheetItems: [ExerciseSheetItem!]!
   talonItems: [OrderedExercise!]!
   createdBy: User!
