@@ -119,6 +119,7 @@ export interface CreateExerciseSheetCommentInput {
     exerciseSheetId?: Nullable<string>;
     exerciseSheetItemId?: Nullable<string>;
     exerciseOnExerciseSheetItemId?: Nullable<string>;
+    contributorIds?: Nullable<string[]>;
 }
 
 export interface ExerciseSearchQuery {

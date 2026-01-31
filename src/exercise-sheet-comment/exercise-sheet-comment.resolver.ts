@@ -7,12 +7,20 @@ import {
   Parent,
 } from '@nestjs/graphql';
 import { ExerciseSheetCommentService } from './exercise-sheet-comment.service';
-import { CreateExerciseSheetCommentInput } from '../graphql/graphqlTypes';
+import {
+  CreateExerciseSheetCommentInput,
+  OrderedExercise,
+} from '../graphql/graphqlTypes';
 import { UseGuards } from '@nestjs/common';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { CurrentUser } from '../auth/decorators/user.auth.decorator';
-import { User, ExerciseSheetComment } from '@prisma/client';
+import {
+  User,
+  ExerciseSheetComment,
+  ExerciseSheetItem,
+  ExerciseSheet,
+} from '@prisma/client';
 import { UserService } from '../user/user.service';
 
 @Resolver('ExerciseSheetComment')
@@ -40,7 +48,11 @@ export class ExerciseSheetCommentResolver {
     @Args('notes') notes: string,
     @CurrentUser() user: User,
   ) {
-    return this.exerciseSheetCommentService.resolve(id, notes, user);
+    return this.exerciseSheetCommentService.resolveSheetComment(
+      id,
+      notes,
+      user,
+    );
   }
 
   @Mutation('deleteExerciseSheetComment')
@@ -76,7 +88,7 @@ export class ExerciseSheetExtensionResolver {
   ) {}
 
   @ResolveField('comments')
-  comments(@Parent() sheet: any) {
+  comments(@Parent() sheet: ExerciseSheet) {
     return this.exerciseSheetCommentService.getCommentsForSheet(sheet.id);
   }
 }
@@ -88,7 +100,7 @@ export class ExerciseSheetItemExtensionResolver {
   ) {}
 
   @ResolveField('comments')
-  comments(@Parent() item: any) {
+  comments(@Parent() item: ExerciseSheetItem) {
     return this.exerciseSheetCommentService.getCommentsForSheetItem(item.id);
   }
 }
@@ -100,7 +112,7 @@ export class OrderedExerciseExtensionResolver {
   ) {}
 
   @ResolveField('comments')
-  comments(@Parent() orderedExercise: any) {
+  comments(@Parent() orderedExercise: OrderedExercise) {
     if (!orderedExercise.id) return [];
     return this.exerciseSheetCommentService.getCommentsForExerciseOnSheet(
       orderedExercise.id,

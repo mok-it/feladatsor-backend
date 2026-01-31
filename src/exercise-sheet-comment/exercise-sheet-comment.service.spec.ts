@@ -93,7 +93,11 @@ describe('ExerciseSheetCommentService', () => {
         expectedResult,
       );
 
-      const result = await service.resolve(commentId, notes, mockUser);
+      const result = await service.resolveSheetComment(
+        commentId,
+        notes,
+        mockUser,
+      );
 
       expect(prisma.exerciseSheetComment.update).toHaveBeenCalledWith({
         where: { id: commentId },

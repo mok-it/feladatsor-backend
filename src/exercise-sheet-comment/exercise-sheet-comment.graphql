@@ -20,6 +20,7 @@ input CreateExerciseSheetCommentInput {
   exerciseSheetId: ID
   exerciseSheetItemId: ID
   exerciseOnExerciseSheetItemId: ID
+  contributorIds: [ID!]
 }
 
 type Mutation {

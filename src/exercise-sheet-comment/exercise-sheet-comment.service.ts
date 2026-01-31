@@ -11,16 +11,29 @@ export class ExerciseSheetCommentService {
     return this.prismaService.exerciseSheetComment.create({
       data: {
         comment: input.comment,
-        userId: user.id,
-        exerciseSheetId: input.exerciseSheetId || undefined,
-        exerciseSheetItemId: input.exerciseSheetItemId || undefined,
-        exerciseOnExerciseSheetItemId:
-          input.exerciseOnExerciseSheetItemId || undefined,
+        user: {
+          connect: { id: user.id },
+        },
+        exerciseSheet: input.exerciseSheetId
+          ? { connect: { id: input.exerciseSheetId } }
+          : undefined,
+        exerciseSheetItem: input.exerciseSheetItemId
+          ? { connect: { id: input.exerciseSheetItemId } }
+          : undefined,
+        exerciseOnExerciseSheetItem: input.exerciseOnExerciseSheetItemId
+          ? { connect: { id: input.exerciseOnExerciseSheetItemId } }
+          : undefined,
+        contributors:
+          input.contributorIds && input.contributorIds.length > 0
+            ? {
+                connect: input.contributorIds.map((id) => ({ id })),
+              }
+            : undefined,
       },
     });
   }
 
-  async resolve(id: string, notes: string | undefined, user: User) {
+  async resolveSheetComment(id: string, notes: string | undefined, user: User) {
     return this.prismaService.exerciseSheetComment.update({
       where: { id },
       data: {
