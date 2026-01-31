@@ -115,6 +115,14 @@ export interface SameLogicExerciseGroupInput {
     description?: Nullable<string>;
 }
 
+export interface CreateExerciseSheetCommentInput {
+    comment: string;
+    exerciseSheetId?: Nullable<string>;
+    exerciseSheetItemId?: Nullable<string>;
+    exerciseOnExerciseSheetItemId?: Nullable<string>;
+    contributorIds?: Nullable<string[]>;
+}
+
 export interface ExerciseSearchQuery {
     skip: number;
     take: number;
@@ -212,6 +220,9 @@ export interface IMutation {
     updateExerciseSheet(id: string, sheetData: UpdateExerciseSheetInput): ExerciseSheet | Promise<ExerciseSheet>;
     deleteExerciseSheet(id: string): boolean | Promise<boolean>;
     createSameLogicExerciseGroup(data?: Nullable<SameLogicExerciseGroupInput>): SameLogicExerciseGroup | Promise<SameLogicExerciseGroup>;
+    createExerciseSheetComment(input: CreateExerciseSheetCommentInput): ExerciseSheetComment | Promise<ExerciseSheetComment>;
+    resolveExerciseSheetComment(id: string, notes?: Nullable<string>): ExerciseSheetComment | Promise<ExerciseSheetComment>;
+    deleteExerciseSheetComment(id: string): boolean | Promise<boolean>;
     createExerciseTag(name: string, parentId?: Nullable<string>): ExerciseTag | Promise<ExerciseTag>;
     updateExerciseTag(id: string, name: string): ExerciseTag | Promise<ExerciseTag>;
     deleteExerciseTag(id: string): boolean | Promise<boolean>;
@@ -233,6 +244,7 @@ export interface IQuery {
     sameLogicExerciseGroups(): SameLogicExerciseGroup[] | Promise<SameLogicExerciseGroup[]>;
     exerciseHistoryByExercise(id: string): ExerciseHistory[] | Promise<ExerciseHistory[]>;
     exerciseHistoryByField(exerciseId: string, field: string): ExerciseHistory[] | Promise<ExerciseHistory[]>;
+    exerciseSheetComments(sheetId: string): ExerciseSheetComment[] | Promise<ExerciseSheetComment[]>;
     exerciseTags(): ExerciseTag[] | Promise<ExerciseTag[]>;
     exerciseTag(id: string): Nullable<ExerciseTag> | Promise<Nullable<ExerciseTag>>;
     flatExerciseTags(): ExerciseTag[] | Promise<ExerciseTag[]>;
@@ -290,6 +302,7 @@ export interface ExerciseSheet {
     createdBy: User;
     createdAt: string;
     updatedAt: string;
+    comments: ExerciseSheetComment[];
 }
 
 export interface ExerciseSheetItem {
@@ -297,11 +310,14 @@ export interface ExerciseSheetItem {
     ageGroup: ExerciseAgeGroup;
     level: number;
     exercises: OrderedExercise[];
+    comments: ExerciseSheetComment[];
 }
 
 export interface OrderedExercise {
+    id?: Nullable<string>;
     order: number;
     exercise: Exercise;
+    comments: ExerciseSheetComment[];
 }
 
 export interface SameLogicExerciseGroup {
@@ -335,6 +351,21 @@ export interface ExerciseHistory {
     createdAt: string;
     updatedAt: string;
     fieldType: ExerciseHistoryFieldType;
+}
+
+export interface ExerciseSheetComment {
+    id: string;
+    comment: string;
+    user: User;
+    createdAt: string;
+    updatedAt: string;
+    exerciseSheetId?: Nullable<string>;
+    exerciseSheetItemId?: Nullable<string>;
+    exerciseOnExerciseSheetItemId?: Nullable<string>;
+    isResolved: boolean;
+    resolvedAt?: Nullable<string>;
+    resolvedBy?: Nullable<User>;
+    resolutionNotes?: Nullable<string>;
 }
 
 export interface ExerciseTag {
