@@ -37,7 +37,6 @@ export class ExerciseSheetCommentService {
     return this.prismaService.exerciseSheetComment.update({
       where: { id },
       data: {
-        isResolved: true,
         resolvedAt: new Date(),
         resolvedById: user.id,
         resolutionNotes: notes,

@@ -85,7 +85,6 @@ describe('ExerciseSheetCommentService', () => {
 
       const expectedResult = {
         id: commentId,
-        isResolved: true,
         resolvedById: mockUser.id,
         resolutionNotes: notes,
       };
@@ -103,7 +102,6 @@ describe('ExerciseSheetCommentService', () => {
       expect(prisma.exerciseSheetComment.update).toHaveBeenCalledWith({
         where: { id: commentId },
         data: {
-          isResolved: true,
           resolvedAt: expect.any(Date),
           resolvedById: mockUser.id,
           resolutionNotes: notes,

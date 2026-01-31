@@ -79,6 +79,11 @@ export class ExerciseSheetCommentResolver {
     if (!comment.resolvedById) return null;
     return this.userService.getUserById(comment.resolvedById);
   }
+
+  @ResolveField('isResolved')
+  isResolved(@Parent() comment: ExerciseSheetComment): boolean {
+    return !!comment.resolvedAt;
+  }
 }
 
 @Resolver('ExerciseSheet')
