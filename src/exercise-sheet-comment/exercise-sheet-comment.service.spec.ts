@@ -67,10 +67,11 @@ describe('ExerciseSheetCommentService', () => {
       expect(prisma.exerciseSheetComment.create).toHaveBeenCalledWith({
         data: {
           comment: input.comment,
-          userId: mockUser.id,
-          exerciseSheetId: 'sheet-1',
-          exerciseSheetItemId: undefined,
-          exerciseOnExerciseSheetItemId: undefined,
+          user: { connect: { id: mockUser.id } },
+          exerciseSheet: { connect: { id: 'sheet-1' } },
+          exerciseSheetItem: undefined,
+          exerciseOnExerciseSheetItem: undefined,
+          contributors: undefined,
         },
       });
       expect(result).toEqual(expectedResult);
