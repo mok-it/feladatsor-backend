@@ -14,12 +14,14 @@ type Mutation {
 
 input ExerciseSheetInput {
   name: String!
+  maxExercisesPerLevel: [Int!]
   sheetItems: [ExerciseSheetItemInput!]
 }
 
 input UpdateExerciseSheetInput {
   name: String
   status: ExerciseSheetStatus
+  maxExercisesPerLevel: [Int!]
   sheetItems: [ExerciseSheetItemInput!]
   talonItems: [OrderedExerciseInput!]
 }
@@ -46,6 +48,7 @@ type ExerciseSheet {
   id: ID!
   name: String!
   status: ExerciseSheetStatus!
+  maxExercisesPerLevel: [Int!]!
   sheetItems: [ExerciseSheetItem!]!
   talonItems: [OrderedExercise!]!
   createdBy: User!
