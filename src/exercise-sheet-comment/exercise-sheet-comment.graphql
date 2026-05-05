@@ -1,0 +1,46 @@
+type ExerciseSheetComment {
+  id: ID!
+  comment: String!
+  user: User!
+  createdAt: String!
+  updatedAt: String!
+  
+  exerciseSheetId: ID
+  exerciseSheetItemId: ID
+  exerciseOnExerciseSheetItemId: ID
+  
+  isResolved: Boolean!
+  resolvedAt: String
+  resolvedBy: User
+  resolutionNotes: String
+}
+
+input CreateExerciseSheetCommentInput {
+  comment: String!
+  exerciseSheetId: ID
+  exerciseSheetItemId: ID
+  exerciseOnExerciseSheetItemId: ID
+  contributorIds: [ID!]
+}
+
+type Mutation {
+  createExerciseSheetComment(input: CreateExerciseSheetCommentInput!): ExerciseSheetComment!
+  resolveExerciseSheetComment(id: ID!, notes: String): ExerciseSheetComment!
+  deleteExerciseSheetComment(id: ID!): Boolean!
+}
+
+type Query {
+  exerciseSheetComments(sheetId: ID!): [ExerciseSheetComment!]!
+}
+
+extend type ExerciseSheet {
+  comments: [ExerciseSheetComment!]!
+}
+
+extend type ExerciseSheetItem {
+  comments: [ExerciseSheetComment!]!
+}
+
+extend type OrderedExercise {
+  comments: [ExerciseSheetComment!]!
+}

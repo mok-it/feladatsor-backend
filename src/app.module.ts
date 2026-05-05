@@ -20,6 +20,7 @@ import { ExerciseGroupModule } from './exercise-group/exercise-group.module';
 import { ExerciseComposeModule } from './exercise-compose/exercise-compose.module';
 import { StatModule } from './stat/stat.module';
 import { FunkyPoolModule } from './funky-pool/funky-pool.module';
+import { ExerciseSheetCommentModule } from './exercise-sheet-comment/exercise-sheet-comment.module';
 
 @Module({
   imports: [
@@ -45,6 +46,7 @@ import { FunkyPoolModule } from './funky-pool/funky-pool.module';
     ExerciseComposeModule,
     StatModule,
     FunkyPoolModule,
+    ExerciseSheetCommentModule,
   ],
   controllers: [AppController],
   providers: [AppService],

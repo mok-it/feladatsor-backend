@@ -64,6 +64,7 @@ type ExerciseSheetItem {
 }
 
 type OrderedExercise {
+  id: ID
   order: Int!
   exercise: Exercise!
 }

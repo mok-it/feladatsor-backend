@@ -116,6 +116,14 @@ export interface SameLogicExerciseGroupInput {
   description?: Nullable<string>;
 }
 
+export interface CreateExerciseSheetCommentInput {
+    comment: string;
+    exerciseSheetId?: Nullable<string>;
+    exerciseSheetItemId?: Nullable<string>;
+    exerciseOnExerciseSheetItemId?: Nullable<string>;
+    contributorIds?: Nullable<string[]>;
+}
+
 export interface ExerciseSearchQuery {
   skip: number;
   take: number;
@@ -237,7 +245,9 @@ export interface IMutation {
   createSameLogicExerciseGroup(
     data?: Nullable<SameLogicExerciseGroupInput>,
   ): SameLogicExerciseGroup | Promise<SameLogicExerciseGroup>;
-  createExerciseTag(
+  createExerciseSheetComment(input: CreateExerciseSheetCommentInput): ExerciseSheetComment | Promise<ExerciseSheetComment>;
+    resolveExerciseSheetComment(id: string, notes?: Nullable<string>): ExerciseSheetComment | Promise<ExerciseSheetComment>;
+    deleteExerciseSheetComment(id: string): boolean | Promise<boolean>;createExerciseTag(
     name: string,
     parentId?: Nullable<string>,
   ): ExerciseTag | Promise<ExerciseTag>;
@@ -292,7 +302,7 @@ export interface IQuery {
     exerciseId: string,
     field: string,
   ): ExerciseHistory[] | Promise<ExerciseHistory[]>;
-  exerciseTags(): ExerciseTag[] | Promise<ExerciseTag[]>;
+  exerciseSheetComments(sheetId: string): ExerciseSheetComment[] | Promise<ExerciseSheetComment[]>;exerciseTags(): ExerciseTag[] | Promise<ExerciseTag[]>;
   exerciseTag(
     id: string,
   ): Nullable<ExerciseTag> | Promise<Nullable<ExerciseTag>>;
@@ -359,6 +369,7 @@ export interface ExerciseSheet {
   createdBy: User;
   createdAt: string;
   updatedAt: string;
+    comments: ExerciseSheetComment[];
 }
 
 export interface ExerciseSheetItem {
@@ -366,11 +377,12 @@ export interface ExerciseSheetItem {
   ageGroup: ExerciseAgeGroup;
   level: number;
   exercises: OrderedExercise[];
+    comments: ExerciseSheetComment[];
 }
 
 export interface OrderedExercise {
-  order: number;
-  exercise: Exercise;
+  id?: Nullable<string>;order: number;
+  exercise: Exercise;comments: ExerciseSheetComment[];
 }
 
 export interface SameLogicExerciseGroup {
@@ -404,6 +416,21 @@ export interface ExerciseHistory {
   createdAt: string;
   updatedAt: string;
   fieldType: ExerciseHistoryFieldType;
+}
+
+export interface ExerciseSheetComment {
+    id: string;
+    comment: string;
+    user: User;
+    createdAt: string;
+    updatedAt: string;
+    exerciseSheetId?: Nullable<string>;
+    exerciseSheetItemId?: Nullable<string>;
+    exerciseOnExerciseSheetItemId?: Nullable<string>;
+    isResolved: boolean;
+    resolvedAt?: Nullable<string>;
+    resolvedBy?: Nullable<User>;
+    resolutionNotes?: Nullable<string>;
 }
 
 export interface ExerciseTag {
