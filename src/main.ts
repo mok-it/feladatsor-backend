@@ -24,7 +24,13 @@ async function bootstrap() {
     express.static(config.fileStorage.generatedArtifactFolder, {}),
   );
 
-  await app.get(UserService).upsertTechnicalUser();
+  // Upsert technical user in background — don't block server startup
+  app
+    .get(UserService)
+    .upsertTechnicalUser()
+    .catch((err) =>
+      logger.warn(`Failed to upsert technical user: ${err.message}`),
+    );
 
   const { port, host } = config.server;
   logger.log(`Graphql running on ${config.server.publicHost}/graphql`);

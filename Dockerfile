@@ -1,5 +1,5 @@
 # ⚒ Build the builder image
-FROM node:18 AS builder
+FROM node:18-alpine AS builder
 
 # 🤫 Silence npm
 ENV NPM_CONFIG_LOGLEVEL=error
@@ -7,15 +7,18 @@ ENV NPM_CONFIG_LOGLEVEL=error
 # 👇 Create working directory and assign ownership
 WORKDIR /code
 
-# 👇 Copy config files and source
-COPY package*.json tsconfig.json ./
+# 👇 Copy package files first for better layer caching
+COPY package*.json tsconfig.json tsconfig.build.json nest-cli.json ./
 COPY prisma ./prisma/
-COPY src ./src
 
-# 👇 Install deps and build source
+# 👇 Install deps
 RUN npm ci
 
+# 👇 Generate Prisma client
 RUN npm run db:generate
+
+# 👇 Copy source and build
+COPY src ./src
 RUN npm run build
 
 FROM builder AS prodbuild
@@ -23,19 +26,22 @@ FROM builder AS prodbuild
 RUN npm prune --production
 
 # 🚀 Build the runner image
-FROM node:18-slim AS runner
+FROM node:18-alpine AS runner
 
 # Add openssl and tini
-RUN apt -qy update && apt -qy install openssl tini
+RUN apk add --no-cache openssl tini
 
 # Tini is now available at /sbin/tini
-ENTRYPOINT ["/usr/bin/tini", "--"]
+ENTRYPOINT ["/sbin/tini", "--"]
 
 # 👇 Create working directory and assign ownership
 WORKDIR /code
 
-# 👇 Copy the built app from the prodbuild image
-COPY --from=prodbuild /code ./
+# 👇 Copy only what's needed for production
+COPY --from=prodbuild /code/dist ./dist
+COPY --from=prodbuild /code/node_modules ./node_modules
+COPY --from=prodbuild /code/package.json ./
+COPY --from=prodbuild /code/prisma ./prisma
 
 # ⚙️ Configure the default command
-CMD ["npm", "run", "start:prod"]
+CMD ["node", "dist/main"]

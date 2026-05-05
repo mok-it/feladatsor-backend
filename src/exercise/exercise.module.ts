@@ -8,7 +8,6 @@ import { ImageModule } from '../image/image.module';
 import { ExerciseCommentModule } from '../exercise-comment/exercise-comment.module';
 import { UserModule } from '../user/user.module';
 import { ExerciseHistoryModule } from '../exercise-history/exercise-history.module';
-import { PrismaService } from '../prisma/PrismaService';
 import { ExerciseGroupModule } from '../exercise-group/exercise-group.module';
 
 @Module({
@@ -21,12 +20,7 @@ import { ExerciseGroupModule } from '../exercise-group/exercise-group.module';
     UserModule,
     ExerciseHistoryModule,
   ],
-  providers: [
-    ExerciseResolver,
-    ExerciseService,
-    ExerciseSearchService,
-    PrismaService,
-  ],
+  providers: [ExerciseResolver, ExerciseService, ExerciseSearchService],
   exports: [ExerciseService, ExerciseSearchService],
 })
 export class ExerciseModule {}

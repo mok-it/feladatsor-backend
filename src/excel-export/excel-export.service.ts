@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import * as ExcelJS from 'exceljs';
-import { ExcelExport, PrismaClient } from '@prisma/client';
+import { ExcelExport } from '@prisma/client';
 import { Config } from '../config/config';
 import * as fs from 'fs';
 import * as path from 'node:path';
+import { PrismaService } from '../prisma/PrismaService';
 
 declare global {
   interface BigInt {
@@ -18,11 +18,12 @@ BigInt.prototype.toJSON = function () {
 @Injectable()
 export class ExcelExportService {
   constructor(
-    private readonly prismaClient: PrismaClient,
+    private readonly prismaClient: PrismaService,
     private readonly config: Config,
   ) {}
 
   async exportExcel(userId: string) {
+    const ExcelJS = await import('exceljs');
     const workbook = new ExcelJS.Workbook();
     let tableNames = (await this.prismaClient
       .$queryRaw`SELECT table_name FROM information_schema.tables WHERE table_schema = 'public'

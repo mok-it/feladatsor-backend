@@ -21,12 +21,15 @@ import { ExerciseComposeModule } from './exercise-compose/exercise-compose.modul
 import { StatModule } from './stat/stat.module';
 import { FunkyPoolModule } from './funky-pool/funky-pool.module';
 import { ExerciseSheetCommentModule } from './exercise-sheet-comment/exercise-sheet-comment.module';
+import { PrismaModule } from './prisma/prisma.module';
+import * as path from 'node:path';
 
 @Module({
   imports: [
+    PrismaModule,
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
-      typePaths: ['./**/*.graphql'],
+      typePaths: [path.join(__dirname, '**/*.graphql')],
       playground: false,
       plugins: [ApolloServerPluginLandingPageLocalDefault()],
     }),

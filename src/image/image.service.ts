@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import * as sharp from 'sharp';
+import type * as SharpType from 'sharp';
 import * as fs from 'fs';
 import { Image as GraphQLImage } from '../graphql/graphqlTypes';
 
@@ -15,6 +15,10 @@ export class ImageService {
     private readonly prisma: PrismaService,
     private readonly config: Config,
   ) {}
+
+  private async getSharp(): Promise<typeof SharpType> {
+    return (await import('sharp')).default;
+  }
 
   async saveImageFromURL(url: string) {
     const isShrepointUrl = url.includes(
@@ -45,6 +49,7 @@ export class ImageService {
   }
 
   async processFile(file: Express.Multer.File) {
+    const sharp = await this.getSharp();
     const image = sharp(file.buffer);
 
     const webpImage = await image
@@ -74,7 +79,7 @@ export class ImageService {
 
   private async storeFileMeta(
     file: Express.Multer.File,
-    sharpMeta: sharp.Metadata,
+    sharpMeta: SharpType.Metadata,
   ) {
     const savedImageMeta = await this.prisma.image.create({
       data: {

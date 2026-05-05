@@ -5,7 +5,6 @@ import {
   HistoryValueResolver,
 } from './exercise-history.resolver';
 import { UserModule } from '../user/user.module';
-import { PrismaService } from '../prisma/PrismaService';
 import { ImageModule } from '../image/image.module';
 import { ExerciseTagModule } from '../exercise-tag/exercise-tag.module';
 
@@ -15,7 +14,6 @@ import { ExerciseTagModule } from '../exercise-tag/exercise-tag.module';
     ExerciseHistoryResolver,
     HistoryValueResolver,
     ExerciseHistoryService,
-    PrismaService,
   ],
   exports: [ExerciseHistoryService],
 })

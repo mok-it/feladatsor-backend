@@ -3,13 +3,11 @@ import { LoadOldExcelService } from './load-old-excel.service';
 import { LoadOldExcelController } from './load-old-excel.controller';
 import { MulterModule } from '@nestjs/platform-express';
 import { Config } from '../config/config';
-import { PrismaService } from '../prisma/PrismaService';
 import { UserModule } from '../user/user.module';
 import { ExerciseModule } from '../exercise/exercise.module';
 import { ImageModule } from '../image/image.module';
 import { ExerciseCommentModule } from '../exercise-comment/exercise-comment.module';
 import { ExerciseGroupModule } from '../exercise-group/exercise-group.module';
-import { ExerciseCheckService } from '../exercise-check/exercise-check.service';
 import { ExerciseCheckModule } from '../exercise-check/exercise-check.module';
 
 @Module({
@@ -24,6 +22,6 @@ import { ExerciseCheckModule } from '../exercise-check/exercise-check.module';
     ExerciseCheckModule,
   ],
   controllers: [LoadOldExcelController],
-  providers: [LoadOldExcelService, PrismaService],
+  providers: [LoadOldExcelService],
 })
 export class LoadOldExcelModule {}

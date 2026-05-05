@@ -6,7 +6,6 @@ import {
   ExerciseSheetItemExtensionResolver,
   OrderedExerciseExtensionResolver,
 } from './exercise-sheet-comment.resolver';
-import { PrismaService } from '../prisma/PrismaService';
 import { UserModule } from '../user/user.module';
 
 @Module({
@@ -14,7 +13,6 @@ import { UserModule } from '../user/user.module';
   providers: [
     ExerciseSheetCommentService,
     ExerciseSheetCommentResolver,
-    PrismaService,
     ExerciseSheetExtensionResolver,
     ExerciseSheetItemExtensionResolver,
     OrderedExerciseExtensionResolver,

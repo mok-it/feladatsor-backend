@@ -1,6 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Config } from '../config/config';
-import * as ExcelJS from 'exceljs';
 import { PrismaService } from '../prisma/PrismaService';
 import { UserService } from '../user/user.service';
 import { ExerciseService } from '../exercise/exercise.service';
@@ -58,6 +57,7 @@ export class LoadOldExcelService {
     const technicalUser = this.technicalUsers[0];
     const records: any[][] = [];
 
+    const ExcelJS = await import('exceljs');
     const workbook = new ExcelJS.Workbook();
     await workbook.xlsx.load(file.buffer);
 
@@ -156,9 +156,8 @@ export class LoadOldExcelService {
           }
         }
 
-        const { imgRes, failedToDownloadImage } = await this.tryToDownloadImage(
-          record,
-        );
+        const { imgRes, failedToDownloadImage } =
+          await this.tryToDownloadImage(record);
 
         const { createdByUser, contributors, notFoundUserNames } =
           await this.getExerciseUsersByExcelRecord(record);
