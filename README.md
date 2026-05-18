@@ -79,3 +79,10 @@ $ npm run start:prod
 Apollo Studio is the perfect tool to run queries and migrations against the database.
 
 It starts to run when you start the backend. It runs on `http://localhost:3000/graphql`, or whatever port you specified in the `.env` file. When running the backend, the url should also displayed in the console, e.g. `Graphql running on http://localhost:3000/graphql`
+
+## Logging in
+
+If you want to log in to the backend, you can use the following credentials on the frontend:
+
+username: `technical_user`
+password: `technical_user_password`
