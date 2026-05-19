@@ -252,7 +252,7 @@ export class ExerciseService {
         //Null means an explicit delete
         //Data is present means modify the data
         if (data.difficulty !== undefined) {
-          tx.exerciseDifficulty.deleteMany({
+          await tx.exerciseDifficulty.deleteMany({
             where: {
               exerciseId: id,
             },
