@@ -95,10 +95,44 @@ export class ExerciseComposeService {
       // Validate configuration changes with existing data
       this.validateSheetConfiguration(sheetData, existingSheet);
 
-      // Create new sheet items if provided
+      // Keep existing sheet item and ordered exercise IDs stable so comments
+      // remain attached when the composer is saved.
       const sheetItems = sheetData.sheetItems
-        ? await this.createSheetItems(tx, sheetData.sheetItems)
+        ? await this.syncSheetItems(
+            tx,
+            id,
+            sheetData.sheetItems,
+            existingSheet.sheetItems,
+          )
         : undefined;
+
+      if (sheetData.talonItems) {
+        const exerciseIds = sheetData.talonItems.map((item) => item.exerciseID);
+
+        await tx.talonItem.deleteMany({
+          where: {
+            exerciseSheetId: id,
+            exerciseId: { notIn: exerciseIds },
+          },
+        });
+
+        for (const item of sheetData.talonItems) {
+          await tx.talonItem.upsert({
+            where: {
+              exerciseId_exerciseSheetId: {
+                exerciseId: item.exerciseID,
+                exerciseSheetId: id,
+              },
+            },
+            update: { order: item.order },
+            create: {
+              exerciseId: item.exerciseID,
+              exerciseSheetId: id,
+              order: item.order,
+            },
+          });
+        }
+      }
 
       return tx.exerciseSheet.update({
         where: { id },
@@ -108,15 +142,6 @@ export class ExerciseComposeService {
           maxExercisesPerLevel: sheetData.maxExercisesPerLevel ?? undefined,
           sheetItems: sheetItems
             ? { set: sheetItems.map((item) => ({ id: item.id })) }
-            : undefined,
-          talonExercises: sheetData.talonItems
-            ? {
-                deleteMany: {},
-                create: sheetData.talonItems.map((item) => ({
-                  exerciseId: item.exerciseID,
-                  order: item.order,
-                })),
-              }
             : undefined,
         },
         include: { sheetItems: true, talonExercises: true },
@@ -239,6 +264,136 @@ export class ExerciseComposeService {
         });
       }),
     );
+  }
+
+  private async syncSheetItems(
+    tx: Prisma.TransactionClient,
+    exerciseSheetId: string,
+    sheetItems: ExerciseSheetItemInput[],
+    existingSheetItems: (ExerciseSheetItem & {
+      exercises: ExerciseOnExerciseSheetItem[];
+    })[],
+  ) {
+    const existingItemsByKey = new Map(
+      existingSheetItems.map((item) => [
+        `${item.ageGroup}-${item.level}`,
+        item,
+      ]),
+    );
+    const retainedSheetItemIds = new Set<string>();
+    const syncedSheetItems: {
+      id: string;
+      input: ExerciseSheetItemInput;
+    }[] = [];
+
+    for (const sheetItem of sheetItems) {
+      const key = `${sheetItem.ageGroup}-${sheetItem.level}`;
+      const existingItem = existingItemsByKey.get(key);
+
+      const syncedItem = existingItem
+        ? await tx.exerciseSheetItem.update({
+            where: { id: existingItem.id },
+            data: {
+              ageGroup: sheetItem.ageGroup,
+              level: sheetItem.level,
+            },
+          })
+        : await tx.exerciseSheetItem.create({
+            data: {
+              ageGroup: sheetItem.ageGroup,
+              level: sheetItem.level,
+              ExerciseSheet: { connect: { id: exerciseSheetId } },
+            },
+          });
+
+      retainedSheetItemIds.add(syncedItem.id);
+      syncedSheetItems.push({ id: syncedItem.id, input: sheetItem });
+    }
+
+    const existingExercises = existingSheetItems.flatMap(
+      (item) => item.exercises,
+    );
+    const existingExercisesById = new Map(
+      existingExercises.map((exercise) => [exercise.id, exercise]),
+    );
+    const fallbackExercisesByTarget = new Map<
+      string,
+      ExerciseOnExerciseSheetItem[]
+    >();
+
+    for (const sheetItem of existingSheetItems) {
+      for (const exercise of [...sheetItem.exercises].sort(
+        (left, right) => left.order - right.order,
+      )) {
+        const key = `${sheetItem.id}:${exercise.exerciseId}`;
+        const available = fallbackExercisesByTarget.get(key) ?? [];
+        available.push(exercise);
+        fallbackExercisesByTarget.set(key, available);
+      }
+    }
+
+    const retainedExerciseIds = new Set<string>();
+
+    for (const sheetItem of syncedSheetItems) {
+      for (const exercise of sheetItem.input.exercises) {
+        const requestedExercise = exercise.id
+          ? existingExercisesById.get(exercise.id)
+          : undefined;
+        const fallbackKey = `${sheetItem.id}:${exercise.exerciseID}`;
+        const fallbackExercises =
+          fallbackExercisesByTarget.get(fallbackKey) ?? [];
+        const fallbackExercise = fallbackExercises.find(
+          (candidate) => !retainedExerciseIds.has(candidate.id),
+        );
+        const existingExercise =
+          requestedExercise && !retainedExerciseIds.has(requestedExercise.id)
+            ? requestedExercise
+            : fallbackExercise;
+
+        if (existingExercise) {
+          await tx.exerciseOnExerciseSheetItem.update({
+            where: { id: existingExercise.id },
+            data: {
+              exerciseId: exercise.exerciseID,
+              exerciseSheetItemId: sheetItem.id,
+              order: exercise.order,
+            },
+          });
+          retainedExerciseIds.add(existingExercise.id);
+        } else {
+          const createdExercise = await tx.exerciseOnExerciseSheetItem.create({
+            data: {
+              exerciseId: exercise.exerciseID,
+              exerciseSheetItemId: sheetItem.id,
+              order: exercise.order,
+            },
+          });
+          retainedExerciseIds.add(createdExercise.id);
+        }
+      }
+    }
+
+    const removedExerciseIds = existingExercises
+      .filter((exercise) => !retainedExerciseIds.has(exercise.id))
+      .map((exercise) => exercise.id);
+
+    if (removedExerciseIds.length > 0) {
+      await tx.exerciseOnExerciseSheetItem.deleteMany({
+        where: { id: { in: removedExerciseIds } },
+      });
+    }
+
+    const removedSheetItemIds = existingSheetItems
+      .filter((item) => !retainedSheetItemIds.has(item.id))
+      .map((item) => item.id);
+
+    if (removedSheetItemIds.length > 0) {
+      await tx.exerciseSheetItem.deleteMany({
+        where: { id: { in: removedSheetItemIds } },
+      });
+    }
+
+    return syncedSheetItems.map(({ id }) => ({ id }));
   }
 
   async deleteExerciseSheet(id: string) {

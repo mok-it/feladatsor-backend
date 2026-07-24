@@ -33,6 +33,7 @@ input ExerciseSheetItemInput {
 }
 
 input OrderedExerciseInput {
+  id: ID
   exerciseID: ID!
   order: Int!
 }

@@ -36,6 +36,15 @@ However the image upload functionality, and loading the old Excel file the backe
 
 The backend uses Nest JS, Prisma, and GraphQL
 
+## Talon status
+
+The backend retains the Talon models and GraphQL support for compatibility and
+to preserve existing data. The frontend workflow has been removed for now
+because it made exercise-sheet composition too complicated from both a UX and
+a technical perspective. New frontend work should not depend on Talon support
+until a simpler product and technical design is agreed. Talon-specific comment
+support is intentionally not implemented in either layer.
+
 ## Initialization
 
 First of all, duplicate the `.env.example` file to a `.env` file.
