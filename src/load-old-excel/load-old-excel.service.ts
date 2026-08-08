@@ -156,8 +156,9 @@ export class LoadOldExcelService {
           }
         }
 
-        const { imgRes, failedToDownloadImage } =
-          await this.tryToDownloadImage(record);
+        const { imgRes, failedToDownloadImage } = await this.tryToDownloadImage(
+          record,
+        );
 
         const { createdByUser, contributors, notFoundUserNames } =
           await this.getExerciseUsersByExcelRecord(record);
