@@ -1,5 +1,4 @@
 type Query {
-  exerciseAgeGroups: [ExerciseAgeGroupMetadata!]!
   searchExercises(query: ExerciseSearchQuery): ExerciseSearchResult!
   exercises(
     take: Int!
@@ -9,13 +8,6 @@ type Query {
   ): [Exercise!]!
   exercisesCount: Int!
   exercise(id: ID!): Exercise
-}
-
-type ExerciseAgeGroupMetadata {
-  ageGroup: ExerciseAgeGroup!
-  name: String!
-  gradeRange: String!
-  order: Int!
 }
 
 type Mutation {

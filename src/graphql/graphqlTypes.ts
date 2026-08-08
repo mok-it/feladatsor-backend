@@ -317,9 +317,6 @@ export interface IQuery {
     id: string,
   ): Nullable<ExerciseTag> | Promise<Nullable<ExerciseTag>>;
   flatExerciseTags(): ExerciseTag[] | Promise<ExerciseTag[]>;
-  exerciseAgeGroups():
-    | ExerciseAgeGroupMetadata[]
-    | Promise<ExerciseAgeGroupMetadata[]>;
   searchExercises(
     query?: Nullable<ExerciseSearchQuery>,
   ): ExerciseSearchResult | Promise<ExerciseSearchResult>;
@@ -454,13 +451,6 @@ export interface ExerciseTag {
   parent?: Nullable<ExerciseTag>;
   children: ExerciseTag[];
   exerciseCount: number;
-}
-
-export interface ExerciseAgeGroupMetadata {
-  ageGroup: ExerciseAgeGroup;
-  name: string;
-  gradeRange: string;
-  order: number;
 }
 
 export interface ExerciseSearchResult {
