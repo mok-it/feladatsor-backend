@@ -28,6 +28,7 @@ import { ExerciseHistoryService } from '../exercise-history/exercise-history.ser
 import { ExerciseCommentService } from '../exercise-comment/exercise-comment.service';
 import { ExerciseGroupService } from '../exercise-group/exercise-group.service';
 import { hasRolesOrAdmin } from '../auth/hasRolesOrAdmin';
+import { exerciseAgeGroups } from './exercise-age-groups';
 
 @Resolver('Exercise')
 export class ExerciseResolver {
@@ -42,6 +43,11 @@ export class ExerciseResolver {
     private readonly userService: UserService,
     private readonly exerciseHistoryService: ExerciseHistoryService,
   ) {}
+
+  @Query('exerciseAgeGroups')
+  getExerciseAgeGroups() {
+    return exerciseAgeGroups;
+  }
 
   @Query('exercise')
   @UseGuards(RolesGuard)
